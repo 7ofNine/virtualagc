@@ -6,8 +6,8 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>--force --hardware main.agc &gt; fooSunburst120.txt  </LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>..\..\Sunburst120</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>--format INTERRUPT_LEAD_INS.agc &gt; INTERRUPT_LEAD_INS.agc.txt  </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..\..\Luminary210</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

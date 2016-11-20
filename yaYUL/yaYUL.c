@@ -253,13 +253,15 @@ main(int argc, char *argv[])
           //    printf ("Input file does not exist.\n");
           //    goto Done;
           //  }
-          OutputFile = fopen(OutputFilename, "wb");
-          if (OutputFile == NULL)
-            {
-              printf("Cannot create output file.\n");
-              goto Done;
-            }
-
+		  if (!formatOnly)
+		  {
+			  OutputFile = fopen(OutputFilename, "wb");
+			  if (OutputFile == NULL)
+			  {
+				  printf("Cannot create output file.\n");
+				  goto Done;
+			  }
+		  }
         }
       else
         {

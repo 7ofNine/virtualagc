@@ -16,7 +16,6 @@ Tools/split-interp
 Tools/webb2burkey-rope
 VirtualAGC/VirtualAGC
 VirtualAGC/temp
-yaAGC/yaAGC
 yaAGS/yaAGS
 yaLEMAP/SampleCodeAGS.bin
 yaLEMAP/SampleCodeAGS.lst
@@ -25,13 +24,12 @@ yaLEMAP/binLEMAP.bin
 yaLEMAP/yaLEMAP
 yaLEMAP/yaLEMAP.binsource
 yaUniverse/yaUniverse
-yaYUL/yaYUL
+
 jWiz/jWiz
 yaACA/yaACA
 yaACA2/yaACA2
 yaACA3/yaACA3
 yaDEDA2/yaDEDA2
-yaDSKY2/yaDSKY2
 yaLEMAP/Apollo32.png
 yaLEMAP/Main.annotation
 yaTelemetry/yaTelemetry
@@ -41,7 +39,6 @@ yaTelemetry/yaTelemetry
 *.bin
 *.symtab
 corediff.txt
-ControlPulseSim/ControlPulseSim
 Validation/Validation.lst
 Validation/Validation.txt
 *.dSYM
@@ -56,3 +53,14 @@ Luminary131/Luminary131.lst
 Solarium055/Solarium055.lst
 Sunburst120/Sunburst120.lst
 oct2bin.proof
+yaYUL/yaYUL/Release/*
+yaYUL/yaYUL/Debug/*
+yaYUL/yaYUL/.vs/*
+yaYUL/yaYUL/yaYUL.VC.db
+ControlPulseSim/ControlPulseSim/Debug/*
+ControlPulseSim/ControlPulseSim/Release/*
+yaYUL/yaYUL/yaYUL.VC.VC.opendb
+yaDSKY2/yaDSKY2/Debug/*
+yaAGC/yaAGC/.vs/*
+yaAGC/yaAGC/Debug/*
+yaAGC/yaAGC/Release/*
