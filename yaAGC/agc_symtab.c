@@ -73,8 +73,8 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/types.h>
-//#include <sys/uio.h>
-#include <unistd.h>
+// #include <sys/uio.h>
+// #include <unistd.h>  // not existing in VS2015
 
 #include "agc_engine.h"
 #include "agc_symtab.h"
@@ -348,7 +348,7 @@ ReadSymbolTable (char *fname)
 
   // Read in the SymbolFile_t structure as the header
   //printf ("__BYTE_ORDER=%0x04X\n", BYTE_ORDER);
-  read (fd, &symfile, sizeof(SymbolFile_t));
+  _read (fd, &symfile, sizeof(SymbolFile_t));
   //printf ("NumberSymbols=0x%08X\n", symfile.NumberSymbols);
   //printf ("NumberLines=0x%08X\n", symfile.NumberLines);
   LittleEndian32 (&symfile.NumberSymbols);

@@ -82,7 +82,7 @@
 #ifdef MSC_VS
 #define NVER "TBD"
 #define _CONSOLE
-#define _CRT_SECURE_NO_WARNINGS
+// #define _CRT_SECURE_NO_WARNINGS // for some reason VS2105 ignores it when it is here but complains about redefinition when it is here??
 #endif
 
 // The following constant should be commented out in production code.
@@ -201,10 +201,11 @@ typedef struct
 
 // Invalid, Constant, Address, SReg, Erasable, Fixed, Unbanked, Banked, EB, FB, Super, Overflow, Value, Syllable.
 #ifdef MSC_VS
-#define VALID_ADDRESS ( { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } )
-#define REG(n) ( { 0, 0, 1, n, 1, 0, 1, 0, 0, 0, 0, 0, n, 0 })
+#define VALID_ADDRESS ( (const Address_t) { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } )  // for some reason vs2015 wnats the const address_t for this one, but
+																					   // but complains about is when it is used in the other ones duh??	
+#define REG(n)  { 0, 0, 1, n, 1, 0, 1, 0, 0, 0, 0, 0, n, 0 }						   // VS2015 doesn't like the brackets () in the macro . heh??	
 #define CONSTANT(n) ( { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, n, 0 })
-#define FIXEDADD(n) ( { 0, 0, 1, n, 0, 1, 1, 0, 0, 0, 0, 0, n, 0 })
+#define FIXEDADD(n)  { 0, 0, 1, n, 0, 1, 1, 0, 0, 0, 0, 0, n, 0 }                      // VS2015 doesn't like the brackets () in the macro . heh??
 #else
 #define VALID_ADDRESS ((const Address_t) { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } )
 #define REG(n) ((const Address_t) { 0, 0, 1, n, 1, 0, 1, 0, 0, 0, 0, 0, n, 0 })

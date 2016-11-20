@@ -40,7 +40,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+// #include <unistd.h>  // not existing in VS2015
 #include "agc_cli.h"
 #include "agc_engine.h"
 #include "agc_symtab.h"

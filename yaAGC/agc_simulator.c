@@ -41,7 +41,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <unistd.h>
+// #include <unistd.h>  // not existing in VS2105
 #include <stdlib.h>
 
 #include "yaAGC.h"
