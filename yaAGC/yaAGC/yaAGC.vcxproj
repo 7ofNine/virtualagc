@@ -146,14 +146,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\agc_cli.c" />
-    <ClCompile Include="..\agc_debugger.c" />
-    <ClCompile Include="..\agc_disassembler.c" />
+    <ClCompile Include="..\agc_debugger.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\agc_disassembler.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\agc_engine.c" />
     <ClCompile Include="..\agc_engine_init.c" />
-    <ClCompile Include="..\agc_gdbmi.c" />
+    <ClCompile Include="..\agc_gdbmi.c">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\agc_help.c" />
     <ClCompile Include="..\agc_simulator.c" />
-    <ClCompile Include="..\agc_symtab.c" />
+    <ClCompile Include="..\agc_symtab.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\agc_utilities.c" />
     <ClCompile Include="..\Backtrace.c" />
     <ClCompile Include="..\DecodeDigitalDownlink.c" />
@@ -167,7 +176,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\random.c" />
-    <ClCompile Include="..\regex.c" />
+    <ClCompile Include="..\regex.c">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\rfopen.c" />
     <ClCompile Include="..\SocketAPI.c" />
     <ClCompile Include="..\WinAGC.c">

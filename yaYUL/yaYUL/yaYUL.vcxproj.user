@@ -6,8 +6,8 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>--format INTERRUPT_LEAD_INS.agc &gt; INTERRUPT_LEAD_INS.agc.txt  </LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>..\..\Luminary210</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments> main.agc </LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..\..\Colossus249</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

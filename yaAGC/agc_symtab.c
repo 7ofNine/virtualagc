@@ -344,11 +344,11 @@ ReadSymbolTable (char *fname)
       printf ("Cannot open symbol table file: %s\n", fname);
       return 1;
     }
-  fd = fileno (fp);
+  fd = _fileno (fp);
 
   // Read in the SymbolFile_t structure as the header
   //printf ("__BYTE_ORDER=%0x04X\n", BYTE_ORDER);
-  _read (fd, &symfile, sizeof(SymbolFile_t));
+  read (fd, &symfile, sizeof(SymbolFile_t));
   //printf ("NumberSymbols=0x%08X\n", symfile.NumberSymbols);
   //printf ("NumberLines=0x%08X\n", symfile.NumberLines);
   LittleEndian32 (&symfile.NumberSymbols);
@@ -357,7 +357,7 @@ ReadSymbolTable (char *fname)
   //printf ("NumberLines=0x%08X\n", symfile.NumberLines);
 
   /* Set the source path if it is not overridden by command-line option */
-  if (SourcePathName == (char*)0) SourcePathName = strdup (symfile.SourcePath);
+  if (SourcePathName == (char*)0) SourcePathName = _strdup (symfile.SourcePath);
 
   // Allocate the symbol table
   SymbolTableSize = symfile.NumberSymbols;
@@ -829,7 +829,7 @@ OpenSourceFile (char *FileName)
   strcpy (CurrentSourcePath, ss);
 
   // Otherwise, we can open the file so complete and return
-  CurrentSourceFile = strdup (FileName);
+  CurrentSourceFile = _strdup (FileName);
   return 0;
 }
 
