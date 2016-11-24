@@ -6,8 +6,8 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments> main.agc </LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>..\..\Colossus249</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments> --format ATTITUDE_MANEUVER_ROUTINE.agc &gt; ATTITUDE_MANEUVER_ROUTINE.agc.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..\..\Luminary210</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
