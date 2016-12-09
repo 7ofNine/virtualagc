@@ -6,7 +6,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments> --format ATTITUDE_MANEUVER_ROUTINE.agc &gt; ATTITUDE_MANEUVER_ROUTINE.agc.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments> main.agc &gt; yaYul.foo.txt</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>..\..\Luminary210</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
