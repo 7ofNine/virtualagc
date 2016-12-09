@@ -200,7 +200,7 @@ typedef struct
 } Address_t;
 
 // Invalid, Constant, Address, SReg, Erasable, Fixed, Unbanked, Banked, EB, FB, Super, Overflow, Value, Syllable.
-#ifdef MSC_VS
+#if defined(MSC_VS)
 #define VALID_ADDRESS ( (const Address_t) { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } )  // for some reason vs2015 wnats the const address_t for this one, but
 																					   // but complains about is when it is used in the other ones duh??	
 #define REG(n)  { 0, 0, 1, n, 1, 0, 1, 0, 0, 0, 0, 0, n, 0 }						   // VS2015 doesn't like the brackets () in the macro . heh??	

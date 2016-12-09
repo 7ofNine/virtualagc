@@ -177,6 +177,28 @@ DATE:=`date +%Y%m%d`
 DEV_STATIC=DEV_STATIC=yes
 # *******************************************************************
 
+# Select compiler basenames.  We use
+#	${cc}	C compiler
+#	${CC}	C++ compiler
+# These are almost always gcc and g++, respectively, but on some
+# platforms it's necessary to use non-GNU compilers (even if the 
+# GNU compilers are actually available and installed)  in order to 
+# be able to access the native builds of wxWidgets for programs
+# like yaDSKY2. 
+cc=gcc
+CC=g++
+ifdef SOLARIS
+cc=cc
+CC=CC
+endif
+ifdef IPHONE
+cc=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-gcc-4.0.1
+CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-g++-4.0.1
+LIBS=
+endif
+export cc
+export CC
+
 # Comment out the following line(s) to use yaDSKY rather than yaDSKY2 and/or 
 # yaDEDA by yaDEDA2.  yaDSKY/yaDEDA have been replaced by yaDSKY2/yaDEDA2 
 # principally because yaDSKY/yaDEDA are gtk+ based while yaDSKY2/yaDEDA2
@@ -215,7 +237,11 @@ ifdef SOLARIS
 LIBS+=-L/usr/local/lib
 LIBS+=-lsocket
 LIBS+=-lnsl
-export CC=gcc
+CFLAGS0 += /opt/csw/include/wx-2.8
+CFLAGS += /opt/csw/include/wx-2.8
+dummy:=$(PATH):/opt/csw/bin
+export PATH=$(dummy)
+export SOLARIS
 endif
 
 # Some adjustments for building in Mac OS X
@@ -226,12 +252,14 @@ endif
 ifdef MACOSX
 #NOREADLINE=yes
 ISMACOSX:=MACOSX=yes
+export MACOSX
 endif
 
 # Some adjustments for building in FreeBSD
 ifdef FREEBSD
 LIBS+=`pkg-config --libs gtk+-2.0`
 LIBS+=`pkg-config --libs glib`
+export FREEBSD
 endif
 
 # GROUP is the main group to which the USER belongs.  This seems to be defined
@@ -252,12 +280,12 @@ ifeq ($(USER),rburkey)
 WEBSITE=../sandroid.org/public_html/apollo
 CFLAGS0=-Werror -DALLOW_BSUB -g -O0
 CFLAGS=-Wall $(CFLAGS0)
-yaACA=
+yaACA=-
 else 
 ifdef DEV_BUILD
 CFLAGS0=-Werror -DALLOW_BSUB -g -O0
 CFLAGS=-Wall $(CFLAGS0)
-yaACA=
+yaACA=-
 else 
 ifdef DEBUG_BUILD
 CFLAGS0=-DALLOW_BSUB -g -O0
@@ -274,10 +302,14 @@ endif
 ifdef MACOSX
 yaACA=-
 endif
+ifdef SOLARIS
+yaACA=-
+endif
 
 # Note:  The CURSES variable is misnamed.  It really is just any special libraries
 # for yaAGC, yaAGS, or yaACA3 that depend on Win32 vs. non-Win32 native builds.
 ifdef WIN32
+export WIN32
 EXT=.exe
 CFLAGS0+=-I/usr/local/include
 CFLAGS+=-I/usr/local/include
@@ -287,7 +319,6 @@ LIBS+=-lkernel32
 LIBS+=-lwsock32
 CURSES=../yaAGC/random.c
 CURSES+=-lregex
-export CC=gcc
 else
 CURSES=-lcurses
 endif
@@ -296,6 +327,26 @@ ifdef MACOSX
 CFLAGS0+=-I/opt/local/include -I/opt/local/include/allegro
 CFLAGS+=-I/opt/local/include -I/opt/local/include/allegro
 endif
+
+ifdef SOLARIS
+CFLAGS0 += -I/opt/csw/include/wx-2.8
+CFLAGS += -I/opt/csw/include/wx-2.8
+endif
+
+ifdef MACOSX
+CFLAGS0+=-DMACOSX=yes
+CFLAGS+=-DMACOSX=yes
+endif
+ifdef SOLARIS
+CFLAGS0+=-DSOLARIS=yes
+CFLAGS+=-DSOLARIS=yes
+endif
+ifdef FREEBSD
+CFLAGS0+=-DFREEBSD=yes
+CFLAGS+=-DFREEBSD=yes
+endif
+export CFLAGS0
+export CFLAGS
 
 # We assume a *nix build environment.
 
@@ -345,6 +396,18 @@ SUBDIRS += jWiz
 SUBDIRS += yaDSKYb1
 SUBDIRS += VirtualAGC
 endif # NOGUI
+
+# EXTSW is the switch for cp that's equivalent to -a in Linux.
+ifdef MACOSX
+EXTSW=-pR
+else
+ifdef SOLARIS
+EXTSW=-r -@ -P
+else
+EXTSW=-a
+endif
+endif
+export EXTSW
 
 .PHONY: $(SUBDIRS)
 
@@ -417,6 +480,10 @@ yaAGC-Block1-Pultorak yaAGCb1 yaDSKYb1 yaUplinkBlock1 yaValidation-Block1:
 VirtualAGC:
 	$(BUILD) -C $@ "YADSKY_SUFFIX=$(YADSKY_SUFFIX)" "YADEDA_SUFFIX=$(YADEDA_SUFFIX)" $(ISMACOSX) $(DEV_STATIC)
 
+.PHONY: VirtualAGC-installer
+VirtualAGC-installer: all
+	$(BUILD) -C VirtualAGC "YADSKY_SUFFIX=$(YADSKY_SUFFIX)" "YADEDA_SUFFIX=$(YADEDA_SUFFIX)" $(ISMACOSX) $(DEV_STATIC) VirtualAGC-installer
+
 # This target is for making HTML assembly listings for the website.
 .PHONY: listings
 AGC_LISTINGS = $(addprefix listing-agc-, $(MISSIONS))
@@ -451,9 +518,9 @@ buildbox: dev
 
 .PHONY: binaries
 binaries: clean all-archs
-	cp -a VirtualAGC/VirtualAGC-installer $(WEBSITE)/Downloads
-	cp -a VirtualAGC/VirtualAGC-setup.exe $(WEBSITE)/Downloads
-	cp -a VirtualAGC/VirtualAGC.app.tar.gz $(WEBSITE)/Downloads
+	cp ${EXTSW} VirtualAGC/VirtualAGC-installer $(WEBSITE)/Downloads
+	cp ${EXTSW} VirtualAGC/VirtualAGC-setup.exe $(WEBSITE)/Downloads
+	cp ${EXTSW} VirtualAGC/VirtualAGC.app.tar.gz $(WEBSITE)/Downloads
 	ls -ltr $(WEBSITE)/Downloads | tail -4
 
 # I used this only for creating a development snapshot.  It's no use to anybody
@@ -545,3 +612,67 @@ ifndef NOGUI
 	cd yaDEDA && ./autogen.sh --prefix=$(PREFIX)
 endif
 
+iTMP:=temp.virtualagc
+WINHOME=$(subst \,/,$(USERPROFILE))
+.PHONY: install
+install: all
+ifdef MACOSX
+	cp ${EXTSW} VirtualAGC/temp/VirtualAGC.app ~/Desktop
+	@echo "Run Virtual AGC from its desktop icon."
+else
+ifdef WIN32
+	-mkdir "$(WINHOME)/VirtualAGC"
+	cp ${EXTSW} VirtualAGC/temp/lVirtualAGC/* "$(WINHOME)/VirtualAGC"
+	@echo "cd %HOMEPATH%\\VirtualAGC\\Resources" >$(iTMP)
+	@echo "..\\bin\\VirtualAGC" >>$(iTMP)
+	mv $(iTMP) $(WINHOME)/Desktop/VirtualAGC.bat
+	@echo ""
+	@echo "================================================================"
+	@echo "Run Virtual AGC from its desktop launcher."
+	@echo "Or else, run Virtual AGC from a Windows command-line as follows:"
+	@echo "  cd VirtualAGC\\Resources"
+	@echo "  ..\\bin\\VirtualAGC"
+	@echo "================================================================"
+else
+	# Create installation directory.
+	-mkdir ~/VirtualAGC
+	cp ${EXTSW} VirtualAGC/temp/lVirtualAGC/* ~/VirtualAGC
+ifdef SOLARIS
+	@echo "#!/bin/sh" >$(iTMP)
+	@echo "export LD_LIBRARY_PATH=/opt/csw/lib" >>$(iTMP)
+	@echo "cd ~/VirtualAGC/Resources" >>$(iTMP)
+	@echo "../bin/VirtualAGC &" >>$(iTMP)
+	chmod +x $(iTMP)
+	mv $(iTMP) $$HOME/Desktop/VirtualAGC
+	@echo ""
+	@echo "================================================================"
+	@echo "Run Virtual AGC from its desktop launcher.  (You can change the"
+	@echo "icon associated with the launcher by right-click, Properties, and"
+	@echo "selecting ~/VirtualAGC/Resources/ApolloPatch2-transparent.png.)"
+	@echo "If given the choice between \"Run\" and \"Run in Terminal\", choose"
+	@echo "\"Run\".  Or else, run Virtual AGC from a command-line as follows:"
+	@echo "  cd ~/VirtualAGC/Resources"
+	@echo "  ../bin//VirtualAGC"
+	@echo "================================================================"
+else
+	@echo "[Desktop Entry]" >$(iTMP)
+	@echo "Encoding=UTF-8" >>$(iTMP)
+	@echo "Name=VirtualAGC" >>$(iTMP)
+	@echo "Comment=Virtual AGC GUI Application" >>$(iTMP)
+	@echo "Terminal=false" >>$(iTMP)
+	@echo "Exec=$$HOME/VirtualAGC/bin/VirtualAGC" >>$(iTMP)
+	@echo "Type=Application" >>$(iTMP)
+	@echo "Icon=$$HOME/VirtualAGC/Resources/ApolloPatch2-transparent.png" >>$(iTMP)
+	@echo "Path=$$HOME/VirtualAGC/Resources" >>$(iTMP)
+	chmod +x $(iTMP)
+	mv $(iTMP) $$HOME/Desktop/VirtualAGC.desktop
+	@echo ""
+	@echo "================================================================"
+	@echo "Run Virtual AGC from its desktop icon."
+	@echo "Or else, run Virtual AGC from a command-line as follows:"
+	@echo "  cd ~/VirtualAGC/Resources"
+	@echo "  ../bin//VirtualAGC"
+	@echo "================================================================"
+endif
+endif
+endif

@@ -1,5 +1,6 @@
 ### FILE="Main.annotation"
 ## Copyright:   Public domain.
+## Filename:    CONTROLLED_CONSTANTS.agc
 ## Purpose:     A section of Luminary revision 210.
 ##              It is part of the source code for the Lunar Module's (LM)
 ##              Apollo Guidance Computer (AGC) for Apollo 15-17.
@@ -13,6 +14,7 @@
 ## Website:     www.ibiblio.org/apollo/index.html
 ## Mod history: 2016-11-17 JL   Created from Luminary131 version.
 ##              2016-11-17 HG   Transcribed
+##              2016-12-08 HG   Fix label  HBEAMANB  -> HBEAMNB
 
 
 ## Page 39
@@ -148,7 +150,7 @@ RANGCONV        2DEC            2.859024        B-3     # CONVERTS RR RANGE READ
                 BANK
                 COUNT*          $$/SERV
 
-HBEAMANB        2DEC            -0.7147168647           # POS 1 ALT BEAM IN NAV BASE COORDINATES
+HBEAMNB         2DEC            -0.7147168647           # POS 1 ALT BEAM IN NAV BASE COORDINATES
                 2DEC            -0.0731086602
                 2DEC            -0.6955824327
 

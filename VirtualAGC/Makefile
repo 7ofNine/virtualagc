@@ -88,6 +88,7 @@
 #				32-bit Linux VirtualAGC VM I'm now creating are
 #				added to the installation bundle.  These are
 #				related to debugging on Code::blocks. 
+#		2016-11-29 RSB	Fixed formation of .app sub-directories for Mac.
 
 APP=VirtualAGC
 ifndef MISSIONS
@@ -111,12 +112,21 @@ INC_MAC=${HOME}/IMCROSS/mac/include
 SDK_MAC=${HOME}/IMCROSS/mac/SDKs/MacOSX10.4u.sdk
 JAMMER_DIR=${HOME}/IMCROSS/installjammer
 
-# cp and sed work slightly differently on Mac OS X than elsewhere.
-ifdef MACOSX
-EXTSW=-pR
-else
-EXTSW=-a
+PLATFORM=
+ifdef WIN32
+PLATFORM+=-DWIN32=yes
 endif
+ifdef MACOSX
+PLATFORM+=-DMACOSX=yes
+endif
+ifdef FREEBSD
+PLATFORM+=-DFREEBSD=yes
+endif
+ifdef SOLARIS
+PLATFORM+=-DSOLARIS=yes
+endif
+
+# cp and sed work slightly differently on Mac OS X than elsewhere.
 INPLACE=-i~
 CP=cp
 CP+=${EXTSW}
@@ -154,14 +164,10 @@ default: Linux
 all-archs: Linux Win32 MacOsX
 
 .PHONY: Linux
-ifeq "${USER}" "rburkey"
-Linux: VirtualAGC-installer
-else
-ifndef MACOSX
-Linux: temp/lVirtualAGC
-else
+ifdef MACOSX
 Linux: temp/VirtualAGC.app
-endif
+else
+Linux: temp/lVirtualAGC
 endif
 
 .PHONY: Win32
@@ -195,7 +201,7 @@ SOURCES:=${APP}.cpp \
 HEADERS:=${APP}.h
 
 ${APP}: ${SOURCES} ${HEADERS}
-	g++ -DONNO_STYLE \
+	${CC} -DONNO_STYLE ${PLATFORM} \
 		${YADSKY2} ${YADEDA2} \
 		`wx-config --cxxflags` \
 		-o $@ ${SOURCES} \
@@ -204,7 +210,7 @@ ${APP}: ${SOURCES} ${HEADERS}
 	strip $@${EXT}
 
 ${APP}.exe: ${SOURCES} ${HEADERS}
-	${PREFIX_WIN}-g++ -DONNO_STYLE \
+	${PREFIX_WIN}-${CC} -DONNO_STYLE \
 		${YADSKY2} ${YADEDA2} \
 		`${BIN_WIN}/wx-config ${WXSTATIC} --cxxflags` \
 		-o $@ ${SOURCES} \
@@ -213,7 +219,7 @@ ${APP}.exe: ${SOURCES} ${HEADERS}
 	${PREFIX_WIN}-strip $@
 
 ${APP}-macosx: ${SOURCES} ${HEADERS}
-	${PREFIX_MAC}-g++ -DONNO_STYLE \
+	${PREFIX_MAC}-${CC} -DONNO_STYLE \
 		${YADSKY2} ${YADEDA2} \
 		-arch ppc -arch i386 -I${INC_MAC} -isysroot ${SDK_MAC} \
 		`${BIN_MAC}/wx-config ${WXSTATIC} --cxxflags` \
@@ -234,7 +240,7 @@ temp/lVirtualAGC/Resources temp/VirtualAGC/Resources temp/VirtualAGC.app/Content
 	for n in ${MISSIONS}; do \
 		sh ./CopyApolloSource.sh $@ $$n ${EXTSW} ${WIN32} ;\
 	done
-	${CP} *.png $@
+	${CP} *.png *.ico $@
 	${CP} ../yaDSKY/src/*.ini $@
 ifeq "${YADSKY_SUFFIX}" ""	
 	${CP} ../yaDSKY/pixmaps $@/pixmaps/yaDSKY
@@ -247,7 +253,7 @@ ifeq "${YADEDA_SUFFIX}" ""
 else
 	${CP} ../yaDEDA2/*.xpm $@
 endif
-	${CP} -a ../yaDSKYb1/images $@/images-yaDSKYb1
+	${CP} ../yaDSKYb1/images $@/images-yaDSKYb1
 	-rm -rf $@/images-yaDSKYb1/CVS $@/images-yaDSKYb1/.xvpics
 	${CP} ../jWiz/*.jpg $@
 	-rm -rf $@/pixmaps/yaDEDA/CVS $@/pixmaps/yaDEDA/.xvpics
@@ -379,7 +385,7 @@ temp/VirtualAGC.app : % : VirtualAGC-macosx create-bundle %/Contents/MacOS %/Con
 		mv $$n `echo $$n | sed "s/-macosx//"` ; \
 	done
 	tar -C $@/Contents/MacOS -xjf ../../Terminator.app.tar.bz2
-	for n in yaDSKY2 yaDEDA2 yaTelemetry jWiz ; \
+	for n in yaDSKY2 yaDEDA2 yaTelemetry jWiz yaDSKYb1 ; \
 	do \
 	  ${CP} template.app $@/Contents/MacOS/$$n.app ; \
 	  mv $@/Contents/MacOS/$$n.app/Contents/Resources/VirtualAGC.icns $@/Contents/MacOS/$$n.app/Contents/Resources/$$n.icns ; \
@@ -401,7 +407,7 @@ else # MACOSX
 temp/VirtualAGC.app : % : VirtualAGC create-bundle %/Contents/MacOS %/Contents/Resources
 	for n in ${EXECUTABLES} ; do ${CP} $$n $@/Contents/MacOS ; done
 	-tar -C $@/Contents/MacOS -xjf ../../Terminator.app.tar.bz2
-	for n in yaDSKY2 yaDEDA2 yaTelemetry jWiz ; \
+	for n in yaDSKY2 yaDEDA2 yaTelemetry jWiz yaDSKYb1 ; \
 	do \
 	  ${CP} template.app $@/Contents/MacOS/$$n.app ; \
 	  mv $@/Contents/MacOS/$$n.app/Contents/Resources/VirtualAGC.icns $@/Contents/MacOS/$$n.app/Contents/Resources/$$n.icns ; \
