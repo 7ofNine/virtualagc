@@ -18,6 +18,9 @@
 ##                              replace tabs with spaces 
 ##              2016-12-07 HG   Fix P00 -> POO
 ##                              Change POO -> P00 in some comments
+##              2016-12-11 HG   Fix operator CS FLAGWRD5 -> CA FLAGWRD5
+##                                  operand  AGSBUFF -> AGSK  
+##              2016-12-12 HG   comment out previous [WORKAROUND] with SBANK= 
 
 ## Page 275
                 BANK    7
@@ -524,7 +527,7 @@ GOLOADLV        TC      FLASHOFF
 V47TXACT        TC      TESTXACT        # NO OTHER EXTVERB.
                 CAF     PRIO4
                 TC      FINDVAC
-                EBANK=  AGSBUFF
+                EBANK=  AGSK
                 2CADR   AGSINIT
 
                 TC      ENDOFJOB
@@ -544,7 +547,7 @@ CKMODCAD        CA      MODECADR
 #              5. RELEASE EXT VERB DISPLAY SYSTEM
 
 ## [WORKAROUND] Moved from the top of VERB 50 a few lines above here --- RSB 2004.
-                SBANK=  PINSUPER        # FOR LOADLV1 AND SHOWSUM CADR'S
+#                SBANK=  PINSUPER        # FOR LOADLV1 AND SHOWSUM CADR'S
 ## [WORKAROUND]
 
 ALINTIME        TC      TESTXACT
@@ -789,7 +792,7 @@ V50N25X         VN      5025
 LRPOSCAL        OCT     444
 
 ## Page 292
-RDRUSECK        CS      FLAGWRD5        # IS R77 RUNNING?
+RDRUSECK        CA      FLAGWRD5        # IS R77 RUNNING?
                 MASK    R77FLBIT
                 CCS     A
                 TC      ALM/END         # YES.

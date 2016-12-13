@@ -111,6 +111,8 @@ nominalRowSpacing = 10 * scale
 nominalRowHeight = 24 * scale
 nominalTwoRowHeight = nominalRowHeight + nominalRowSpacing + nominalRowHeight
 row = 0
+alnumPattern = re.compile(r"[0-9A-Z]")
+lastBoxChar = '?'
 for box in file:
 	boxFields = box.split()
 	boxChar = boxFields[0]
@@ -179,6 +181,63 @@ for box in file:
 		addIt = 1 # For general characters.
 		numBoxWidths += 1
 		sumBoxWidths += boxWidth
+	# There's an effect which occurs frequently, but *very* frequently when the contrast in the
+	# original scans is poorer (such as non-archive.org imagery) in which wide characters
+	# with a narrow crossbar, like M, H, U, and particularly N, may be split into two adjacent
+	# boxes.  The following filter tries to detect that case and turn them into a single wider
+	# box ... but it only does so within a *very* narrow range of combined-box sizes.
+	combinedSomeBoxes = 0
+	if len(boxes) > 0:
+		# Check both existing boxes[] (whichBoxes==0) and rejectedBoxes[] (whichBoxes==1).
+		for whichBoxes in range(0,2):
+			if whichBoxes == 0:
+				length = len(boxes)
+			else:
+				length = len(rejectedBoxes)
+			if length > 0:
+				if whichBoxes == 0:
+					lastBox = boxes[len(boxes)-1]
+				else:
+					lastBox = rejectedBoxes[len(rejectedBoxes)-1]
+				lastTop = lastBox['boxTop']
+				lastBottom = lastBox['boxBottom']
+				lastLeft = lastBox['boxLeft']
+				lastRight = lastBox['boxRight']
+				combinedWidth = boxRight - lastLeft 
+				#print combinedWidth
+				if combinedWidth >= 15 * scale and combinedWidth <= 19 * scale:
+				   	# Convert all of the lastXXXX variables to describe the
+				   	# combined box.  We already know that the width is within
+				   	# the range we want, but let's check the height.
+				   	lastRight = boxRight
+				   	lastWidth = lastRight - lastLeft + 1
+				   	if boxBottom > lastBottom:
+				   		lastBottom = boxBottom
+				   	if boxTop < lastTop:
+				   		lastTop = boxTop
+				   	lastHeight = lastBottom - lastTop + 1
+				   	if lastHeight >= 20 * scale and lastHeight <= 28 * scale:
+				   		# Accept it!
+				   		if whichBoxes == 0:
+					   		boxes[len(boxes)-1]['boxRight'] = lastRight
+					   		boxes[len(boxes)-1]['boxLeft'] = lastLeft
+					   		boxes[len(boxes)-1]['boxTop'] = lastTop
+					   		boxes[len(boxes)-1]['boxBottom'] = lastBottom
+					   		boxes[len(boxes)-1]['boxWidth'] = lastWidth
+					   		boxes[len(boxes)-1]['boxHeight'] = lastHeight
+					   		combinedSomeBoxes = 1
+					   		break
+						else:
+					   		boxRight = lastRight
+					   		boxLeft = lastLeft
+					   		boxTop = lastTop
+					   		boxBottom = lastBottom
+					   		boxWidth = lastWidth
+					   		boxHeight = lastHeight
+					   		addIt = 1
+							del rejectedBoxes[len(rejectedBoxes)-1]
+	if combinedSomeBoxes:
+		continue
 	# On a number of these printouts, there's an occasional short vertical stroke immediately to
 	# the right of a legitimate character ... perhaps the edge of the physical metal block containing
 	# the raised impression of the character itself.  At any rate, octopus's noise filters can't deal
@@ -193,6 +252,21 @@ for box in file:
 		distance = boxRight - boxes[len(boxes)-1]['boxRight']
 	if distance < 8 * scale:
 		rejectIt = 1;
+	# Here's something to help apostrophes to be recognized:
+	if boxWidth >= 6 * scale and boxWidth <= 8 * scale and boxHeight >= 12 * scale and \
+	   boxHeight <= 16 * scale and numCharsInRow > 0 and \
+	   boxBottom <= (sumBottomsInRow + 0.0)/numCharsInRow - 7 * scale:
+	   	addIt = 1 		
+	# Here's something to help hyphens to be recognized:
+	if boxChar == '-' and numCharsInRow > 0:
+		#print boxWidth/scale, boxHeight/scale, numCharsInRow, sumBottomsInRow, lastBoxChar
+		if boxWidth > 14 * scale and boxWidth < 19 * scale and boxHeight > 6 * scale and boxHeight < 9 * scale:
+			midPoint = (boxTop + boxBottom) / 2.0
+			#print midPoint - sumBottomsInRow/numCharsInRow
+			if abs(midPoint - sumBottomsInRow/numCharsInRow + 12.5 * scale) <= 2 * scale:
+				#print "Adding"
+		 		addIt = 1
+	lastBoxChar = boxChar
 	# The following one is a very tough compromise.  Make it too small, and you miss some poorly-printed
 	# parentheses and L's that are printed too low.  Make it too big, and you add in some extra gunk
 	# that some printouts (like Sunburst 120) liked to stick in as short vertical line segments next to
@@ -241,14 +315,14 @@ for box in file:
 		boxWidth = int(boxWidth/addAs) - 1
 		boxRight = boxLeft + boxWidth - 1 + nominalColSpacing
 		for i in range(0,addAs):
-			sumBottomsInRow += boxBottom
-			numCharsInRow += 1
+			if alnumPattern.match(boxChar):
+				sumBottomsInRow += boxBottom
+				numCharsInRow += 1
 			boxes.append({'boxChar':boxChar, 'boxLeft':boxLeft, 'boxBottom':boxBottom,
 				      'boxRight':boxRight, 'boxTop':boxTop, 'boxWidth':boxWidth, 
 				      'boxHeight':boxHeight})
 			boxLeft += boxWidth + nominalColSpacing - 1
-			boxRight += boxWidth + nominalColSpacing - 1
-			
+			boxRight += boxWidth + nominalColSpacing - 1	
 	else:
 		rejectedBoxes.append({'boxChar':boxChar, 'boxLeft':boxLeft, 'boxBottom':boxBottom,
 				      'boxRight':boxRight, 'boxTop':boxTop, 'boxWidth':boxWidth, 
@@ -350,14 +424,14 @@ for ascii in range(128):
 	if os.path.isfile(filename):
 		imagesMatch.append(Image(filename=filename))
 	else:
-		imagesMatch.append(Image(filename="asciiFont/127.png"))
+		imagesMatch.append(Image(filename="asciiFont/match127.png"))
 imagesNomatch = []
 for ascii in range(128):
 	filename = "asciiFont/nomatch" + str(ascii) + ".png"
 	if os.path.isfile(filename):
 		imagesNomatch.append(Image(filename=filename))
 	else:
-		imagesNomatch.append(Image(filename="asciiFont/127.png"))
+		imagesNomatch.append(Image(filename="asciiFont/nomatch127.png"))
 
 # Prepare a drawing-context.
 draw = Drawing()
@@ -396,9 +470,11 @@ for row in range(0, len(lines)):
 	# Loop on non-blank characters in the row.
 	sumBottomsInRow = 0
 	numCharsInRow = 0
-	for character in list(lines[row]):
-		if re.match(blankLinePattern, character):
-			continue
+	charList = list(re.sub(r"\s+" ,"", lines[row]))
+	for index in range(0,len(charList)):
+		character = charList[index]
+		#if re.match(blankLinePattern, character):
+		#	continue
 		if boxIndex >= len(boxes):
 			#print 'Out of boxes in page, on row', row, "character", character
 			top = boxes[boxIndex-1]['boxBottom']
@@ -415,6 +491,23 @@ for row in range(0, len(lines)):
 				middle = (boxes[boxIndex-1]['boxTop'] + boxes[boxIndex-1]['boxBottom']) / 2
 				draw.line((left,middle), (right,middle))
 				break
+		
+		# Here is a thing to overcome a problem what octopus has to do to eliminate
+		# horizontal lines on the input pages.  One side effect is that '=' is often
+		# eliminated, which is very troublesome.  However, there are patterns we can
+		# try to use to reinsert an = where one is missing.
+		if numCharsInRow > 0 and index < len(charList)-1 and \
+		   character == '=' and boxes[boxIndex]['boxChar'] != '=' and \
+		   boxes[boxIndex]['boxChar'] == charList[index+1] and \
+		   boxes[boxIndex]['boxLeft'] > boxes[boxIndex-1]['boxRight'] + 80*scale: 
+			boxLeft = boxes[boxIndex]['boxLeft'] - 40 * scale
+			fontChar = imagesNomatch[ord('=')].clone()
+			draw.composite(operator='darken', left=boxLeft, 
+				       top=boxes[boxIndex]['boxTop'], width=fontChar.width * scale, 
+				       height=fontChar.height * scale, image=fontChar)
+			# Note that this will advance index (the pointer to characters in the line)
+			# but not boxIndex.
+			continue
 		sumBottomsInRow += boxes[boxIndex]['boxBottom']
 		numCharsInRow += 1
 		asciiCode = ord(character)

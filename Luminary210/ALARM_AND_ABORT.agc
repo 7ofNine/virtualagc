@@ -15,6 +15,8 @@
 ## Mod history: 2016-11-17 JL   Created from Luminary131 version.
 ##              2016-11-29 TB   Transcribed
 ##              2016-12-07 HG   Fix P00 -> POO
+##              2016-12-11 HG   add missing opertaion MASK FLGWRD10
+##              2016-12-12 HG   add [WORKAROUND] using SBANK=
 
 ## Page 1378
 # THE FOLLOWING SUBROUTINE MAY BE CALLED TO DISPLAY A NON-ABORTIVE ALARM CONDITION.  IT MAY BE CALLED
@@ -189,7 +191,10 @@ ALMNCADR        INHINT
                 TCF             LARMENT                         
 
 ADR77770        TCF             OCT77770                        
-ADR40400        TCF             OCT40400                        
+ADR40400        TCF             OCT40400
+## [WORKAROUND]        not in original   HG
+                SBANK=          LOWSUPER                # To adjust subsequent BBCON
+## [WORKAROUND]        not in original   HG              
 DOALARM         EQUALS          ENDOFJOB                        
                 EBANK=          DVCNTR                          
 BBSERVDL        BBCON           SERVIDLE                        
@@ -220,7 +225,8 @@ ABORT           EQUALS          WHIMPER
 FLAGS           CS              STATEBIT                        
                 MASK            FLAGWRD3                        
                 TS              FLAGWRD3                        
-                CS              REINTBIT                        
+                CS              REINTBIT 
+                MASK            FLGWRD10
 
 ## Page 1382
                 TS              FLGWRD10                        

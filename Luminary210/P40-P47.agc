@@ -27,6 +27,10 @@
 ##              2016-12-07 HG   fix P00 -> POO (appears only in a comment)
 ##                              revert above change
 ##              2016-12-07 HG   Add missing label S40RET
+##              2016-12-11 HG   Fix pseudo operation GOTO -> CALL
+##              2016-12-12 hg   Fix interpretive operand FRCS2 -> FRCS4
+##                                               operator GOTO -> SET  
+##                                  operand PHASCHNG -> 2PHSCHNG                    
 
 ## Page 747
 # PROGRAM DESCRIPTION  P40BOTH    DECEMBER 22, 1966
@@ -231,7 +235,7 @@ P41LM		CAF	P41ADRES	# INITIALIZATION FOR BURNBABY
 		EBANK=	VGPREV
 		2CADR	DYNMDISP
 		
-		TC	PHASCHNG
+		TC	2PHSCHNG
 
 ## Page 751
 		OCT	00116		# GROUP 6 RESTART AT FKP5RST, PRIO 17
@@ -978,7 +982,7 @@ ALARMIT		EXIT
 		TC	ALARM
 		OCT	01407		# SKIP TGO COMPUTATION BUT CALL FINDCDUW.
 		TC	INTPRET
-GOFIND		GOTO		
+GOFIND		CALL		
 			FINDCDUW -2
 		GOTO
 			S40RET		# LOCATION FOLLOWING CALL TO S40.8
@@ -1028,7 +1032,7 @@ S40.13		TC	INTPRET
 			VGTIG		# VELOCITY TO BE GAINED AT +7
 		PDDL	DMP		# 00D = MAG OF VGTIG AT +7
 			6.5SECS 	# CORRECT VG FOR 6.5 SECONDS OF ULLAGE
-			FRCS2		# ASSUME 4 JET ULLAGE
+			FRCS4		# ASSUME 4 JET ULLAGE
 		DDV	SL1		# SCALE
 			WEIGHT/G
 		BDSU	PUSH
@@ -1091,7 +1095,7 @@ S40.13D		DLOAD	DMP		# FOR DPS ENGINE
 S40.127		DSU	BPL
 			6SEC		# 600.0 CS AT +14
 			S40.138
-		DAD	GOTO
+		DAD	SET
 			6SEC
 ## Page 770
 			NOTHROTL
