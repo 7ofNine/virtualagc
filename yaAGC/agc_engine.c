@@ -282,7 +282,16 @@
  *		11/12/16 MAS	Apparently CH11 bit 10 only turns off RESTART
  *				*on write*, with the actual value of the
  *				channel being otherwise  meaningless.
- *
+ *		12/19/16 MAS	Corrected one more bug in the DV instruction;
+ *				the case of a number being divided by itself
+ *				was not sign-extending the result in the L
+ *				register. The overflow correction of the L
+ *				register was then destroying the calculated
+ *				sign. This was caught by Retread; apparently
+ *				Aurora doesn't test for it.
+ *		12/22/16 MAS	Fixed the No TC hardware alarm, discovered
+ *				to be erroneously counting EXTENDS by
+ *				BOREALIS.
  *
  * The technical documentation for the Apollo Guidance & Navigation (G&N) system,
  * or more particularly for the Apollo Guidance Computer (AGC) may be found at
@@ -2164,9 +2173,9 @@ agc_engine (agc_t * State)
 	  if (ValueK != RegQ)	// If not a RETURN instruction ...
 	    c (RegQ)= 0177777 & NextZ;
 	  NextZ = Address12;
+          ExecutedTC = 1;
 	}
 
-      ExecutedTC = 1;
       break;
     case 010:			// CCS. 
     case 011:
@@ -2702,8 +2711,8 @@ agc_engine (agc_t * State)
 		{
 		  Operand16 = (077777 & ~037777);	// Max negative value.
 		}
-	      c (RegL) = AccPair[0];
-	      c (RegA) = SignExtend (Operand16);
+	      c (RegL) = SignExtend(AccPair[0]);
+	      c (RegA) = SignExtend(Operand16);
 	    }
 	  else
 	    {
