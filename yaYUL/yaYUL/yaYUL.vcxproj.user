@@ -6,8 +6,8 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments> main.agc &gt; foo2.txt</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>..\..\Luminary069</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments> Validation.agc &gt; foo2.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..\..\Validation</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
