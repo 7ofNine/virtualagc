@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    PINBALL_NOUN_TABLES.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -19,6 +20,8 @@
 ##              2017-01023 HG   Fix value OCT 24033 -> OCT 22033 (49 DELTA R)
 ##                                        OCT 24261 -> OCT 22261 (99 RMS IN POSITION)
 ##                                        OCT 71572 -> OCT 01572 (99 3COMP  POS9, VEL4, RADIANS)
+##		2017-01-25 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 316
 # THE FOLLOWING REFERS TO THE NOUN TABLES
@@ -433,7 +436,7 @@ NNTYPTAB        OCT             00000                   # 00 NOT IN USE
                                                         #           (DEC ONLY)
                 OCT             01367                   # 48 2COMP  TRIM DEG2 FOR EACH
                                                         #           (DEC ONLY)
-                OCT             00510                   # 49 3COMP  POS4, VEL3
+                OCT             00510                   # 49 2COMP  POS4, VEL3
                                                         #           (DEC ONLY)
                 OCT             0                       # 50        SPARE
                 OCT             00204                   # 51 2COMP  DPDEG(360), DPDEG(360)
@@ -515,7 +518,7 @@ NNTYPTAB        OCT             00000                   # 00 NOT IN USE
                 OCT             0                       # 96        SPARE
                 OCT             00000                   # 97 3COMP  WHOLE FOR EACH
                 OCT             00000                   # 98 3COMP  WHOLE, FRAC, WHOLE
-                OCT             01572                   # 99 3COMP  POS9, VEL4, RADIANS
+                OCT             01572                   # 99 3COMP  POS9, VEL4
                                                         #           (DEC ONLY)
 # END OF NNTYPTAB FOR MIXED NOUNS
 

@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    EXTENDED_VERBS.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -17,6 +18,8 @@
 ## Mod history: 2016-12-13 MAS  Created from Luminary 99.
 ##              2017-01-11 HG   Transcribed
 ##              2017-01-23 HG   Remove SBANK= Workaround. Not needed in this version
+##		2017-01-25 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 277
                 BANK    7
@@ -425,7 +428,7 @@ LROFF           TC              DOWNFLAG                # INHIBIT INCORPORATION 
                 TCF             GOPIN
 
 
-# THIS EXTENDED VERB CAUSES P63 TO SWITCH INTO P64
+# THIS EXTENDED VERB CAUSES P63 TO SWITCH INTO P64.
 
 
                 EBANK=          TENDBRAK
@@ -477,7 +480,7 @@ IMUFINEK        TC              CKMODCAD
                 CADR            IMUSTALL
                 TC              ENDEXTVB
 
-FINEK2          CAF             LGYROBIN                # PINBALL LEFT COMMANDS IN OGC REGISTERS
+FINEK2          CAF             LGYROBIN                # PINBALL LEFT COMMANDS IN OGC REGIST5RS
                 TC              BANKCALL
                 CADR            IMUPULSE
 
@@ -1606,7 +1609,7 @@ RRLOSDSP        EXTEND
                 DXCH            TANGNB
                 TC              INTPRET
                 CALL
-                                RRNB                    # GET RR LOS IN BODY AXIS.
+                                RRNB                    # GET RR LOS IN BODY AXES.
                 STORE           0D                      # UNIT LOS
                 STODL           6D
                                 HI6ZEROS

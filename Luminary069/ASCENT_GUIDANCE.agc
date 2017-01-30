@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    ASCENT_GUIDANCE.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -18,6 +19,8 @@
 ##              2016-12-18 MAS  Updated from comment-proofed Luminary 99 version.
 ##              2017-01-20 HG   Transcribed
 ##              2017-01-23 HG   Fix value of SIN5DEG .008716 -> 0.08716
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 844
                 BANK            34
@@ -94,7 +97,7 @@ ASCENT          VLOAD           ABVAL
                                 QAXIS
                 STORE           ZAXIS1
                 DOT             SL1
-                                V                       # Z.V = ZDOT*2(-8)
+                                V                       # Z.V = ZDOT*2(-8).
                 STOVL           ZDOT                    # ZDOT*2(-7)
                                 ZAXIS1
                 VXV             VSL1
@@ -269,7 +272,7 @@ PROK            DLOAD
                 DMP             DAD                     # D21 DYDOT - DY                         (8)
                                 04D
                 DDV             DDV
-                                TGO                     # (D21 DYDOT - DY/ E TGO*2(6)            (6)
+                                TGO                     # (D21 DYDOT - DY)/ E TGO*2(6)            (6)
                 SL2             SETPD                   # MPAC = D*2(8)
                                 04D                     #                                        (4)
                 STORE           YRATE

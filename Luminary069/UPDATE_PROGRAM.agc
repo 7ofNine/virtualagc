@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    UPDATE_PROGRAM.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -22,6 +23,8 @@
 ##              2017-01-16 MAS  Fixed a page number and changed to spaces-only in
 ##                              the line comments.
 ##              2017-01-22 HG   Add workaround for SBANK
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 1379
 # PROGRAM NAME:   P27
@@ -477,7 +480,7 @@ UPOUT           EQUALS
 
                 TC      ENDEXT          # EXTENDED VERB EXIT
 
-#          VERB TO BRANCH
+#          VERB 70 BRANCH
 
 UPEND70         EXTEND                  # V70 DOES THE FOLLOWING WITH DP DELTA
                 DCS     UPBUFF          # TIME IN UPBUFF

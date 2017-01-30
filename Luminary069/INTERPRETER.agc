@@ -1,10 +1,11 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    INTERPRETER.agc
 ## Purpose:     The main source file for Luminary revision 069.
-##              It is part of the source code for the original release 
-##              of the source code for the Lunar Module's (LM) Apollo 
-##              Guidance Computer (AGC) for Apollo 10. The actual flown 
-##              version was Luminary 69 revision 2, which included a 
+##              It is part of the source code for the original release
+##              of the flight software for the Lunar Module's (LM) Apollo
+##              Guidance Computer (AGC) for Apollo 10. The actual flown
+##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
 ##              This file is intended to be a faithful transcription, except
 ##              that the code format has been changed to conform to the
@@ -17,6 +18,8 @@
 ## Mod history: 2016-12-13 MAS  Created from Luminary 99.
 ##              2016-12-18 MAS  Updated from comment-proofed Luminary 99 version.
 ##              2017-01-20 MAS  Updated for Luminary 69.
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 997
 # SECTION 1  DISPATCHER
@@ -1127,7 +1130,7 @@ DMPNSUB         TS      DMPNTEMP
                 TC      Q
 
 ## Page 1033
-# MISCELLANEOUS VECTOR OPERATIONS. INCLUDED HERE ARE THE FOLLOWING.
+# MISCELLANEOUS VECTOR OPERATIONS. INCLUDED HERE ARE THE FOLLOWING:
 
 #          1.  DOT                DP VECTOR DOT PRODUCT.
 #          2.  VXV                DP VECTOR CROSS PRODUCT.
@@ -2502,7 +2505,7 @@ VSQSUB          EXTEND                  # DOTS THE VECTOR IN MPAC WITH ITSELF.
 ## Page 1074
 #          DOUBLE PRECISION SQUARE ROOT ROUTINE. TAKE THE SQUARE ROOT OF THE TRIPLE PRECISION (MPAC +2 USED ONLY
 # IN NORMALIZATION) CONTENTS OF MPAC AND LEAVE THE NORMALIZED RESULT IN MPAC (C(MPAC) GREATER THAN OR EQUAL TO
-# .5). THE RIGHT SHIFT COUNT (TC UNNORMALIZE) IS LEFT IN MPTEMP.
+# .5). THE RIGHT SHIFT COUNT (TO UNNORMALIZE) IS LEFT IN MPTEMP.
 
 
 SQRTSUB         CAF     ZERO            # START BY ZEROING RIGHT SHIFT COUNT.
@@ -2836,7 +2839,7 @@ TCSUBTR         TCF     SUBTR
 #          THE FOLLOWING INSTRUCTIONS ARE AVAILABLE FOR SETTING, MODIFYING, AND BRANCHING ON INDEX REGISTERS:
 
 #          1.  AXT                ADDRESS TO INDEX TRUE.
-#          2.  AXC                ADDRESS TO INDEX COMPLEMENTED.
+#          1.  AXC                ADDRESS TO INDEX COMPLEMENTED.
 #          3.  LXA                LOAD INDEX FROM ERASABLE.
 #          4.  LXC                LOAD INDEX COMPLEMENTED FROM ERASABLE.
 #          5.  SXA                STORE INDEX IN ERASABLE.

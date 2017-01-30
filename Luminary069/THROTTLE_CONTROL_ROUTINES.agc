@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    THROTTLE_CONTROL_ROUTINES.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -22,6 +23,8 @@
 ##                                                                 TS  FCODD
 ##                                                                 TCF DOPIF
 ##                              Fix operator CS -> CA
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 797
 
@@ -101,7 +104,7 @@ LOWFCOLD        CS      H*GHCR*T
                 EXTEND
                 BZF     FLATOUT1 -1
 
-                CA      H*GHCR*T
+                CA      H*GHCR*T	# YES:  THROTTLE-UP ONLY TO HIGHCRIT
                 TS      FCODD
                 TCF     DOPIF
 
@@ -121,7 +124,7 @@ FLATOUT2        TS      PIFPSET
 #               NUMBER CORRESPONDING TO ACTUAL THRUST (FP).  THUS THE TOTAL
 #               THROTTLE COMMAND PIF = FC - FP - (FMAXODD - FP) = FC - FMAXODD.
 
-DOPIF           TC      FASTCHNG
+DOPIF           TC      FASTCHNG	# RESTART PROTECTION
                 EXTEND
                 DCA     FCODD
                 TS      FCOLD
@@ -154,7 +157,7 @@ DOIT            CA      PIF
 
                 CA      4SECS
                 TS      Q
-                CS      PIPTIME +1      # TIME OF LAST PIPA READING.
+                CS      PIPTIME +1      # TIME OF LAST PIPA READING
                 AD      TIME1
                 AD      THROTLAG        # COMPENSATE FOR ENGINE RESPONSE LAG
                 MASK    LOW8            # MAKE SURE SMALL AND POSITIVE
@@ -199,7 +202,7 @@ MASSMULT        EXTEND
                 EXTEND
                 MP      MASS            # LEAVES ODDLY SCALED FORCE IN A AND L
                 DXCH    MPAC
-                TC      DMP             # LEAVES PROPERLY SCALED FORCE IN MPAC
+                TC      DMP             # LEAVES PROPERLY SCALED FORCE IM MPAC
                 ADRES   SCALEFAC
                 TC      TPAGREE
                 CA      MPAC

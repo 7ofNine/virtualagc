@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    ORBITAL_INTEGRATION.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -19,7 +20,9 @@
 ##		2017-01-21 RRB	Updated for Luminary 69.
 ##              2017-01-22 HG   Remove non existent code arround label GOBAQUE
 ##                              Remove incorrect "," in interpretative operand
-#3                              Fic interpretive operators VXSC BOV -> VXSC
+##                              Fix interpretive operators VXSC BOV -> VXSC
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 1223
 # DELETE
@@ -408,7 +411,7 @@ COMTERM		STORE	UZ
 			URPV		# X  B-2 TO 2D
 		PDDL	DSQ
 			URPV +2		#  2  2
-		DAD	PDDL		# Y +X  B2 TO 2D
+		DAD	PDDL		# Y +X  B-2 TO 2D
 			2D
 		SL1	DSU
 
@@ -860,6 +863,8 @@ DP2/3		2DEC	.6666666667
 
 2/3		EQUALS	DP2/3
 OCT27		OCT	27
+
+# LM504 IS TEMPORARY
 
 		BANK	13
 		SETLOC	ORBITAL2

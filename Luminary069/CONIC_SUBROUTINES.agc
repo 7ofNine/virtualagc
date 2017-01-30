@@ -1,10 +1,11 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    CONIC_SUBROUTINES.agc
 ## Purpose:     The main source file for Luminary revision 069.
-##              It is part of the source code for the original release 
-##              of the source code for the Lunar Module's (LM) Apollo 
-##              Guidance Computer (AGC) for Apollo 10. The actual flown 
-##              version was Luminary 69 revision 2, which included a 
+##              It is part of the source code for the original release
+##              of the flight software for the Lunar Module's (LM) Apollo
+##              Guidance Computer (AGC) for Apollo 10. The actual flown
+##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
 ##              This file is intended to be a faithful transcription, except
 ##              that the code format has been changed to conform to the
@@ -17,6 +18,9 @@
 ## Mod history: 2016-12-13 MAS  Created from Luminary 99.
 ##              2016-12-18 MAS  Updated from comment-proofed Luminary 99 version.
 ##              2017-01-22 MAS  Updated for Luminary 69
+##		2017-01-28 RSB	WTIH -> WITH.
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 1154
 # PROGRAM DESCRIPTION - ENTIRE CONIC SUBROUTINE LOG SECTION                       DATE - 1 SEPTEMBER 1967
@@ -141,8 +145,8 @@
 # VCV     * +7 FOR EARTH *DP TERMINAL VELOCITY VECTOR IN METERS/CENTISEC
 #         * +5 FOR MOON  *
 # TC      * +28          *DP TRANSFER TIME IN CENTISECS TO WHICH KEPLER CONVERGED.
-# XPREV   * +17 FOR EARTH*DP X IN METERS-TO-THE-ONE-HALF-POWER TO WHCIH KEPLER CONVERGED.
-#         * +16 FOR MOON *
+# XPREV   * +17 FOR EARTH*DP X IN METERS-TO-THE-ONE-HALF-POWER TO WHICH KEPLER CONVERGED.
+#         * +16 FOR MOON *(DP)
 # FOR OTHER OUTPUT WHICH MAY BE OF USE, SEE DEBRIS.
 #
 
@@ -318,7 +322,7 @@
 # STATE IS TO BE UPDATED ALONG A CONIC TRAJECTORY, CALCULATES THE CORRESPONDING TIME-OF-FLIGHT AND, IN ADDITION,
 # PROVIDES THE OPTION OF COMPUTING THE NEW UPDATED STATE VECTOR.  THE RESULTING TRAJECTORY MAY BE A SECTION OF A
 # CIRCLE, ELLIPSE, PARABOLA, OR HYPERBOLA WITH RESPECT TO THE EARTH OR THE MOON.  THE USE OF THE SUBROUTINE CAN BE
-# EXTENDED USING OTHER PRIMARY BODIES BY SIMPLE ADDITIONS TO THE MUTABLE WTIHOUT INTRODUCING ANY CODING CHANGES,
+# EXTENDED USING OTHER PRIMARY BODIES BY SIMPLE ADDITIONS TO THE MUTABLE WITHOUT INTRODUCING ANY CODING CHANGES,
 # ACCEPTING THE INHERENT SCALE FACTOR CHANGES IN POSITION AND VELOCITY.
 #
 
@@ -405,7 +409,7 @@
 #         *              *CLEAR IF NOT.
 #
 # IN ADDITION, IF VTARGTAG IS NON-ZERO, THE FOLLOWING ARE OUTPUT -
-# MPAC    * +7 FOR EARTH *DP TERMINAL VELOCITY VECTOR IN METERS/CENTISEC.
+# MPAC -  * +7 FOR EARTH *DP TERMINAL VELOCITY VECTOR IN METERS/CENTISEC.
 #  MPAC +5* +5 FOR MOON  *
 ## Page 1163
 # 0D - 5D * +29 FOR EARTH*DP TERMINAL POSITION VECTOR IN METERS (PL AT 6D)
@@ -558,7 +562,7 @@
 
 # IN ADDITION, IF VTARGTAG IS NON-ZERO, THE FOLLOWING ARE OUTPUT -
 
-# MPAC    * +7 FOR EARTH *DP TERMINAL VELOCITY VECTOR IN METERS/CENTISEC.
+# MPAC -  * +7 FOR EARTH *DP TERMINAL VELOCITY VECTOR IN METERS/CENTISEC.
 #  MPAC +5* +5 FOR MOON  *
 # 0D - 5D * +29 FOR EARTH*DP TERMINAL POSITION VECTOR IN METERS (PL AT 6D)
 #         * +27 FOR MOON *

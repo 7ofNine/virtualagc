@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    AOSTASK_AND_AOSJOB.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -27,6 +28,8 @@
 ##                                                                   TC  INVERT
 ##                                                                   EXTEND
 ##                                                                   MP  BIT14
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ##
 
@@ -195,14 +198,14 @@ STCTR1          CAE     LEMMASS
                 TCF     COMMEQS
                 TCF     LRESC
 
-COMMEQS         CA      1JACCR          # SCALED at PI/4
+COMMEQS         CA      1JACCR          # SCALED AT PI/4
                 AD      1JACCQ
                 EXTEND
                 MP      0.35356         # .70711 SCALED BY (+1)
                 TS      1JACCU
                 TS      1JACCV          # SCALED AT PI/2 RAD/SEC**2
 
-                CCS     MPAC            # COMPUTE L,PVT-GC IF IN DESCENT
+                CCS     MPAC            # COMPUTE L,PVT-CG IF IN DESCENT
                 CAF     ZERO            # ZERO SWITCHES AND GO TO 1/ACCONT IN
                 TS      ALLOWGTS        #   ASCENT
                 TCF     1/ACCONT -1

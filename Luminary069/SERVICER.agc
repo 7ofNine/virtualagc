@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    SERVICER.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -19,6 +20,8 @@
 ##              2017-01-21 HG   Transcribed
 ##              2017-01-23 HG   Fix operation DAS -> DXCH
 ##                                            CS  -> CA
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 858
                 BANK            37
@@ -236,7 +239,7 @@ MOONSPOT        CA              KPIP1                   # TP MPAC = ABDELV AT 2(
                                 XNBNDX
                 EXIT
 
-                CA              PRIO20                  # RETORE PRIO 20
+                CA              PRIO20                  # RESTORE PRIO 20
                 TC              PRIOCHNG
 
                 TC              INTPRET
@@ -280,7 +283,7 @@ DVMON           CS              DVTHRUSH
                 ADS             FLAGWRD2
 
 DVCNTSET        CAF             ONE                     # ALLOW TWO PASSES MAXIMUM NOW THAT
-                TS              DVCNTR                  # THRUST HAS BEEN DETECTED.
+                TS              DVCNTR                  # THRUXT HAS BEEN DETECTED.
 
                 CA              FLGWRD10                # BRANCH IF APSFLAG IS SET.
                 MASK            APSFLBIT
@@ -1431,7 +1434,7 @@ NOLITE          CA              LRMCTR                  # SET S = M
                 TCF             ENDVDAT                 # NOT Z, DO NOT SET VX INHIBIT
 
                 TC              UPFLAG                  # Z COMPONENT - SET FLAG TO SKIP X
-                ADRES           VXINH                   # COMPONENT AS ERROR MAY BE DUE TO CROSS
+                ADRES           VXINH                   # COMPONENT,AS ERROR MAY BE DUE TO CROSS
                 TCF             ENDVDAT                 # LOBE LOCK UP NOT DETECTED ON X AXIS.
 
 ## Page 892

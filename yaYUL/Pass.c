@@ -106,6 +106,8 @@
  *                              the operand if so. This is needed for a word in the Retread
  *                              instruction checks.
  *              2017-01-05 RSB  Added BBCON* as distinct from BBCON.
+ *              2017-01-27 MAS  Added "MSK" as an alias for "MASK", as supported by the
+ *                              Raytheon assembler.
  *
  * I don't really try to duplicate the formatting used by the original
  * assembly-language code, since that format was appropriate for
@@ -168,6 +170,7 @@ static int NumFields = 0;
 
 char *assemblyTarget = "AGC4";
 int Block1 = 0;
+int Raytheon = 0;
 int blk2 = 0;
 int Html = 0;
 FILE *HtmlOut = NULL;
@@ -275,6 +278,7 @@ static ParserMatch_t ParsersBlock2[] =
     { "INHINT", OP_BASIC, NULL, "TC", "$4" },
     { "LXCH", OP_BASIC, ParseLXCH },
     { "MASK", OP_BASIC, ParseMASK },
+    { "MSK", OP_BASIC, ParseMASK },
     { "MEMORY", OP_PSEUDO, NULL, "", "" },
     { "MM", OP_PSEUDO, ParseDEC },
     { "MP", OP_BASIC, ParseMP },

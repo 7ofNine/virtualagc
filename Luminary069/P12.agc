@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    P12.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -20,6 +21,8 @@
 ##              2017-01-07 HG   Fix interpretive operation STORE -> STODL
 ##                                               operand   FLP1 -> FLPI
 ##              2017-01-23 HG   Fix interpretive operation STOVL -> STODL
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 839
                 BANK    24
@@ -87,7 +90,7 @@ P12LMB          DLOAD
                 MXV     VSL6
                         REFSMMAT
                 STCALL  R               # COMPUTE R = POS(TIG)*2(-24) M.
-                        MUNGRAV         # COMPUTE GDT1/2(TIG)*2(-T)M/CS.
+                        MUNGRAV         # COMPUTE GDT1/2(TIG)*2(-7)M/CS.
                 VLOAD   UNIT
                         R
                 STCALL  UNIT/R/         # COMPUTE UNIT/R/ FOR YCOMP.
@@ -96,7 +99,7 @@ P12LMB          DLOAD
                         5D
                 STODL   XRANGE          # INITIALIZE XRANGE FOR NOUN 76.
                         (APO)
-                STORE   APO             # INITIALIZE
+                STORE   APO             # INITIALIZE APO FOR NOUN 76.
                 EXIT
 
                 TC      PHASCHNG
@@ -122,7 +125,7 @@ NEWLOAD         CAF     V06N76          # FLASH CROSS-RANGE AND APOLUNE VALUES.
                 DAD
                         Y
                 STODL   YCO
-                        APO
+                        APO		# RA = APO + /LAND/
                 SL
 ## Page 841
                         5D
@@ -217,11 +220,11 @@ COMMINIT        DLOAD   DAD             # INITIALIZE TARGET DATA. USED BY P12, P
                         FLPI
                         LOVEL
                 SLOAD   DSU
-                        TBRKPNT         # TBRKPNT-GO
+                        TBRKPNT         # TBRKPNT-TGO
                         TGO
                 BMN     DLOAD           # IF TGO>TBRKPNT,LOW VINJECT IS OK;RETURN
                         LOVEL
-                        ABTVINJ1
+                        ABTVINJ1	# FOR TGO.TBRKPNT USE HI VELOCITY.
                 STORE   ZDOTD
 LOVEL           RVQ
 GUIDINIT        STQ     SETPD

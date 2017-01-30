@@ -1,10 +1,11 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    P70-P71.agc
 ## Purpose:     The main source file for Luminary revision 069.
-##              It is part of the source code for the original release 
-##              of the source code for the Lunar Module's (LM) Apollo 
-##              Guidance Computer (AGC) for Apollo 10. The actual flown 
-##              version was Luminary 69 revision 2, which included a 
+##              It is part of the source code for the original release
+##              of the flight software for the Lunar Module's (LM) Apollo
+##              Guidance Computer (AGC) for Apollo 10. The actual flown
+##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
 ##              This file is intended to be a faithful transcription, except
 ##              that the code format has been changed to conform to the
@@ -24,6 +25,8 @@
 ##                                                      ADRES AVEGFLAG
 ##                                                      STOVL   RTIG
 ##                                                              VN1
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 829
 		BANK	21
@@ -52,7 +55,7 @@ R10,R11A	CS	IMODES33	# IF LAMP TEST, DO NOT CHANGE LR LITES.
 		EXTEND
 		BZF	10,11
 
-FLASHH?		MASK	FLGWRD11	# C(A) = 1 - HFLASH BIT
+FLASHH?		MASK	FLGWRD11	# C(A) = 1 = HFLASH BIT
 		EXTEND
 		BZF	FLASHV?		# H FLASH OFF, SO LEAVE ALONE
 
@@ -268,7 +271,7 @@ INJTARG		GOTO			# *** BYPASS ZONE 0 ***
 		TC	CHECKMM
 		DEC	70
 		CAF	DEC299		# P71.  DELAY 3 SECONDS.
-		AD	BIT1		# P70.  DELAY ONE CENTISECOND
+		AD	BIT1		# P70.  DELAY 1 CENTISECOND.
 		TS	ENGOFFDT
 		TC	TWIDDLE
 		ADRES	ZONEZERO
@@ -383,7 +386,7 @@ PREBRET1	EXIT
 		TS	AGSWORD
 
 		TC	CHECKMM
-		DEC	70		# FOR MODE=70,USE P40,OTHERWISE P42.
+		DEC	70		# FOR MODE=70,USE P40,OTHERWISE P42
 		TCF	42SET
 40SET		CAF	P40CADR
 		TS	CADRSAVE
@@ -484,7 +487,7 @@ TGOCOMP		RTB	DSU
 		STORE	TGO
 		RVQ
 
-# ************************************************************************
+#  ************************************************************************
 
 THROTUP		CAF	BIT13
 		TS	THRUST
@@ -493,7 +496,7 @@ THROTUP		CAF	BIT13
 		WOR	CHAN14
 		TC	Q
 
-# ************************************************************************
+# *************************************************************************
 
 DEC299		DEC	299
 

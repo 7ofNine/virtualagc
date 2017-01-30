@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    Q,R-AXES_RCS_AUTOPILOT.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -21,6 +22,8 @@
 ##                                          +X0RULGE -> +XORULGE
 ##                              Add missing declaration .707 DEC .70711
 ##              2017-01-23 HG   Add mising statement CA POSMAX
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 1436
                 BANK    17
@@ -512,7 +515,7 @@ TJLAW           CA      TJLAWADR
                 MASK    USEQRJTS        #  ON THE NEXT PASS.
                 CCS     A               # USEQRJTS BIT MUST NOT BE BIT 15.
                 TS      COTROLER        # GIMBAL USABLE.  STORE POSITIVE VALUE.
-                TC      SPSRCS          # DETERMINE RCS CONTROL
+                TC      SPSRCS          # DETERMINE RCS CONTROL.
                 CAF     FOUR            # ALWAYS CALL FOR 2-JET CONTROL ABOUT U,V.
                 TS      NUMBERT         # FALL THROUGH TO JET SELECTION, ETC.
 

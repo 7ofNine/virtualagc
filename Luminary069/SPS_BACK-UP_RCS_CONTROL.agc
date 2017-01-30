@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    SPS_BACK-UP_RCS_CONTROL.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -17,6 +18,8 @@
 ## Mod history: 2016-12-13 MAS  Created from Luminary 99.
 ##              2016-12-18 MAS  Updated from comment-proofed Luminary 99 version.
 ##              2017-01-22 HG   Transcribed
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 ## Page 1500
 # PROGRAM NAME:  SPSRCS
@@ -33,13 +36,13 @@
 # 1.  OUTER RATE LIMIT (SPSRCS)
 
 # IF MAGNITUDE OF EDOT IS GREATER THAN 1.73 DEG/SEC SET JET FIRING TIME, TJ, TO REDUCE RATE AND THEN RETURN TO
-# CALLING PROGRAM (REQUESTING 4 JETS FOR P-AXIS)
+# CALLING PROGRAM (REQUESTING 4 JETS FOR P-AXIS).
 # OTHERWISE, CONTINUE.
 
 # 2.  RATE DEAD BAND TEST ( JTONTEST)
 
 # IF JETS ARE FIRING NEGATIVE AND RATE IS GREATER THAN -0.101 DEG/SEC, LEAVE JETS ON AND RETURN,
-# IF JETS ARE FIRING POSITIVE AND RATE IS LESS THAN +0.101 DEG/SEC, LEAVE JETS ON AND RETURN, OTHERWISE, CONTINUE.
+# IF JETS ARE FIRING POSITIVE AND RATE IS LESS THAN +0.101 DEG/SEC, LEAVE JETS ON AND RETURN, OTHERWISE CONTINUE.
 
 # 3.  COASTING TEST (SPSSTART)
 
@@ -47,7 +50,7 @@
 # TIVE AND RETURN,
 # IF STATE IS ABOVE LINE E + 4 X EDOT > +1.4 DEG AND EDOT IS GREATER THAN -1.30 DEG/SEC, SET JET TIME NEGATIVE
 # AND RETURN,
-# OTHERWISE, SET JET FIRING TIME TO ZERO AND RETURN.
+# OTHERWISE, SET JET TIME ZERO AND RETURN.
 
 # THE MINIMUM PULSE WIDTH OF THIS CONTROLLER IS DETERMINED BY THE REPETITION  RATE AT WHICH THIS ROUTINE IS CALLED
 # AND IS NOMINALLY 100 MS FOR ALL AXES IN DRIFTING FLIGHT.   DURING POWERED FLIGHT THE MINIMUM IS 100 MS FOR THE

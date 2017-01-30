@@ -1,8 +1,9 @@
+### FILE="Main.annotation"
 ## Copyright:   Public domain.
 ## Filename:    P34-P35,_P74-P75.agc
 ## Purpose:     The main source file for Luminary revision 069.
 ##              It is part of the source code for the original release
-##              of the source code for the Lunar Module's (LM) Apollo
+##              of the flight software for the Lunar Module's (LM) Apollo
 ##              Guidance Computer (AGC) for Apollo 10. The actual flown
 ##              version was Luminary 69 revision 2, which included a
 ##              newer lunar gravity model and only affected module 2.
@@ -24,6 +25,8 @@
 ##              2017-01-22 HG   Remove CAF P30ZERO
 ##              2017-01-23 HG   Add interpretive operation PUSH
 ##                              Fix operand GOFLASH -> GOFLASHR
+##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
+##				and fixed errors found.
 
 
 ## Page 667
@@ -1227,7 +1230,7 @@ INITVEL4        LXA,2   SXA,2
 
                         LAMBERT
 
-#       DELETE THRU 452I
+#       DELETE THRU 4521
 # ARRIVED AT SOLUTION IS GOOD ENOUGH ACCORDING TO SLIGHTLY WIDER BOUNDS.
 
                 CLEAR   VLOAD
@@ -1529,6 +1532,8 @@ PERIAPO         STQ     CALL
                         NORMEX
 
 ## Page 705
+# SETRAD
+
 SETRAD          DLOAD   PUSH
                         RPAD
                 SXA,1   INCR,2
@@ -1543,6 +1548,8 @@ SETRAD          DLOAD   PUSH
 SETRADX         DLOAD   RVQ
 
 ## Page 706
+# PRECSET
+
 PRECSET         STQ
                         NORMEX
                 STCALL  TDEC2
@@ -1575,6 +1582,7 @@ PASSIVE         STOVL   RPASS3
                 RVQ
 
 ## Page 707
+# VECSHIFT 
 VECSHIFT        LXA,2   VSR*
                         RTX2
                         0,2
@@ -1585,6 +1593,8 @@ VECSHIFT        LXA,2   VSR*
                 RVQ
 
 ## Page 708
+# SHIFTR1
+
 SHIFTR1         LXA,2   SL*
                         RTX2
                         0,2
