@@ -530,6 +530,8 @@ void
 PrintOutputRecord(const ParseOutput_t *record);
 void
 PrintTrace(const ParseInput_t *inRecord, const ParseOutput_t *outRecord);
+int
+CalculateParity(int Value);
 
 // Various parsers.
 Parser_t ParseBLOCK, ParseEQUALS, ParseEqualsECADR, ParseCHECKequals, ParseBANK,
@@ -553,6 +555,7 @@ extern int Html;
 extern FILE *HtmlOut;
 
 extern int ObjectCode[044][02000];
+extern unsigned char Parities[044][02000];
 
 extern int NumInterpretiveOperands, RawNumInterpretiveOperands;
 extern int nnnnFields[4];
