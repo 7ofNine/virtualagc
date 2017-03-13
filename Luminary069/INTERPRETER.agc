@@ -20,6 +20,9 @@
 ##              2017-01-20 MAS  Updated for Luminary 69.
 ##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
 ##				and fixed errors found.
+##		2017-02-05 RSB	Back-ported comment corrections 
+##				identified while proofing Artemis 072.
+##		2017-03-13 RSB	Comment-text fixes noted in proofing Luminary 116.
 
 ## Page 997
 # SECTION 1  DISPATCHER
@@ -889,7 +892,7 @@ TAD             EXTEND
 ## Page 1026
 # ARITHMETIC SUBROUTINES REQUIRED IN FIXED-FIXED.
 
-#          1.  DMPSUB     DOUBLE PRECISION MULTIPLY, MULTIPLY THE CONTENTS OF MPAC,+1 BY THE DP WORD WHOSE ADDRESS
+#          1.  DMPSUB     DOUBLE PRECISION MULTIPLY. MULTIPLY THE CONTENTS OF MPAC,+1 BY THE DP WORD WHOSE ADDRESS
 #                         IS IN ADDRWD AND LEAVE A TRIPLE PRECISION RESULT IN MPAC.
 #          2.  ROUNDSUB   ROUND THE TRIPLE PRECISON CONTENTS OF MPAC TO DOUBLE PRECISION.
 #          3.  DOTSUB     TAKE THE DOT PRODUCT OF THE VECTOR IN MPAC AND THE VECTOR WHOSE ADDRESS IS IN ADDRWD
@@ -1176,7 +1179,7 @@ VXM/MXV         TS      DOTINC
                 ADS     ADDRWD          # FORMS BASE ADDRESS OF NEXT COLUMN(ROW).
 
                 TC      DOTSUB
-                DXCH    VBUF            # MORE GIVEN VECTOR BACK TO MPAC, SAVING Y
+                DXCH    VBUF            # MOVE GIVEN VECTOR BACK TO MPAC, SAVING Y
                 DXCH    MPAC            # COMPONENT OF ANSWER IN VBUF +2.
                 DXCH    VBUF    +2
                 DXCH    MPAC    +3
@@ -1707,7 +1710,7 @@ VRIGHT2         AD      NEG12
                 EXTEND
                 BZMF    VSSR            # IF SO, BRANCH AND SHIFT IMMEDIATELY.
 
-                AD      NEGONE          # IF NOT, REDUCE MPTEMP BY A TOTAL OF 14.
+                AD      NEGONE          # IF NOT, REDUCE MPTEMP BY A TOTAL OF 14,
                 TS      MPTEMP          # AND DO A SHIFT RIGHT AND ROUND BY 14.
                 CAF     ZERO            # THE ROUND AT THIS STAGE MAY INTRODUCE A
                 TS      L               # ONE BIT ERROR IN A SHIFT RIGHT 15D.
@@ -2565,7 +2568,7 @@ SMPAC+          AD      -1/2+2          # SEE IF ARGUMENT GREATER THAN OR EQUAL 
                 XCH     SR
                 ADS     MPAC    +1      # GUARANTEED NO OVERFLOW.
 
-ARGHI           CAF     SLOPEHI         # ARGUMENT BETWEEN .25 AND .5, GET A
+ARGHI           CAF     SLOPEHI         # ARGUMENT BETWEEN .25 AND .5. GET A
                 EXTEND                  # LINEAR APPROXIMATION FOR THIS RANGE.
                 MP      MPAC
                 AD      BIASHI          # X0/2 = (MPAC/2)(SLOPEHI) + BIASHI/2.

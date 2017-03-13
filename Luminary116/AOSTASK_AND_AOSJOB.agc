@@ -14,6 +14,13 @@
 ## Website:     www.ibiblio.org/apollo/index.html
 ## Mod history: 2017-01-22 MAS  Created from Luminary 99.
 ##              2017-01-27 RRB  Updated for Luminary 116.
+##              2017-02-25 HG   Add missing address setup
+##                                              BANK     20
+##                                              SETLOC   DAPS3
+##                                              BANK   
+##                                              COUNT*   $$/DAPAO
+##		2017-03-10 RSB	Proofed comment text via 3-way diff vs
+##				Luminary 99 and 132 ... no problems found.
 
 ## Page 1475
 # PROGRAM NAME: 1/ACCS
@@ -89,6 +96,11 @@
                 CADR            1/ACCS          +2              # SKIP EBANK SETTING.
 
                 TC              ENDOFJOB                        
+                
+                BANK            20
+                SETLOC          DAPS3
+                BANK
+                COUNT*          $$/DAPAO
 
 1/ACCS          CA              EBANK6                          # ***** EBANK SET BUT NOT RESTORED *****
                 TS              EBANK                           

@@ -1,8 +1,8 @@
 # Copyright:    Public domain.
 # Filename:     YUL_SYSTEM_MANUFACTURING_-_AGC4.mitigus
-# Purpose:      Part of the source code for YUL (revision 9),
+# Purpose:      Part of the source code for YUL (revision 9).
 # Assembler:    TBD
-# Contact:      Ron Burkey <info@sandroid.org>.
+# Contact:      Jim Lawton <jim.lawton@gmail.com>
 # Website:      https://www.ibiblio.org/apollo/index.html
 # Page scans:   https://archive.org/details/yulsystemsourcec00hugh
 # Pages:        576-615
@@ -43,30 +43,30 @@ R0003   JSOCTL
 
 
 
- R0006             THIS AGC4 MANUFACTURING PROGRAM IS LOADED IN RESPONSE TO A WELL-FORMED YUL DIRECTOR CARD SPECIFYING
- R0008  MANUFACTURING FOR A CORRECTLY ASSEMBLED AGC4 PROGRAM.  IT COMMUNICATES WITH SUBROUTINES IN PASS 0 AS WITH A
- R0010  MONITOR.  IT EXAMINES ONE OR MORE SUBDIRECTOR CARDS ("S" IN COLUMN 1) TO DETERMINE THE TASK REQUIRED.  SUBDIREC-
- R0012  TOR CARDS OBEY THE SAME SYNTACTICAL RULES AS DIRECTOR CARDS.  EXAMPLES OF ALL CURRENTLY AVAILABLE TYPES FOLLOW:
+R0006              THIS AGC4 MANUFACTURING PROGRAM IS LOADED IN RESPONSE TO A WELL-FORMED YUL DIRECTOR CARD SPECIFYING
+R0008   MANUFACTURING FOR A CORRECTLY ASSEMBLED AGC4 PROGRAM.  IT COMMUNICATES WITH SUBROUTINES IN PASS 0 AS WITH A
+R0010   MONITOR.  IT EXAMINES ONE OR MORE SUBDIRECTOR CARDS ("S" IN COLUMN 1) TO DETERMINE THE TASK REQUIRED.  SUBDIREC-
+R0012   TOR CARDS OBEY THE SAME SYNTACTICAL RULES AS DIRECTOR CARDS.  EXAMPLES OF ALL CURRENTLY AVAILABLE TYPES FOLLOW:
 
- R0014  S          PUNCH 24K CORE ROPE SIMULATOR TAPE
- R0015  S          PUNCH 36K CORE ROPE SIMULATOR TAPE
- R0016  S          PUNCH RAYTHEON WIRING TAPE
- R0017  S          PUNCH RAYTHEON TESTER TAPE
- R0018  S          PUNCH MASTER DECK
- R0019  S          PUNCH SYMBOL TABLE                                           (USED WITH COMPARE, BELOW).
- R0020  S          PUNCH SYMBOL TABLE AND MASTER DECK                           (PROGNAME IS NAME OF COPIED PROGRAM).
+R0014   S       PUNCH 24K CORE ROPE SIMULATOR TAPE
+R0015   S       PUNCH 36K CORE ROPE SIMULATOR TAPE
+R0016   S       PUNCH RAYTHEON WIRING TAPE
+R0017   S       PUNCH RAYTHEON TESTER TAPE
+R0018   S       PUNCH MASTER DECK
+R0019   S       PUNCH SYMBOL TABLE
+R0020   S       PUNCH SYMBOL TABLE AND MASTER DECK
 
- R0021  S          COPY ONTO WORKER
- R0023  S          COMPARE PROGRAM PROGNAME FROM WORKER
+R0021   S        COPY ONTO WORKER                                               (USED WITH COMPARE, BELOW).
+R0023   S        COMPARE PROGRAM PROGNAME FROM WORKER                           (PROGNAME IS NAME OF COPIED PROGRAM).
 
- R0025  FOR ALL TAPE PUNCHING A *USE* SUBDIRECTOR IS AVAILABLE.  SEE PAGE 26
+R0025   FOR ALL TAPE PUNCHING A *USE* SUBDIRECTOR IS AVAILABLE.  SEE PAGE 26
 
- R0026  FOR WIRING AND TESTER TAPE RUNS A *MODULE DECK NUMBERS* SUBDIRECTOR IS REQUIRED.  SEE PAGE 27
+R0026   FOR WIRING AND TESTER TAPE RUNS A *MODULE DECK NUMBERS* SUBDIRECTOR IS REQUIRED.  SEE PAGE 27
 
- R0028  AN OPTIONAL FEATURE EXISTS FOR PRINTING OUT THE RESULTS OF A TAPE/CARD PUNCHING RUN AND/OR SUPPRESSING PUNCHING.
- R0030  SEE PAGE 34
+R0028   AN OPTIONAL FEATURE EXISTS FOR PRINTING OUT THE RESULTS OF A TAPE/CARD PUNCHING RUN AND/OR SUPPRESSING PUNCHING.
+R0030   SEE PAGE 34
 
- R0031  FOR ALL TAPE PUNCHING A *PARAGRAPH* SUBDIRECTOR IS REQUIRED. SEE PAGE 24
+R0031   FOR ALL TAPE PUNCHING A *PARAGRAPH* SUBDIRECTOR IS REQUIRED. SEE PAGE 24
 
  0032   AGC4  MANU TS           BANK 1        Z,X0          WHAT SUBD           THIS ORDER IS AT BASE ADDR. OF PROGRAM.
 
@@ -148,7 +148,7 @@ P0062   FURTHER SHIFT MASKS
 
 P0089   ALPHABETIC CONSTANTS.
 
- 0090   BLANKS     ALF          
+ 0090   BLANKS     ALF
  0091   W NASA     ALF          NASA
  0092   W CORE     ALF          CORE
  0093   W ROPE     ALF          ROPE
@@ -170,8 +170,8 @@ P0089   ALPHABETIC CONSTANTS.
 P0103   ALPHABETIC CONSTANTS CONTINUED.
 
  0104              OCT          0
- 0105   CARDS      ALF,5        
- 0106              ALF,5        
+ 0105   CARDS      ALF,5
+ 0106              ALF,5
  0107              OCT          0
  0108   CARD       ALF,5        L0000004AGC4 MASTER DECK
  0109              ALF,5          1ST PARAGRAPH
@@ -263,12 +263,12 @@ P0103   ALPHABETIC CONSTANTS CONTINUED.
  0188   CANCL MSG  OCT          0102
  0189              ALF,5        FIVE CONSECUTIVE ERRORS.  ZAP FOR THIS
  0190              ALF,5        PARAGRAPH
- 0191              ALF,5        
+ 0191              ALF,5
  0192   SYMBL MSG  ALF,3        PUNCH SYMBOL TABLE
  0193   SKIP MSG   OCT          0102
  0194              ALF,5        APPARENTLY THE ABOVE SIX ERRORS WERE
  0195              ALF,5        CAUSED BY A READER SKIP
- 0196              ALF,5        
+ 0196              ALF,5
  0197   SYMAS MSG  ALF,5        PUNCH SYMBOL TABLE AND MASTER DECK
  0198   NO SYM MSG ALF,3        PROGRAM HAS NO SYMBOLS
  0199   PALL MSG   ALF,5        *PARAGRAPH ALL* CARD INVALIDATED BY PREV
@@ -276,7 +276,7 @@ P0103   ALPHABETIC CONSTANTS CONTINUED.
  0201   NASA MSG   ALF,5        RAYTHEON TAPE PUNCHING REQUIRES NASA DWG
  0202              ALF          NUMBER
  0203   CHECK MUM  ALF,5         FRAME 00000 = 000 INSTEAD OF 000
- 0204              ALF          
+ 0204              ALF
  0205   CHECK SPA  ALF,4        PREVIOUS 10 FRAMES =
  0206   CHECK BRA  ALF,4        FOLLOWING 10 FRAMES =
  0207   CHECK LOS  ALF,5        TAPE CHECKING DONE     00000 ERRORS
@@ -462,7 +462,7 @@ P0348   EQUIVALENCES
  0355   PARAG NO   EQUALS       BEGIN ADR
  0356   REQ PLACE  EQUALS       SS FWA
  0357   DATA CHAR  EQUALS       ONE
- 0358   STIX WIRE  EQUALS       LAST FWA
+ 0358   STIK WIRE  EQUALS       LAST FWA
  0359   COMMON     EQUALS       DELTA FWA
 
 # Page 588
@@ -717,7 +717,7 @@ R0558   SUBDIRECTOR *TESTING* IS OPTIONAL. SEE PAGE 34.
  0658              RW,1         -             -             -                   REWIND YULPROGS.
  0660              S,MON TYPER  WPAPER TA     SPRAMR +24    MANUF RTN           ANNOUNCE READY TAPE, EXIT.
  0662   CHK PARIT  SWS,ONES     FRAME         4,L           KCOMMON +2     C    FOR RIGHT EIGHT BITS IN FRAME, COMPUTE
- 0664              HA           FRAME         KCOMMON +2    KCOMMON +2     C    ODD PARITY (BIT 42 IS ALWAYS INITIALLY 
+ 0664              HA           FRAME         KCOMMON +2    KCOMMON +2     C    ODD PARITY (BIT 42 IS ALWAYS INITIALLY
  0666              SWS,ONES     KCOMMON +2    2,L           KCOMMON +3     C    = 1) AND PLACE IN BIT 42
  0668              HA           KCOMMON +2    KCOMMON +3    KCOMMON +2     C
  0669              SWS,ONES     KCOMMON +2    1             KCOMMON +3     C
@@ -851,7 +851,7 @@ R0801   SUBDIRECTOR *TESTING* IS OPTIONAL.  SEE PAGE 34.
  0828              S,MON TYPER  NO SYM MSG    SPRAMR +24    TYP ABORT
  0829              DS           KCOMMON       ONE           KCOMMON             COMPUTE NUMBER OF CARDS NEEDED
  0831              LA           ELEVEN        Z,R1,10       C,-1
- 0832              TX           BLK4AGC4      -             CARDS +9
+ 0832              TX           BLK4AGC4      -             CARDS  +9
  0833              SWE,ONES     KCOMMON       16,L          C,+2
  0834              TS           Z,SC          Z,AU1         YUL D2A ZS          CONVERT NUMBER TO HOLLERITH CODE
  0836              RESERVE      1
@@ -918,7 +918,7 @@ P0896   SUBROUTINES COMMON TO PUNCHING RAYTHEOM WIRING TAPE AND RAYTHEOM CORE RO
  0917              SWE,CAC3     STIKWIRE      16            Z,X4
  0918              SWS,C3T5     4,0           A,2,L         TITLE MSG  +7       INSTALL NAME OF QUARTER-ROPE.
  0920              TX           Z,SC,6        -             Z,X5
- 0921   ARTS OK NO RESERVE      6
+ 0921   ARTS DK NO RESERVE      6
  0922              NA,C5T6      5,0           4,0           C,+2                MATCH MODULE NUMBER
  0924              TS           STIK WIRE     Z,AU1         C,+2
  0925              NA           N,X5,1        C,-3          C,-2
@@ -1165,7 +1165,7 @@ R1234   SUBDIRECTOR *MODULE DECK NUMBERS* IS REQUIRED.  SEE PAGE 27.
 R1235   SUBDIRECTOR *USE* IS OPTIONAL. SEE PAGE 26.
 R1236   SUBDIRECTOR *TESTING* IS OPTIONAL.  SEE PAGE 34.
 
- 1237   RAYTH PQ   NA           KCOMMON       W RATHEON     TRY MASTR           BR IF WD 2 NOTE "CORE" OR "RAYTHEON".
+ 1237   RAYTH PQ   NA           KCOMMON       W RATHEON     TRY MASTR           BR IF WD 2 NOT "CORE" OR "RAYTHEON".
  1239              NA           KCOMMON +1    BLANKS        BAD SD              "RAYTHEON" IS REQUIRED HERE.
  1241              NA           N,X5          W WIRING      RAYTH TT            "WIRING" IS REQUIRED.
  1243              TX           Z,X5,3        -             -
@@ -1248,7 +1248,7 @@ R1337   PROCEDURE FOR EACH CORE.
  1340              TS           Z,X5,1        -             END WIR CH
 
  1341              HA           SPEC FRAM     FOUR          SPEC FRAM           COMPLEMENT NEEDLE-HOLDER BIT.
- 1343              TX           SPEC FRAM     -             FRAME          C    SPECI CHARACTER FOR CORE THREADING.
+ 1343              TX           SPEC FRAM     -             FRAME          C    SPECIAL CHARACTER FOR CORE THREADING.
  1345              SWE, D12     N,X5          D,9           FRAME
  1346              SM           FRAME         X TENS        FRAME          C    TENS DIGIT OF X COORDINATE.
  1348              SWE, D12     N,X5          D,8           FRAME
@@ -1321,10 +1321,10 @@ R1398   SUBDIRECTOR *TESTING* IS OPTIONAL.  SEE PAGE 34.
  1420              TS           STOP          FRAME         PCH FRAME      C    SEND STOP CODE
  1422              TX           RESET         -             FRAME          C
  1423              EX           Z,R3          CHAR8         FRAME
- 1424              SM           FRAME         SENSE A       FRAME          C    SEND WIRE NUMNER IN TWO FRAMES
+ 1424              SM           FRAME         SENSE A       FRAME          C    SEND WIRE NUMBER IN TWO FRAMES
  1426              SWE,ONE      Z,R3,1        A,1           FRAME
  1427              SM           FRAME         SENSE B       FRAME          C
- 1428   NEW CORE   EX           Z,R2          B44T48        FRAME               SEND CORE NUMNER WITHIN BANK IN 2 FRAMES
+ 1428   NEW CORE   EX           Z,R2          B44T48        FRAME               SEND CORE NUMBER WITHIN BANK IN 2 FRAMES
  1430              SM           FRAME         CORE NO A     FRAME          C
  1431              SWE,B44T48   Z,R2,1        5             FRAME
  1432              SM           FRAME         CORE NO B     FRAME          C
@@ -1631,7 +1631,7 @@ R1756   S       COMPARE PROGRAM PROGNAME FROM WORKER
  1759              TX           N,X5,3        -             C FIRST RC +1       EXTRACT COPY PROGRAM NAME
  1761              NA           N,X5,3        W FROM        BAD SD              WORD FROM IS REQUIRED
  1763              NA           N,X5,3        W WORKER      BAD SD              WORD WORKER IS REQUIRED
- 1765              TX           BY PAS MDN    -             ANY MDN             * MODULE DECK NUMBER* SD IS NOT ALLOWED.
+ 1765              TX           BY PAS MDN    -             ANY MDN             * MODULE DECK NUMBER* SD NOT ALLOWED.
  1767              TS           Z,SC          HOLD LOC      RY COMMOP           ZERO PARAGRAPH REQUESTS
  1769              S,MON TYPER  CMPAR MSG     SPRA+24       C,+1                PRINT OUT COMPARE MESSAGE
  1771              TS           Z,SC          HOLD LOC      READ A REQ          GO READ TASK SUBDIRECTORS
@@ -1711,7 +1711,7 @@ R1756   S       COMPARE PROGRAM PROGNAME FROM WORKER
  1874              TS           -             -             C,+1
  1875              NA,BANBITS   4,0           BANEOFRI      CMPR XW             JUMP IF NOT END OF WORKER
  1877              S,MON TYPER  E CMPR MSG    SPRAMR+16     COPY XC             PRINT COMPARE DONE MESSAGE
- 1879   CMPR XW    SWS,ACO6     4,2           6,L           CMPR XX +1          COMPLAIN ABOUT POSSIBLE MISSING 
+ 1879   CMPR XW    SWS,ACO6     4,2           6,L           CMPR XX +1          COMPLAIN ABOUT POSSIBLE MISSING
  1881              SWS,ACO7     4,2           3,L           CMPR XX +1          PARAGRAPHS IN THE COMPARE PROGRAM
  1883              SS           4,2           SEVEN         CMPR XX +1
  1884              TN           CMPR XX       7             PRINT BUF +1

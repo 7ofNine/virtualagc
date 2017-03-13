@@ -20,6 +20,9 @@
 ##              2017-01-20 MAS  Updated for Luminary 69.
 ##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
 ##				and fixed errors found.
+##		2017-02-07 RSB	Comment-text corrections identified while 
+##				proofing Artemis 72.
+##		2017-03-09 RSB	Comment-text fixes noted in proofing Luminary 116.
 
 ## Page 628
 # COELLIPTIC SEQUENCE INITIATION (CSI) PROGRAMS (P32 AND P72)
@@ -290,7 +293,7 @@ P32/P72F        STORE   T2TOT3
 ## Page 634
 # CONSTANT DELTA HEIGHT (CDH) PROGRAMS (P33 AND P73)
 
-# MOD NO -1       LOC SECTION - P32-P35, P72-P75
+# MOD NO -1       LOG SECTION - P32-P35, P72-P75
 # MOD BY WHITE.P  DATE  1JUNE67
 # PURPOSE
 
@@ -380,7 +383,7 @@ P32/P72F        STORE   T2TOT3
 #       (7) IT IS NORMALLY REQUIRED THAT THE ISS BE ON FOR 1 HOUR PRIOR TO
 #           A THRUSTING MANEUVER.
 
-#       (8) THIS PROGRAM IS SELECTED BY THE ASTRONAUT BY DSKY ENTRY.
+#       (8) THIS PROGRAM IS SELECTED BY THE ASTRONAUT BY DSKY ENTRY -
 
 #               P33 IF THIS VEHICLE IS ACTIVE VEHICLE.
 
@@ -388,7 +391,7 @@ P32/P72F        STORE   T2TOT3
 
 # INPUT
 
-#       (1) TTPIO    TIME OF THE TPI MANEUVER - SAVED FROM P32/P72
+#       (1) TTPI0    TIME OF THE TPI MANEUVER - SAVED FROM P32/P72
 ## Page 636
 #       (2) ELEV     DESIRED LOS ANGLE AT TPI - SAVED FROM P32/P72
 #       (3) TCDH     TIME OF THE CDH MANEUVER

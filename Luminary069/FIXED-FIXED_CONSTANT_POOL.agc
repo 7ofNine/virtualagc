@@ -20,6 +20,7 @@
 ##		2017-01-02 RRB	Updated for Luminary 69.
 ##		2017-01-28 RSB	Proofed comment text using octopus/prooferComments
 ##				but no errors found.
+##		2017-03-13 RSB	Comment-text fixes noted in proofing Luminary 116.
 
 ## Page 1090
 		BLOCK	02
@@ -74,7 +75,7 @@ OCT15		OCT	15
 LOW4		OCT	17
 ## Page 1091
 # BIT5		OCT	00020
-# NC1		OCT	21		PINBALL
+# ND1		OCT	21		PINBALL
 # VD1		OCT	23		PINBALL
 # OCT24		OCT	24		SERVICE ROUTINES
 # MD1		OCT	25		PINBALL
@@ -103,7 +104,7 @@ SUPER101	OCT	120		# BITS FOR SUPERBNK SETTING 101
 # OCT121	OCT	121		SERVICE ROUTINES
 					# (FIRST 8K OF ACM)
 SUPER110	OCT	140		# BITS FOR SUPERBNK SETTING 110.
-					# (LAST BK OF ACM)
+					# (LAST 8K OF ACM)
 1SEC		DEC	100
 # LOW7		OCT	177		INTERPRETER
 # BIT8		OCT	00200

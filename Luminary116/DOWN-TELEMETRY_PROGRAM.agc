@@ -14,6 +14,10 @@
 ## Website:     www.ibiblio.org/apollo/index.html
 ## Mod history: 2017-01-22 MAS  Created from Luminary 99.
 ##              2017-01-31 RRB  Updated for Luminary 116.
+##              2017-03-17 HG   Fix operand O13QSAV  --> C13QSAV
+##                                          C13QSAV  --> C13STALL  
+##		2017-03-13 RSB	Proofed comment text via 3-way diff vs
+##				Luminary 99 and 132.
 
 ## Page 980
 # PROGRAM NAME- DOWN TELEMETRY PROGRAM
@@ -72,7 +76,7 @@
 #       LDATALST, DNTMBUFF TO DNTMBUFF +21D, TMINDEX, DNQ.
 
 ## Page 981
-## This page is empty
+## <br>This page is empty<br>
 
 ## Page 982
 # DODOWNTM IS ENTERED EVERY 20 MS BY AN INTERRUPT TRIGGERED BY THE
@@ -98,7 +102,7 @@
 #        SAME AS ECADR, BUT USED WHEN THE WORD ADDRESSED IS THE LEFT
 #        HALF OF A DOUBLE-PRECISION WORD FOR DOWN TELEMETRY.
 #    B. 2DNADR - 6DNADR     N-WORD DOWNLIST ADDRESS, N = 2 - 6.
-#        SAME AS 1DNADR, BUT WTIH THE 4 UNUSED BITS OF THE ECADR FORMAT
+#        SAME AS 1DNADR, BUT WITH THE 4 UNUSED BITS OF THE ECADR FORMAT
 #        FILLED IN WITH 0001-0101.  USED TO POINT TO A LIST OF N DOUBLE-
 #        PRECISION WORDS, STORED CONSECUTIVELY, FOR DOWN TELEMETRY.
 #    C. DNCHAN              DOWNLIST CHANNEL ADDRESS.
@@ -120,9 +124,9 @@
 #   (B) CAN CONTAIN ONLY 1DNADR'S
 
 # 2. ALL DOWNLINKED DATA(EXCEPT CHANNELS) IS PICKED UP BY A <DCA<SO DOWNLINK LISTS CANNOT CONTAIN THE
-#    EQUIVALENT OF THE FOLLOWING ECADRS(I.E. 1DNADRS): 377, 777, 1377, 1777, 2377, 27777, 3377, 3777.
+#    EQUIVALENT OF THE FOLLOWING ECADRS(I.E. IDNADRS): 377, 777, 1377, 1777, 2377, 27777, 3377, 3777.
 
-#    (NOTE: THE TERM EQUIVALENT ' MEANT THAT THE 1DNADR TO 6DNADR  WILL BE PROCESSED LIKE 1 TO 6 ECADRS)
+#    (NOTE: THE TERM EQUIVALENT ' MEANT THAT THE IDNADR TO 6DNADR  WILL BE PROCESSED LIKE 1 TO 6 ECADRS)
 
 # 3.  CONTROL LISTS AND SUBLISTS CANNOT HAVE ENTRIES = OCTAL 00000 OR OCTAL 77777
 ## Page 983
@@ -230,15 +234,15 @@ DODNCHAN        TC              6                               # (EXECUTED AS E
                 TCF             DNTMEXIT                        # GO SEND CHANNELS
 
 WOZERO          EXTEND
-                QXCH            O13QSAV
+                QXCH            C13QSAV
                 LXCH            RUPTREG1
-                TC              O13QSAV
+                TC              C13STALL
 
                 LXCH            RUPTREG1
                 CS              BIT7
                 EXTEND                
                 WAND            CHAN13                          # SET WORD ORDER CODE TO ZERO		
-                TC              O13QSAV
+                TC              C13QSAV
 
 DODNPTR         INDEX           DNECADR                         # DNECADR CONTAINS ADRES OF SUBLIST
                 0               0                               # CLEAR AND ADD LIST ENTRY INTO A.
@@ -343,7 +347,7 @@ SUBLIST         EQUALS          DNQ
 #          ONCE INITIATED THE DOWNLINK ERASABLE DUMP CAN BE TERMINATED (AND INTERRUPTED DOWNLIST REINSTATED) ONLY
 #          BY THE FOLLOWING:
 #           1. A FRESH START
-#           2. COMPLETION OF BOTH DUMPS
+#           2. COMPLETION OF BOTH COMPLETE DUMPS
 #           3. AND INVOLUNTARILY BY A RESTART.
 # NORMAL EXIT MODE- TCF DNPHASE1
 # ALARM OR ABORT MODE- NONE

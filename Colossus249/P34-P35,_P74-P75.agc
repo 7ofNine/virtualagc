@@ -19,6 +19,9 @@
 ##				vs the already-proofed corresponding Colossus
 ##				237 and Comanche 55 source-code files
 ##				and corrected errors found.
+##		2017-01-28 RSB	Back-ported some comment fixes I noticed while
+##				proofing Artemis 72.
+##		2017-03-09 RSB	Fixed VNP00H to VNPOOH.
 ##
 ## The contents of the "Colossus249" files, in general, are transcribed 
 ## from a scanned copy of the program listing.  Notations on this
@@ -197,7 +200,7 @@ P34		TC	AVFLAGA
 P74		TC	AVFLAGP
 P34/P74A	TC	P20FLGON	# SET UPDATFLG, TRACKFLG
 		CAF	V06N37		# TTPI
-		TC	VNP00H
+		TC	VNPOOH
 		TC	DISPLAYE	# ELEV AND CENTANG
 		TC	INTPRET
 		CLEAR	DLOAD
@@ -248,7 +251,7 @@ SWCHCLR		BONCLR	BON
 		TC	P34/P74E
 P34/P74D	EXIT
 		CAF	V06N37		# TTPI
-		TC	VNP00H
+		TC	VNPOOH
 P34/P74E	TC	INTPRET
 		SETPD	DLOAD
 			0D
@@ -295,7 +298,7 @@ P34/P74E	TC	INTPRET
 		STORE	TIG
 		EXIT
 		CAF	V06N58
-		TC	VNP00H
+		TC	VNPOOH
 		TC	INTPRET
 		CALL
 			S34/35.5
@@ -853,7 +856,7 @@ FLAGOFF		CALL
 			S34/35.4
 		EXIT
 		CAF	V06N59
-		TC	VNP00H
+		TC	VNPOOH
 		TC	INTPRET
 		GOTO
 			SUBEXIT
@@ -966,7 +969,7 @@ P3XORP7X	CAF	HIGH9
 #	GOFLASH
 #	GOTOPOOH
 
-VNP00H		EXTEND
+VNPOOH		EXTEND
 		QXCH	RTRN
 		TS	VERBNOUN
 		CA	VERBNOUN
@@ -1354,7 +1357,7 @@ GET.LVC		VLOAD	UNIT		# (PL 6D) R (+29) IN MPAC, UNITIZE UR
 			0D		# DELTA V (+7) IN 0D
 		MXV	VSL1		# CONVERT FROM INER COOR TO LV COOR (+8)
 			6D		# AND SCALE +7 IN MPAC
-		STORE	DELVLVC		# STORE IN DELVLVC (+7(
+		STORE	DELVLVC		# STORE IN DELVLVC (+7)
 		SET	RVQ		# SET MGLVFLAG TO INDICATE LVC CALC
 			MGLVFLAG	# AND EXIT
 
