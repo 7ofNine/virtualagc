@@ -14,6 +14,10 @@
 ## Website:     www.ibiblio.org/apollo/index.html
 ## Mod history: 2017-01-22 MAS  Created from Luminary 99.
 ##              2017-03-11 HG   Transcribed
+##		2017-03-14 RSB	Proofed comment text via 3-way diff vs
+##				Luminary 99 and 131.
+##		2017-03-16 RSB	Comment-text fixes identified in 5-way
+##				side-by-side diff of Luminary 69/99/116/131/210.
 
 ## Page 852
                 BANK            37
@@ -321,7 +325,7 @@ SERVOUT         RELINT
                 MASK            LOW9
                 TS              PUSHLOC
                 ZL
-                DXCH            FIXLOC                          # FIXLOC AND DVFIND
+                DXCH            FIXLOC                          # FIXLOC AND OVFIND
 
                 TC              QUIKFAZ5
                 EXTEND                                          # EXIT TO SELECTED ROUTINE WHETHER THERE
@@ -1277,7 +1281,7 @@ VELUPDAT        CS              VSELECT                         # PROCESS VELOCI
                 ADRES           VXINH                           # RESET VX INHIBIT
 
                 CA              VSELECT
-                AD              NEG2                            # IF VSELECT = 2 (X AXIS).
+                AD              NEG2                            # IF VSELECT = 2 (X AXIS),
                 EXTEND                                          # BYPASS UPDATE
                 BZF             ENDVDAT
 
@@ -1356,9 +1360,9 @@ VALTCHK         TC              QUIKFAZ5                        # DO NOT REPEAT 
                 CS              ABVEL                           # NO - SEE IF VELOCITY < 6000 FT/SEC
                 AD              6KFT/SEC
                 EXTEND
-                BZMF            CONTSERV                        # V > 6000 FT/SEC  DO NOT READ VELOCITY.
+                BZMF            CONTSERV                        # V > 6000 FT/SEC.  DO NOT READ VELOCITY.
 
-                TC              UPFLAG                          # V < 6000 FT/SEC  SET READVEL AND READ.
+                TC              UPFLAG                          # V < 6000 FT/SEC.  SET READVEL AND READ.
                 ADRES           READVEL
 
 READV           CAF             PRIO32                          # SET UP JOB TO READ VELOCITY BEAMS.

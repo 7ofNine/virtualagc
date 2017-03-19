@@ -14,6 +14,9 @@
 ##				changes made.
 ##		2017-01-28 RSB	WTIH -> WITH.
 ##		2017-02-09 RSB	Comment-text fixes identified in proofing Artemis 72
+##		2017-03-14 RSB	Comment-text fixes noted in proofing Luminary 116.
+##		2017-03-16 RSB	Comment-text fixes identified in 5-way
+##				side-by-side diff of Luminary 69/99/116/131/210.
 
 ## Page 1062
 
@@ -87,8 +90,8 @@
 #            CONTROL WILL NOT BE RETURNED TO THE SPECIFIED ADDRESS (2CADR) IN EXACTLY DELTA T CENTISECONDS.
 #       THE APPROXIMATE TIME MAY BE CALCULATED AS FOLLOWS
 #
-#               LET T0 = THE TIME OF THE TC WAITLIST
-#               LET TS = T0 +147U + COUNTER INCREMENTS (SET UP TIME)
+#               LET TO = THE TIME OF THE TC WAITLIST
+#               LET TS = TO +147U + COUNTER INCREMENTS (SET UP TIME)
 #               LET X  = TS -(100TS)/100  (VARIANCE FROM COUNTERS)
 #               LET Y  = LENGTH OF TIME OF INHIBIT INTERRUPT AFTER T3RUPT
 #               LET Z  = LENGTH OF TIME TO PROCESS TASKS WHICH ARE DUE THIS T3RUPT BUT DISPATCHED EARLIER.
@@ -442,7 +445,7 @@ LONGCYCL        EXTEND                                          # CAN WE SUCCESF
                 TCF             MUCHTIME                        # INVOLVED, TAKING INTO ACCOUNT THAT THE
                                                                 # WORDS MAY NOT BE SIGNED CORRECTED (DP
                                                                 # BASIC INSTRUCTIONS
-                                                                # DO NOT SIGN CORRECT) AND THAT WE SUBTRAC-
+                                                                # DO NOT SIGN CORRECT) AND THAT WE SUBTRAC
                                                                 # TED BIT14 (1 OVER HALF THE POS. VALUE
                                                                 # REPRESENTABLE IN SINGLE WORD)
 

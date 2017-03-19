@@ -16,6 +16,10 @@
 ##		2017-01-28 RSB	Comment-text fixes identified for Luminary 69.
 ##		2017-02-09 RSB	Comment-text fixes identified for Artemis 72.
 ##              2017-02-10 RRB  Updated for Luminary 116.
+##		2017-03-14 RSB	Proofed comment text via 3-way diff vs
+##				Luminary 99 and 131.
+##		2017-03-16 RSB	Comment-text fixes identified in 5-way
+##				side-by-side diff of Luminary 69/99/116/131/210.
 
 ## Page 1376
 # PROGRAM NAME:         P27
@@ -68,7 +72,7 @@
 ## Page 1377
 #       V71EIIEAAAAE            (CONTIGUOUS BLOCK UPDATE) II-2 OCTAL COMPONENTS, XXXXX,
 #       XXXXXE                  ARE LOADED INTO ERASABLE STARTING AT ECADR, AAAA.
-#       XXXXXE                  IT IS .GE. 3 .AND. .LE. 200.,
+#       XXXXXE                  IT IS .GE. 3 .AND. .LE. 20D.,
 #                               AND (AAAA + II -3) DOES NOT PRODUCE AN ADDRESS IN THE
 #       9 NEXT BANK
 #         .                     SCALING IS SAME AS INTERNAL REGISTERS.
@@ -188,7 +192,6 @@ UPPART2         EQUALS                                          # UPDATE PROGRAM
                 OCT             30000                           # PRIORITY SAME AS CHRPRIO
 ## [WORKAROUND] RSB 2009 - kept for Luminary 116 RRB 2017.
                 SBANK=          PINSUPER                        
-## [WORKAROUND]
                 EBANK=          UPBUFF                          
                 2CADR           UPOUT           +1              
 
