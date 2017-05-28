@@ -103,6 +103,14 @@
 				Win10+Msys specifically, but probably for some other
 				Windows configurations as well.  Thanks to Romain Lamour.
 		03/26/17 MAS	Added previously-static items from agc_engine.c to agc_t.
+		03/27/17 MAS	Added a bit for Night Watchman's 1.28s-long assertion of
+				its channel 77 bit.
+		03/29/17 RSB    More integer types needed for Windows.
+ 		04/02/17 MAS	Added a couple of flags used for simulation of the 
+                		TC Trap hardware bug.
+		04/16/17 MAS    Added a voltage counter and input flag for the AGC
+				warning filter, as well as a channel 163 flag for
+				the AGC (CMC/LGC) warning light.
    
   For more insight, I'd highly recommend looking at the documents
   http://hrst.mit.edu/hrs/apollo/public/archive/1689.pdf and
@@ -130,6 +138,7 @@ typedef short int16_t;
 typedef signed char int8_t;
 typedef unsigned char uint8_t; // 20170326
 typedef unsigned int uint32_t; // 20170326
+typedef unsigned short uint16_t; // 20170329
 #ifdef __MINGW32__
 typedef unsigned long long uint64_t;
 #else
@@ -248,6 +257,7 @@ extern long random (void);
 #define CH77_RUPT_LOCK      000010
 #define CH77_NIGHT_WATCHMAN 000020
 
+#define DSKY_AGC_WARN 000001
 #define DSKY_KEY_REL  000020
 #define DSKY_VN_FLASH 000040
 #define DSKY_OPER_ERR 000100
@@ -352,6 +362,7 @@ typedef struct
   //unsigned RegQ16:1;		// Bit "16" of register Q.
   unsigned DownruptTimeValid:1;	// Set if the DownruptTime field is valid.
   unsigned NightWatchman:1;     // Set when Night Watchman is watching. Cleared by accessing address 67.
+  unsigned NightWatchmanTripped:1; // Set when Night Watchman has been tripped and its CH77 bit is being asserted.
   unsigned RuptLock:1;          // Set when rupts are being watched. Cleared by executing any non-ISR instruction
   unsigned NoRupt:1;            // Set when rupts are being watched. Cleared by executing any ISR instruction
   unsigned TCTrap:1;            // Set when TC is being watched. Cleared by executing any non-TC/TCF instruction
@@ -362,6 +373,10 @@ typedef struct
   unsigned ParityFail:1;        // Set when a parity failure is encountered accessing memory (in yaAGC, just hitting banks 44+)
   unsigned CheckParity:1;       // Enable parity checking for fixed memory.
   unsigned RestartLight:1;      // The present state of the RESTART light
+  unsigned TookBZF:1;           // Flag for having just taken a BZF branch, used for simulation of a TC Trap hardware bug
+  unsigned TookBZMF:1;          // Flag for having just taken a BZMF branch, used for simulation of a TC Trap hardware bug
+  unsigned GeneratedWarning:1;  // Whether there is a pending input to the warning filter
+  uint32_t WarningFilter;       // Current voltage of the AGC warning filter
   uint64_t /*unsigned long long */ DownruptTime;	// Time when next DOWNRUPT occurs.
   int Downlink;
   int NextZ;                    // Next value for the Z register
