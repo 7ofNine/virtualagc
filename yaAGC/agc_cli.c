@@ -1,40 +1,41 @@
 /*
-  Original Copyright 2003-2006,2009 Ronald S. Burkey <info@sandroid.org>
-  Modified Copyright 2008,2016 Onno Hommes <ohommes@alumni.cmu.edu>
-  
-  This file is part of yaAGC.
-
-  yaAGC is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  yaAGC is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with yaAGC; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-  In addition, as a special exception, permission is given to
-  link the code of this program with the Orbiter SDK library (or with 
-  modified versions of the Orbiter SDK library that use the same license as 
-  the Orbiter SDK library), and distribute linked combinations including 
-  the two. You must obey the GNU General Public License in all respects for 
-  all of the code used other than the Orbiter SDK library. If you modify 
-  this file, you may extend this exception to your version of the file, 
-  but you are not obligated to do so. If you do not wish to do so, delete 
-  this exception statement from your version. 
- 
-  Filename:	agc_cli.c
-  Purpose:	This module implements the yaAGC command-line interface
-  Contact:	Onno Hommes <ohommes@alumni.cmu.edu>
-  Reference:	http://www.ibiblio.org/apollo
-  Mods:         11/30/08 OH.	Began rework
-                08/04/16 OH     Fixed the GPL statement and old user-id
-                09/30/16 MAS    Added the --inhibit-alarms option
+ * Original Copyright 2003-2006,2009,2017 Ronald S. Burkey <info@sandroid.org>
+ * Modified Copyright 2008,2016 Onno Hommes <ohommes@alumni.cmu.edu>
+ *
+ * This file is part of yaAGC.
+ *
+ * yaAGC is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * yaAGC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with yaAGC; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * In addition, as a special exception, permission is given to
+ * link the code of this program with the Orbiter SDK library (or with
+ * modified versions of the Orbiter SDK library that use the same license as
+ * the Orbiter SDK library), and distribute linked combinations including
+ * the two. You must obey the GNU General Public License in all respects for
+ * all of the code used other than the Orbiter SDK library. If you modify
+ * this file, you may extend this exception to your version of the file,
+ * but you are not obligated to do so. If you do not wish to do so, delete
+ * this exception statement from your version.
+ *
+ * Filename:	agc_cli.c
+ * Purpose:	This module implements the yaAGC command-line interface
+ * Contact:	Onno Hommes <ohommes@alumni.cmu.edu>
+ * Reference:	http://www.ibiblio.org/apollo
+ * Mods:       	11/30/08 OH.	Began rework
+ *              08/04/16 OH     Fixed the GPL statement and old user-id
+ *              09/30/16 MAS    Added the --inhibit-alarms option
+ *              05/30/17 RSB	Added --initialize-sunburst-37 option.
  */
 
 #include <string.h>
@@ -96,6 +97,11 @@ static void CliShowUsage(void)
 "                  configuration files is used only for --debug-dsky\n"
 "                  mode.  It would typically be the same configuration\n"
 "                  file as used for yaDSKY.\n\n"
+"--initialize-sunburst-37 Makes some initializations to erasable memory needed\n"
+"                         for a first-time run of SUNBURST 37 (SHEPATIN 0) having\n"
+"                         otherwise clean memory, in lieu of pad-loads.  Not\n"
+"                         required for subsequent runs.  Note that this option only\n"
+"                         has an effect if there is no existing core-dump file.\n"
 "Note that the exec-ropes file should contain exactly 36 banks\n"
 "(36x1024=36864 words, or 73728 bytes). Other sizes may be accepted,\n"
 "but it is unclear what (if any) utility such core-rope images\n"
@@ -185,6 +191,7 @@ static void CliInitializeOptions(void)
 	  Options.resumed = 0;
 	  Options.interlace = 50;
 	  Options.version = 0;
+	  Options.initializeSunburst37 = 0;
 }
 /**
 This function takes a character string and checks the string for
@@ -236,8 +243,9 @@ static int CliProcessArgument(char* token)
 	else if (!strncmp (token, "-symbols=", 9)) Options.symtab = _strdup(&token[9]);
 	else if (!strncmp (token, "-symtab=", 8)) Options.symtab = _strdup(&token[8]);
 	else if (1 == sscanf (token,"-interlace=%d", &j)) Options.interlace = j;
+	else if (!strcmp (token, "-initialize-sunburst-37")) Options.initializeSunburst37 = 1;
 	else if (Options.core == (char*)0) Options.core = _strdup(token);
-	else if (Options.resume == (char*)0) Options.resume = _strdup(token);
+	else if (Options.resume == (char*)0) Options.resume _= strdup(token);
 	else result = CLI_E_UNKOWNTOKEN;
 
 	return (result);
