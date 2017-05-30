@@ -245,7 +245,7 @@ static int CliProcessArgument(char* token)
 	else if (1 == sscanf (token,"-interlace=%d", &j)) Options.interlace = j;
 	else if (!strcmp (token, "-initialize-sunburst-37")) Options.initializeSunburst37 = 1;
 	else if (Options.core == (char*)0) Options.core = _strdup(token);
-	else if (Options.resume == (char*)0) Options.resume _= strdup(token);
+	else if (Options.resume == (char*)0) Options.resume =_strdup(token);
 	else result = CLI_E_UNKOWNTOKEN;
 
 	return (result);
