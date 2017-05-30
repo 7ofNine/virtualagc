@@ -61,7 +61,7 @@
 // both cases.
 #ifndef INSTALLDIR
 #ifdef WIN32
-#define INSTALLDIR "c:/mingw/bin"
+#define INSTALLDIR "c:/mingw/bin" //TODO: doesnt work in WINDOWS only when built with mingw etc
 #else
 #define INSTALLDIR "/usr/local/bin"
 #endif

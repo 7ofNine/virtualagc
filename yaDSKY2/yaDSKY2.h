@@ -227,5 +227,13 @@ public:
     virtual void HotkeyEvent (wxKeyEvent &event);
 }; // wxGlade: end class
 
+// these are originally in agc_engine.h not good to redfine here but easy
+#define SOCKET_BROKEN 1
+#define DSKY_VN_FLASH 000040
+
+extern "C"
+{
+    FILE *rfopen(const char *Filename, const char *mode);
+}
 
 #endif // YADSKY2_H

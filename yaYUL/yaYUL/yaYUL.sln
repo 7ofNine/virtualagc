@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yaDSKY2", "..\..\yaDSKY2\ya
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ControlPulseSim", "..\..\ControlPulseSim\ControlPulseSim\ControlPulseSim.vcxproj", "{E1597DC2-4129-4807-91AC-1C2CBF35E1ED}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yaTelemetry", "..\..\yaTelemetry\yaTelemetry\yaTelemetry.vcxproj", "{FE9EE48C-8800-4644-8817-98C67EFA1DAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{E1597DC2-4129-4807-91AC-1C2CBF35E1ED}.Release|x64.Build.0 = Release|x64
 		{E1597DC2-4129-4807-91AC-1C2CBF35E1ED}.Release|x86.ActiveCfg = Release|Win32
 		{E1597DC2-4129-4807-91AC-1C2CBF35E1ED}.Release|x86.Build.0 = Release|Win32
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Debug|x64.ActiveCfg = Debug|x64
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Debug|x64.Build.0 = Debug|x64
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Debug|x86.ActiveCfg = Debug|Win32
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Debug|x86.Build.0 = Debug|Win32
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Release|x64.ActiveCfg = Release|x64
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Release|x64.Build.0 = Release|x64
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Release|x86.ActiveCfg = Release|Win32
+		{FE9EE48C-8800-4644-8817-98C67EFA1DAA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

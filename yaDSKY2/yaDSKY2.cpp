@@ -100,7 +100,13 @@ using namespace std;
 #include "wx/filefn.h"
 
 #include "../yaAGC/yaAGC.h"
-#include "../yaAGC/agc_engine.h"
+
+//#include "../yaAGC/agc_engine.h"
+
+// add ons to make it compileable under windows
+int Portnum;
+int CmOrLm;
+int DebugMode = 0;
 
 static MainFrame* MainWindow;
 int HalfSize = 0;
@@ -950,7 +956,8 @@ IMPLEMENT_APP(yaDskyApp)
 bool yaDskyApp::OnInit()
 {
 
-  int i, j, UsedCfg = 0;
+  int i;
+  int UsedCfg = 0;
 
     wxInitAllImageHandlers();
     MainWindow = new MainFrame(NULL, wxID_ANY, wxEmptyString);
@@ -1230,7 +1237,7 @@ TimerClass::Notify ()
 	      else
 	        {	
 		  printf ("yaDSKY reports server error %d\n", errno);
-		  close (ServerSocket);
+		  _close (ServerSocket);
 		  ServerSocket = -1;
 		  break;
 	        }
@@ -1513,7 +1520,6 @@ TimerClass::ActOnIncomingIO (unsigned char *Packet)
     }
   else if (Channel == 011)
     {
-      int i;
       // Here are appropriate Luminary 131 actions for various discrete
       // annunciations.
       if ((Value & 2) != (Last11 & 2))
@@ -1573,7 +1579,7 @@ MainFrame::OutputKeycode (int Keycode)
       j = send (ServerSocket, (const char *) Packet, 4, MSG_NOSIGNAL);
       if (j == SOCKET_ERROR && SOCKET_BROKEN)
         {
-	  close (ServerSocket);
+	  _close (ServerSocket);
 	  ServerSocket = -1;
 	}
     }
@@ -1600,7 +1606,7 @@ MainFrame::OutputPro (int OffOn)
       j = send (ServerSocket, (const char *) Packet, 8, MSG_NOSIGNAL);
       if (j == SOCKET_ERROR && SOCKET_BROKEN)
         {
-	  close (ServerSocket);
+	  _close (ServerSocket);
 	  ServerSocket = -1;
 	}
     }
@@ -1624,7 +1630,7 @@ xpm2jpg (char *s)
 int 
 MainFrame::ParseCfg (wxString &Filename)
 {
-  FILE *rfopen (const char *Filename, const char *mode);  
+
   Ind_t *Indptr;
   char s[129], *ss, s1[1024], s2[129], s3[129];
   int i, RetVal = 1, IndNum, BitNum, Polarity, Channel, Latched, RowMask, Row;

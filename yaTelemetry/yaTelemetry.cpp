@@ -499,7 +499,7 @@ TimerClass::Notify ()
 		  //Dummy << wxT ("yaTelemetry reports server error ") << errno;
 		  //wxMessageBox (Dummy);
 		  printf ("yaTerminal reports server error %d\n", errno);
-		  close (ServerSocket);
+		  _close (ServerSocket);
 		  ServerSocket = -1;
 		  break;
 	        }
@@ -979,17 +979,17 @@ void SimpleFrameClass::do_layout()
     wxBoxSizer* sizer_11 = new wxBoxSizer(wxVERTICAL);
     sizer_7->Add(20, 10, 0, 0, 0);
     sizer_7_copy->Add(20, 20, 3, 0, 0);
-    sizer_10->Add(20, 20, 0, wxADJUST_MINSIZE, 0);
-    sizer_11->Add(20, 5, 1, wxADJUST_MINSIZE, 0);
+    sizer_10->Add(20, 20, 0, 0/*wxADJUST_MINSIZE*/, 0);
+    sizer_11->Add(20, 5, 1, 0/*wxADJUST_MINSIZE*/, 0);
     sizer_11->Add(Bigger, 0, 0, 0);
-    sizer_11->Add(20, 5, 1, wxADJUST_MINSIZE, 0);
+    sizer_11->Add(20, 5, 1, 0/*wxADJUST_MINSIZE*/, 0);
     sizer_11->Add(Smaller, 0, 0, 0);
-    sizer_11->Add(20, 5, 1, wxADJUST_MINSIZE, 0);
+    sizer_11->Add(20, 5, 1, 0/*wxADJUST_MINSIZE*/, 0);
     sizer_10->Add(sizer_11, 1, wxEXPAND, 0);
-    sizer_10->Add(20, 20, 0, wxADJUST_MINSIZE, 0);
+    sizer_10->Add(20, 20, 0 /*wxADJUST_MINSIZE*/, 0);
     sizer_7_copy->Add(sizer_10, 0, wxEXPAND, 0);
     sizer_7_copy->Add(10, 20, 1, 0, 0);
-    sizer_7_copy->Add(DecodingBox, 0, wxADJUST_MINSIZE, 0);
+    sizer_7_copy->Add(DecodingBox, 0, 0/*wxADJUST_MINSIZE*/, 0);
     sizer_7_copy->Add(20, 20, 3, 0, 0);
     sizer_7->Add(sizer_7_copy, 0, wxEXPAND, 0);
     sizer_7->Add(20, 10, 0, 0, 0);
