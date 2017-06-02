@@ -383,7 +383,7 @@ main(int argc, char *argv[])
           printf("Unrecoverable error.\n");
           break;
         }
-      if ((k == 0 || k >= LastUnresolved) && numSymbolsReassigned == 0)
+      if (((k == 0 || k >= LastUnresolved) && numSymbolsReassigned == 0)|| i == MaxPasses)
         {
           printf("Pass #%d\n", i + 1);
           Pass(1, InputFilename, OutputFile, &Fatals, &Warnings);
