@@ -6,7 +6,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments> Main.agc &gt; foo2.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments> Main.agc &gt; foo2.txt --force</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>..\..\Sunburst37</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
