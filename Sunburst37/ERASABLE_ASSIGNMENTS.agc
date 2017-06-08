@@ -19,6 +19,8 @@
 ## Mod history: 2017-05-24 MAS  Created from Sunburst 120.
 ##              2017-05-28 HG   Transcribed
 ##              2017-05-30 HG   Add missing variable RUPTSTOR
+##              2017-06-08 HG   Fix label NEWTIME -> NEWMTIME
+##                                        ABDCONV -> ABDVCONV
 
 ## Page 10
 
@@ -624,7 +626,7 @@ MPHASE1         ERASE
 MTIMER4T        ERASE           +3                      # RESTART STORAGE AREAS FOR THE ABOVE.
 MPHASE4T        ERASE           +3
 MDUETEMP        ERASE
-NEWTIME         ERASE                                   # T1 AT MAINTENANCE TASK AFTER NEXT.
+NEWMTIME        ERASE                                   # T1 AT MAINTENANCE TASK AFTER NEXT.
 NEWTIMET        ERASE                                   # RESTART STORAGE FOR THE ABOVE.
 MINH            ERASE
 STATECTR        ERASE                                   # TIMER FOR INTERNAL STATE VECTOR UPDATES.
@@ -1082,7 +1084,7 @@ URCO            EQUALS          AMEMORY         +106D   # VECTOR
 
 1/DV1           EQUALS          AMEMORY         +112D   # DP
 1/DV2           EQUALS          AMEMORY         +114D   # DP
-ABDCONV         EQUALS          AMEMORY         +116D   # DP
+ABDVCONV        EQUALS          AMEMORY         +116D   # DP
 TFL             EQUALS          AMEMORY         +118D   # DP
 
 
