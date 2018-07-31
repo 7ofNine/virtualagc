@@ -161,6 +161,16 @@
 #		2017-03-27 RSB	Updated NVER for "releasing" a new installer and VM.
 #		2017-04-17 RSB	Updated NVER.
 #		2017-06-19 RSB	Updated NVER and added Sunburst37 to the mission list.
+#		2017-08-01 MAS	Added LMY99R0 to the list of missions.
+#		2017-08-23 RSB	Since Solarium doesn't presently assemble correctly in
+#				Mac OS X, it is now only conditionally added to the 
+#				mission list for non-Mac build systems.  Hopefully that's
+#				temporary.
+#		2017-08-24 RSB	Added FORCE_clang, FORCE_cc and FORCE_CC options.
+#		2017-08-29 RSB	Added ZERLINA56 to mission list.
+#		2017-08-31 RSB	Unconditionally returned Solarium to the mission list, since 
+#				the yaYUL bug related to it that was expressing itself in 
+#				Mac OS X has been fixed.
 #
 # The build box is always Linux for cross-compiles.  For native compiles:
 #	Use "make MACOSX=yes" for Mac OS X.
@@ -168,6 +178,15 @@
 #	Use "make WIN32=yes" for Windows.
 #	Use "gmake FREEBSD=yes" for FreeBSD.
 #	Use "make" for Linux.
+# On some platforms, we simply can't deduce what C or C++ compiler is being used
+# from the settings indicated above.  An example is Mac OS X, in which older versions
+# of Xcode used gcc, but newer ones use clang (which we don't support).  Or so I'm 
+# told.  At any rate, you can force using specific C and C++ compilers by giving their
+# full pathnames. For example:
+#	make MACOSX=yes FORCE_cc=/path/to/gcc FORCE_CC=/path/to/g++
+# I have no systems myself on which this is an issue, so that's a feature I've never
+# tested in any meaningful way.  Another available switch is FORCE_clang=yes, which makes
+# certain changes that *may* allow building with clang rather than gcc.
 
 # NVER is the overall version code for the release.
 NVER:=\\\"2017-06-19\\\"
@@ -194,15 +213,29 @@ DEV_STATIC=DEV_STATIC=yes
 # like yaDSKY2. 
 cc=gcc
 CC=g++
+
 ifdef SOLARIS
 cc=cc
-CC=CC
 endif
 ifdef IPHONE
 cc=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-gcc-4.0.1
+LIBS=
+endif
+ifdef FORCE_cc
+cc=$(FORCE_cc)
+endif
+
+ifdef SOLARIS
+CC=CC
+endif
+ifdef IPHONE
 CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-g++-4.0.1
 LIBS=
 endif
+ifdef FORCE_CC
+CC=$(FORCE_CC)
+endif
+
 export cc
 export CC
 
@@ -238,8 +271,12 @@ NOREADLINE=yes
 
 SNAP_PREFIX = /usr/local/yaAGC
 
+# Does the compiler accept the -x switch?
+DASHX=-x c
+
 # Some adjustments for building in Solaris
 ifdef SOLARIS
+DASHX=
 #NOREADLINE=yes
 LIBS+=-L/usr/local/lib
 LIBS+=-lsocket
@@ -278,6 +315,8 @@ ifndef GROUP
 GROUP = users
 endif
 
+export DASHX
+
 # Note:  The default build uses no CFLAGS; this makes it easier for a user in
 # the field to build it, since unexpected problems won't throw them for a loop.
 # But I personally want to build with 
@@ -311,6 +350,13 @@ yaACA=-
 endif
 ifdef SOLARIS
 yaACA=-
+endif
+
+LIBS2=
+ifdef FORCE_clang
+wxFLAGS=-Wno-potentially-evaluated-expression
+export wxFLAGS
+LIBS2=-lstdc++
 endif
 
 # Note:  The CURSES variable is misnamed.  It really is just any special libraries
@@ -362,18 +408,22 @@ ifndef PREFIX
 PREFIX=/usr/local
 endif
 
-BUILD = $(MAKE) PREFIX=$(PREFIX) NVER=$(NVER) CFLAGS="$(CFLAGS)" CURSES="$(CURSES)" LIBS2="$(LIBS)" NOREADLINE=$(NOREADLINE) ReadlineForWin32=$(ReadlineForWin32) $(ARCHS) EXT=$(EXT)
+LIBS2+=$(LIBS)
+BUILD = $(MAKE) PREFIX=$(PREFIX) NVER=$(NVER) CFLAGS="$(CFLAGS)" CURSES="$(CURSES)" LIBS2="$(LIBS2)" NOREADLINE=$(NOREADLINE) ReadlineForWin32=$(ReadlineForWin32) $(ARCHS) EXT=$(EXT)
 
 # List of mission software directories to be built.
-MISSIONS = Validation Luminary131 Colossus249 Comanche055 
-MISSIONS += Luminary099 Artemis072 Colossus237 Solarium055
+MISSIONS = Validation Zerlina56 Luminary131 Colossus249 Comanche055 
+MISSIONS += Luminary099 Artemis072 Colossus237
 MISSIONS += Aurora12 Sunburst120 Luminary210 Retread44 Luminary069
-MISSIONS += SuperJob LUM99R2 Luminary116 Borealis Sunburst37
+MISSIONS += SuperJob LUM99R2 Luminary116 Borealis Sunburst37 LMY99R0
+# ifndef MACOSX
+MISSIONS += Solarium055
+# endif
 export MISSIONS
 
 # Missions needing code::blocks project files.
 cbMISSIONS = Validation Luminary131 Colossus249 Comanche055 
-cbMISSIONS += Luminary099 Artemis072 Colossus237 Aurora12 Sunburst120
+cbMISSIONS += Luminary099 Artemis072 Colossus237 Aurora12 Sunburst120 LMY99R0
 cbMISSIONS += Luminary069 LUM99R2 Luminary116 Luminary210 Retread44 Borealis SuperJob
 cbMISSIONS := $(patsubst %,%.cbp,$(cbMISSIONS))
 

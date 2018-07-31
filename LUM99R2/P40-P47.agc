@@ -19,6 +19,9 @@
 ##		2017-03-10 RSB	Comment-text fixes noted in proofing Luminary 116.
 ##		2017-03-16 RSB	Comment-text fixes identified in 5-way
 ##				side-by-side diff of Luminary 69/99/116/131/210.
+##		2017-08-16 RSB	Fixed comment typo identified in AP11ROPE.
+##		2017-08-26 MAS  Fixed an incorrect label found while transcribing
+##                              Zerlina 56 (it was unreferenced so caused no errors).
 
 ## Page 752
 # PROGRAM DESCRIPTION  P40BOTH		DECEMBER 22, 1966
@@ -213,7 +216,7 @@ P41LM		CAF	P41ADRES	# INITIALIZATION FOR BURNBABY
 		CADR	R02BOTH
 
 		TC	INTPRET		# BOTH LM
-		BON	DLOAD		# IF NJETSFLAG IS SET, LOAD Z JET F
+		BON	DLOAD		# IF NJETSFLAG IS SET, LOAD 2 JET F
 			NJETSFLG
 			P41FJET1
 			FRCS4		# IF NJETSFLAG IS CLEAR, LOAD 4 JET F
@@ -1063,7 +1066,7 @@ S40.13D		DLOAD	DMP		# FOR DPS ENGINE
 		BOV	PUSH
 ## Page 775
 			S40.130V
-S40.127		DSU	BPL
+S40.137		DSU	BPL
 			6SEC		# 600.0 CS AT +14
 			S40.138
 		DAD	GOTO

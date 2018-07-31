@@ -24,6 +24,7 @@ yaLEMAP/binLEMAP
 yaLEMAP/binLEMAP.bin
 yaLEMAP/yaLEMAP
 yaLEMAP/yaLEMAP.binsource
+yaLEMAP/yaLEMAP.lst
 yaUniverse/yaUniverse
 
 jWiz/jWiz
@@ -33,6 +34,7 @@ yaACA3/yaACA3
 yaDEDA2/yaDEDA2
 yaLEMAP/Apollo32.png
 yaLEMAP/Main.annotation
+yaLEMAP/Default.style
 yaTelemetry/yaTelemetry
 *.agc.html
 *.agc.bin
@@ -70,3 +72,9 @@ yaDSKY2/yaDSKY2/Debug/*
 yaAGC/yaAGC/.vs/*
 yaAGC/yaAGC/Debug/*
 yaAGC/yaAGC/Release/*
+*.cbp
+*.lst
+yaAGC-Block1-Pultorak/yaAGC-Block1
+yaAGCb1/test.agc.pad
+yaAGCb1/yaAGCb1
+yaUplinkBlock1/yaUplinkBlock1

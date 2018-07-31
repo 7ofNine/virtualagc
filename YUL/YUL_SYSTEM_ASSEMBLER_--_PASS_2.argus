@@ -18,6 +18,8 @@
 #               2016-12-17 JL   Transcribed pages 321-323.
 #               2016-12-19 JL   Transcribed pages 324-329.
 #               2016-12-20 JL   Transcribed pages 330-331.
+#               2018-01-03 JL   Fixed symbol OCT7777 definition on p.274.
+#               2018-01-03 JL   Fixed symbol LFINI2P definition on p.280.
 
 # Annotations:
 #
@@ -504,7 +506,7 @@ P0222   ASSIGNMENTS TO ALLOW MASKS TO BE USED AS CONSTANTS.
 
  022269 FL ZERO    EQUALS       BIT1
  02227  A COLUMN 1 EQUALS       B2 B6
- 022271 OCT 3777   EQUALS       C7T8
+ 022271 OCT 7777   EQUALS       C7T8
  022272 OCT 10000  EQUALS       BIT 36
 
  022273 OCT 3777   EQUALS       B38T48
@@ -758,7 +760,7 @@ R0458   PROCESSES THE SECOND LOCATION, SETS UP THE SECOND WORD, AND CALLS FOR WO
  0461              TS           CARD +5       SAVE W6       DELIMIT        C    ENSURE DELIMITING OF FIELD BY ASTERISK.
  0463              TN           D2 PARAMS     3             MAX DECML           SET PARAMETERS FOR 2P DECIMAL.
  0465              TS           N,SC          Z,X4          DEC CONST
- 0466   L FINI 1P  CAC                                      C,+1
+ 0466   L FINI 2P  CAC                                      C,+1
 
  0467              SWE, CAC3    M PROC 2P     32            Z,CSC          C    FINISH WORDS ACCORDING TO MACHINE.
  0471              TS           Z,SC          Z,X4          PRINT LIN           PRINT FIRST LINE.

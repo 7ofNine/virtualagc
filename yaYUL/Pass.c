@@ -115,6 +115,11 @@
  *                              emits a word will update the current superbank. Also added
  *                              --early-sbank, which makes yaYUL use pre-1967 YUL behavior
  *                              when handling superbank bits.
+ *             	2017-08-31 RSB	It seems as though for --block1, the variable NumInterpretiveOperands
+ *             			was used without regard to the fact that it was sometimes used in
+ *             			conjunction with RawNumInterpretiveOperands (which wasn't changed).
+ *             			The result is that --block1 assembly was working essentially by
+ *             			accident, and similarly was failing by accident in Mac OS X.
  *
  * I don't really try to duplicate the formatting used by the original
  * assembly-language code, since that format was appropriate for
@@ -1482,6 +1487,8 @@ Pass(int WriteOutput, const char *InputFilename, FILE *OutputFile, int *Fatals,
   static char lastLines[10][sizeof(s)] =
     { "", "", "", "", "", "", "", "", "", "" };
 
+  debugLineString = s;
+  debugLine = 1;
   SaveUsedCounts();
   thisIsTheLastPass = WriteOutput;
   numSymbolsReassigned = 0;
@@ -1620,6 +1627,7 @@ Pass(int WriteOutput, const char *InputFilename, FILE *OutputFile, int *Fatals,
           CurrentLineAll++;
           CurrentLineInFile++;
         }
+      debugLine = CurrentLineAll;
 
       // Analyze the input line.
 
@@ -1636,7 +1644,9 @@ Pass(int WriteOutput, const char *InputFilename, FILE *OutputFile, int *Fatals,
             }
         }
       else if (s[0] == '#' && s[1] == '#' && 1 != sscanf(s, "## Page%d", &k)) // is a ## line
-        ;
+        {
+	  // Intentionally empty.
+        }
       else if (inHeader)
         {
           inHeader = 0;
@@ -1882,6 +1892,7 @@ Pass(int WriteOutput, const char *InputFilename, FILE *OutputFile, int *Fatals,
                     {
                       iMatch = 0;
                       ParseInputRecord.Operator = "";
+                      RawNumInterpretiveOperands = 1;
                       NumInterpretiveOperands = 1;
                     }
                 }

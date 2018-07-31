@@ -1,4 +1,4 @@
-# Copyright 2009,2016 Ronald S. Burkey <info@sandroid.org>
+# Copyright 2009,2016,2017 Ronald S. Burkey <info@sandroid.org>
 #
 # This file is part of yaAGC.
 #
@@ -89,6 +89,8 @@
 #				added to the installation bundle.  These are
 #				related to debugging on Code::blocks. 
 #		2016-11-29 RSB	Fixed formation of .app sub-directories for Mac.
+#		2017-08-24 RSB	Added wxFLAGS.
+#		2017-12-11 RSB	Added yaDSKY2/*.canned files.
 
 APP=VirtualAGC
 ifndef MISSIONS
@@ -190,7 +192,8 @@ clean:
 	rm -f VirtualAGC-linux/build.log
 	rm -f VirtualAGC-linux/temp.mpi
 
-SOURCES:=${APP}.cpp \
+SOURCES:=${APP}.cpp
+SOURCESc:=\
 	../yaAGC/agc_utilities.c \
 	../yaAGC/DecodeDigitalDownlink.c \
 	../yaAGC/agc_engine.c \
@@ -200,30 +203,30 @@ SOURCES:=${APP}.cpp \
 
 HEADERS:=${APP}.h
 
-${APP}: ${SOURCES} ${HEADERS}
+${APP}: ${SOURCES} ${SOURCESc} ${HEADERS}
 	${CC} -DONNO_STYLE ${PLATFORM} \
 		${YADSKY2} ${YADEDA2} \
-		`wx-config --cxxflags` \
-		-o $@ ${SOURCES} \
+		`wx-config --cxxflags` ${wxFLAGS} \
+		-o $@ ${SOURCES} ${DASHX} ${SOURCESc} \
 		`wx-config --libs` \
 		${LIBS2}
 	strip $@${EXT}
 
-${APP}.exe: ${SOURCES} ${HEADERS}
+${APP}.exe: ${SOURCES} ${SOURCESc} ${HEADERS}
 	${PREFIX_WIN}-${CC} -DONNO_STYLE \
 		${YADSKY2} ${YADEDA2} \
 		`${BIN_WIN}/wx-config ${WXSTATIC} --cxxflags` \
-		-o $@ ${SOURCES} \
+		-o $@ ${SOURCES} ${DASHX} ${SOURCESc} \
 		`${BIN_WIN}/wx-config ${WXSTATIC} --libs` \
 		${EXTRA_WIN_LIBS}
 	${PREFIX_WIN}-strip $@
 
-${APP}-macosx: ${SOURCES} ${HEADERS}
+${APP}-macosx: ${SOURCES} ${SOURCESc} ${HEADERS}
 	${PREFIX_MAC}-${CC} -DONNO_STYLE \
 		${YADSKY2} ${YADEDA2} \
 		-arch ppc -arch i386 -I${INC_MAC} -isysroot ${SDK_MAC} \
 		`${BIN_MAC}/wx-config ${WXSTATIC} --cxxflags` \
-		-o $@ ${SOURCES} \
+		-o $@ ${SOURCES} ${DASHX} ${SOURCESc} \
 		`${BIN_MAC}/wx-config ${WXSTATIC} --libs`
 	${PREFIX_MAC}-strip $@
 
@@ -246,6 +249,7 @@ ifeq "${YADSKY_SUFFIX}" ""
 	${CP} ../yaDSKY/pixmaps $@/pixmaps/yaDSKY
 else
 	${CP} ../yaDSKY2/*.jpg $@
+	${CP} ../yaDSKY2/*.canned $@
 endif	
 	-rm -rf $@/pixmaps/yaDSKY/CVS $@/pixmaps/yaDSKY/.xvpics
 ifeq "${YADEDA_SUFFIX}" ""	
@@ -334,11 +338,11 @@ temp/lVirtualAGC : % : VirtualAGC %/bin %/Resources
 		${CP} $$n${EXT} $@/bin ; \
 	done
 	-${CP} ../yaACA/yaACA${EXT} ../yaACA2/yaACA2${EXT} $@/bin
-	cp ApolloPatch2-transparent.png $@/bin/ApolloPatch2.png
 	for n in $@/bin/* ; do strip $$n ; done
+	cp ApolloPatch2-transparent.png $@/bin/ApolloPatch2.png
 	${CP} ../scripts/SimStop $@/bin
 	chmod +x $@/bin/SimStop
-	-mkdir $@/Resources/source
+	-mkdir -p $@/Resources/source
 	cp ../Makefile.inc $@/Resources/source
 	-mkdir -p $@/Resources/source/yaYUL
 	-mkdir -p $@/Resources/source/Tools

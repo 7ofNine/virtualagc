@@ -36,10 +36,40 @@ if 'BLATANT7' in environ:
 	blatant['7'] = 'yes'
 print blatant
 
+specialOne = ('SPECIALONE' in environ)
+specialThree = ('SPECIALTHREE' in environ)
+specialFive = ('SPECIALFIVE' in environ)
+invert = ("INVERT" in environ)
+
+minFontScale = 0.9
+maxFontScale = 1.2
+defaultFontScale = 1.0
+if 'ZERLINA' in environ:
+	scanColor="#000000"
+	matchColor="#00C000"
+	defaultFontScale = 0.75
+	bounds = (4, 20, 11, 30)
+	if not invert:
+		specialOne = 1
+		specialThree = 1
+		specialFive = 1
+elif 'AP11ROPE' in environ:
+	defaultFontScale = 1.25
+	bounds = (8, 28, 16, 36)
+else:
+	scanColor="#000000"
+	matchColor="#006C00"
+	bounds = (8, 24, 16, 36)
+minFontScale *= defaultFontScale
+maxFontScale *= defaultFontScale
+
+# Don't use SWAPCOLORS: it's enormously, mind-bogglingly slow.
+swapColors = ('SWAPCOLORS' in environ)	
+
 # Parse command-line arguments
 if len(sys.argv) != 6:
 	print 'Usage:'
-	print '\t./ProoferBox.py BWINPUTIMAGE OUTPUTIMAGE BANK PAGEINBANK BINSOURCE'
+	print '\t[ZERLINA=yes] [AP11ROPE=yes] ./ProoferBox.py BWINPUTIMAGE OUTPUTIMAGE BANK PAGEINBANK BINSOURCE'
 	sys.exit()
 
 backgroundImage = sys.argv[1]
@@ -69,16 +99,17 @@ for line in file:
 	boxWidth = boxRight + 1 - boxLeft
 	boxHeight = boxTop + 1 - boxBottom
 	#print boxChar, boxWidth, boxHeight
-	if boxWidth >= 8 and boxWidth <= 24 and boxHeight >= 16 and boxHeight <= 36:
+	if boxWidth >= bounds[0] and boxWidth <= bounds[1] and boxHeight >= bounds[2] and boxHeight <= bounds[3]:
 		boxes.append(line)
 	else:
 		rejectedBoxes.append(line)
+		print "Out of bounds ", line
 file.close()
 
 # Read in the binsource file.
 file = open (binsourceFilename, 'r')
 lines = []
-octalPattern = re.compile(r"([0-7]{6}|@)([ \t]([0-7]{6}|@)){7}.*")
+octalPattern = re.compile(r"([0-7]{6}|[ \t]*@)([ \t]+([0-7]{6}|@)){7}.*")
 for line in file:
 	if octalPattern.match(line):
 		lines.append(line)
@@ -89,14 +120,42 @@ file.close()
 
 # Read in the octal-digit files.
 images = []
-images.append(Image(filename='0t.png'))
-images.append(Image(filename='1t.png'))
-images.append(Image(filename='2t.png'))
-images.append(Image(filename='3t.png'))
-images.append(Image(filename='4t.png'))
-images.append(Image(filename='5t.png'))
-images.append(Image(filename='6t.png'))
-images.append(Image(filename='7t.png'))
+		
+def replaceColorsInImage(img, color1, color2):
+	ldraw = Drawing()
+	ldraw.fill_color = color2
+	width, height = img.size
+	for x in range(0, width):
+		for y in range(0, height):
+			if img[x,y] == color1:
+				ldraw.color(x, y, 'replace')
+	ldraw(img)
+
+if 'ZERLINA' in environ:
+	images.append(Image(filename='z0t.png'))
+	images.append(Image(filename='z1t.png'))
+	images.append(Image(filename='z2t.png'))
+	images.append(Image(filename='z3t.png'))
+	images.append(Image(filename='z4t.png'))
+	images.append(Image(filename='z5t.png'))
+	images.append(Image(filename='z6t.png'))
+	images.append(Image(filename='z7t.png'))
+	oneSpecialDigit = Image(filename='z1tb.png')
+	threeSpecialDigit = Image(filename='z3tb.png')
+	fiveSpecialDigit = Image(filename='z5tb.png')
+else:
+	images.append(Image(filename='0t.png'))
+	images.append(Image(filename='1t.png'))
+	images.append(Image(filename='2t.png'))
+	images.append(Image(filename='3t.png'))
+	images.append(Image(filename='4t.png'))
+	images.append(Image(filename='5t.png'))
+	images.append(Image(filename='6t.png'))
+	images.append(Image(filename='7t.png'))
+	oneSpecialDigit = Image(filename='1tb.png')
+	threeSpecialDigit = Image(filename='3tb.png')
+	fiveSpecialDigit = Image(filename='5tb.png')
+	
 imagesColored = []
 imagesColored.append(Image(filename='0m.png'))
 imagesColored.append(Image(filename='1m.png'))
@@ -109,8 +168,16 @@ imagesColored.append(Image(filename='7m.png'))
 
 # Read in the input image ... i.e., the B&W octal page.
 img = Image(filename=backgroundImage)
+if invert:
+	img.negate()
 backgroundWidth = img.width
 backgroundHeight = img.height
+
+if swapColors:
+	print 'Swapping colors'
+	for i in range(0, 8):
+		replaceColorsInImage(images[i], Color(matchColor), Color(scanColor))
+	replaceColorsInImage(img, Color(scanColor), Color(matchColor))
 
 # Make certain conversions on the background image.
 img.type = 'truecolor'
@@ -172,26 +239,39 @@ for index in range(startIndex, endIndex):
 		
 		if characters[characterIndex] != '@':
 			digitIndex = int(characters[characterIndex])
-			if boxOctal == digitIndex and not (characters[characterIndex] in blatant) and not (boxFields[0] in blatant):
+			#print boxFields[0], ' ', characters[characterIndex]
+			if specialOne and characters[characterIndex] == '1':
+				#print "here"
+				digit = oneSpecialDigit.clone() 
+				operator = 'difference'
+			elif specialThree and characters[characterIndex] == '3':
+				#print "here"
+				digit = threeSpecialDigit.clone() 
+				operator = 'multiply'
+			elif specialFive and characters[characterIndex] == '5':
+				digit = fiveSpecialDigit.clone()
+				operator = 'difference'
+			elif boxOctal == digitIndex and not (characters[characterIndex] in blatant) and not (boxFields[0] in blatant):
 				digit = images[digitIndex].clone()
+				operator = 'darken'
 			else:
 				digit = imagesColored[digitIndex].clone()
-			operator = 'darken'
+				operator = 'darken'
 			fontWidth = digit.width
 			fontHeight = digit.height
-			minFontHeight = 0.9*fontHeight
-			maxFontHeight = 1.2*fontHeight
-			minFontWidth = 0.9*fontWidth
-			maxFontWidth = 1.2*fontWidth
+			minFontHeight = minFontScale*fontHeight
+			minFontWidth = minFontScale*fontWidth
+			maxFontHeight = maxFontScale*fontHeight
+			maxFontWidth = maxFontScale*fontWidth
 			if boxHeight > minFontHeight and boxHeight < maxFontHeight and \
 			   boxWidth > minFontWidth and boxWidth < maxFontWidth:
 				digit.resize(boxWidth, boxHeight, 'cubic')
 				draw.composite(operator=operator, left=boxLeft, top=boxTop, width=boxWidth, height=boxHeight, image=digit)
 			else:
-				digit.resize(int(round(fontWidth)), int(round(fontHeight)), 'cubic')
-				draw.composite(operator=operator, left=round((boxLeft+boxRight-fontWidth)/2.0), 
-					       top=round((boxTop+boxBottom-fontHeight)/2.0), width=fontWidth, 
-					       height=fontHeight, image=digit)
+				digit.resize(int(round(fontWidth*defaultFontScale)), int(round(fontHeight*defaultFontScale)), 'cubic')
+				draw.composite(operator=operator, left=round((boxLeft+boxRight-fontWidth*defaultFontScale)/2.0), 
+					       top=round((boxTop+boxBottom-fontHeight*defaultFontScale)/2.0), width=fontWidth*defaultFontScale, 
+					       height=fontHeight*defaultFontScale, image=digit)
 
 		
 		characterIndex += 1
