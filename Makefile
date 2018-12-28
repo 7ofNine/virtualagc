@@ -1,4 +1,4 @@
-# Copyright 2003-2007,2009-2010,2016,2017 Ronald S. Burkey <info@sandroid.org>
+# Copyright 2003-2007,2009-2010,2016-2018 Ronald S. Burkey <info@sandroid.org>
 #
 # This file is part of yaAGC.
 #
@@ -171,6 +171,7 @@
 #		2017-08-31 RSB	Unconditionally returned Solarium to the mission list, since 
 #				the yaYUL bug related to it that was expressing itself in 
 #				Mac OS X has been fixed.
+#		2018-10-12 RSB	Added the Validation-hardware-simulation target.
 #
 # The build box is always Linux for cross-compiles.  For native compiles:
 #	Use "make MACOSX=yes" for Mac OS X.
@@ -417,7 +418,7 @@ MISSIONS += Luminary099 Artemis072 Colossus237
 MISSIONS += Aurora12 Sunburst120 Luminary210 Retread44 Luminary069
 MISSIONS += SuperJob LUM99R2 Luminary116 Borealis Sunburst37 LMY99R0
 # ifndef MACOSX
-MISSIONS += Solarium055
+MISSIONS += Solarium055 TRIVIUM TRIVIUM-repaired
 # endif
 export MISSIONS
 
@@ -478,6 +479,9 @@ missions: $(MISSIONS)
 
 $(MISSIONS): yaYUL Tools
 	$(BUILD) -C $@
+
+Validation-hardware-simulation: yaYUL
+	$(BUILD) -C Validation $@.agc.bin 
 
 clean-missions:
 	for subdir in $(MISSIONS) ; do $(BUILD) -C $$subdir clean ; done
