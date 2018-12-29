@@ -532,8 +532,8 @@ extern int Portnum;
 //---------------------------------------------------------------------------
 // Function prototypes.
 
-char *nbfgets (char *Buffer, int Length);
-void nbfgets_ready (const char *);
+//char *nbfgets (char *Buffer, int Length);
+//void nbfgets_ready (const char *);
 int agc_engine (agc_t * State);
 int agc_engine_init (agc_t * State, const char *RomImage,
 		     const char *CoreDump, int AllOrErasable);

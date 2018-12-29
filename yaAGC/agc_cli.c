@@ -41,6 +41,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <direct.h>
 // #include <unistd.h>  // not existing in VS2015
 #include "agc_cli.h"
 #include "agc_engine.h"
@@ -286,7 +287,7 @@ Options_t* CliParseArguments(int argc, char *argv[])
 		 * immediately */
 		if (Options.cd != NULL)
 		  {
-		    if (chdir(Options.cd) < 0)
+		    if (_chdir(Options.cd) < 0)
 		      {
 		        printf("\n*** Cannot change directories. ***\n]n");
 		        return (NULL);
