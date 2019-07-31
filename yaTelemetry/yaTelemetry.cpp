@@ -635,6 +635,7 @@ void MainFrameClass::do_layout()
 class yaTelemetryApp: public wxApp {
 public:
     bool OnInit();
+	
 };
 
 IMPLEMENT_APP(yaTelemetryApp)
