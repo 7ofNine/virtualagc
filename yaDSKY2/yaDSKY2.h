@@ -133,7 +133,7 @@ public:
       wxBitmapButton *button;
     } scriptKeysPressed[19];
     int numScriptKeysPressed;
-    bool recordingFileOpen;
+    bool recordingFileOpen = 0;
     wxTextFile recordingFile;
     long recordingLastTime;
     void record(int channel, int value);
@@ -144,10 +144,13 @@ private:
     void do_layout();
     // end wxGlade
     
-    wxTimer *PulseTimer;
+    wxTimer *PulseTimer = NULL;
     void OutputKeycode (int Keycode);
     void OutputPro (int OffOn);
     void MatchCheck (void);
+
+public:
+	void stopAndExit(wxCloseEvent& event);
 
 //protected:
 public:
@@ -283,4 +286,8 @@ extern "C"
     FILE *rfopen(const char *Filename, const char *mode);
 }
 
+// they are actually defined in agc_engine.h but are are not available because of defines. Why?
+int DebugMode = 0;
+int CmOrLm = 0;
+int Portnum = 19697; // is being set in the SW, too.
 #endif // YADSKY2_H

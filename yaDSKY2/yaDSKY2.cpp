@@ -108,6 +108,11 @@ using namespace std;
 
 #include "../yaAGC/yaAGC.h"
 #include "../yaAGC/agc_engine.h"
+
+namespace {
+	static wxApp* dskyApp;
+}
+
 #ifdef __clang__
 extern "C" FILE *rfopen (const char *Filename, const char *mode);
 #else
@@ -419,7 +424,25 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_BUTTON(ID_PROBUTTON, MainFrame::on_ProButton_released)
     // end wxGlade
     EVT_CHAR_HOOK(MainFrame::HotkeyEvent)
+	EVT_CLOSE(MainFrame::stopAndExit)
 END_EVENT_TABLE();
+
+
+void MainFrame::stopAndExit(wxCloseEvent& event)
+{
+	// remove timer
+	if (PulseTimer != NULL)
+	{
+		PulseTimer->Stop();
+		delete PulseTimer;
+	}
+	
+	// event loop handling
+	event.Skip();
+	dskyApp->ExitMainLoop();
+	dskyApp->OnExit();
+
+}
 
 void 
 MainFrame::HotkeyEvent (wxKeyEvent &KeyEvent)
@@ -1175,12 +1198,15 @@ public:
 
 IMPLEMENT_APP(yaDskyApp)
 
+
 bool
 yaDskyApp::OnInit ()
 {
 
   int i;
   int UsedCfg = 0;
+
+  dskyApp = this;
 
     wxInitAllImageHandlers();
     MainWindow = new MainFrame(NULL, wxID_ANY, wxEmptyString);
