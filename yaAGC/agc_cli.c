@@ -302,7 +302,7 @@ Options_t* CliParseArguments(int argc, char *argv[])
 		 */
 		if (strstr(Options.core,".bin"))
 		{
-			int FullPathLength = strlen(Options.core);
+			size_t FullPathLength = strlen(Options.core);
 
 			/* If Debugging without symtab set default symtab */
 			if (Options.debug && !Options.symtab)

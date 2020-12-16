@@ -655,7 +655,7 @@ bool yaTelemetryApp::OnInit()
     printf ("For more information, consult http://www.ibiblio.org/apollo.\n");
 	    
     // Read the command-line arguments.
-    Portnum = 19800;
+    Portnum = 19700;
     CmOrLm = 0;
     for (i = 1; i < argc; i++)
       {
