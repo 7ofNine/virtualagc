@@ -478,7 +478,8 @@ cbMISSIONS := $(patsubst %,%.cbp,$(cbMISSIONS))
 # The base set of targets to be built always.
 SUBDIRS = Tools yaLEMAP yaAGC yaAGS yaYUL ControlPulseSim yaUniverse
 SUBDIRS += yaAGC-Block1-Pultorak yaAGCb1 yaUplinkBlock1 Validation-Block1
-SUBDIRS += yaASM yaOBC yaLVDC
+SUBDIRS += yaASM yaOBC
+SUBDIRS += yaLVDC
 SUBDIRS += $(MISSIONS)
 
 ifndef NOGUI
@@ -499,8 +500,8 @@ ifndef FREEBSD
 SUBDIRS += yaACA2
 endif
 SUBDIRS += yaACA3
-SUBDIRS += yaTelemetry 
 SUBDIRS += jWiz
+SUBDIRS += yaTelemetry 
 SUBDIRS += yaDSKYb1
 SUBDIRS += VirtualAGC
 endif # NOGUI
@@ -797,7 +798,7 @@ else
 	@echo "Run Virtual AGC from its desktop icon."
 	@echo "Or else, run Virtual AGC from a command-line as follows:"
 	@echo "  cd ~/VirtualAGC/Resources"
-	@echo "  ../bin//VirtualAGC"
+	@echo "  ../bin/VirtualAGC"
 	@echo "================================================================"
 endif
 endif
