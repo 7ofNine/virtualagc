@@ -80,3 +80,6 @@ yaAGC-Block1-Pultorak/yaAGC-Block1
 yaAGCb1/test.agc.pad
 yaAGCb1/yaAGCb1
 yaUplinkBlock1/yaUplinkBlock1
+*.obj
+*\x64*
+*Release*
