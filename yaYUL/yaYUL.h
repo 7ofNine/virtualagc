@@ -83,7 +83,7 @@
 
 #include <stdio.h>
 
-#if defined(WIN32) && defined(_MSC_VER )
+#if defined(_WIN32) && defined(_MSC_VER )
 #define MSC_VS
 #endif
 
@@ -92,7 +92,9 @@
 
 #ifdef MSC_VS
 #define NVER "TBD"
+#ifndef _CONSOLE
 #define _CONSOLE
+#endif
 // #define _CRT_SECURE_NO_WARNINGS // for some reason VS2105 ignores it when it is here but complains about redefinition when it is here??
 #endif
 
