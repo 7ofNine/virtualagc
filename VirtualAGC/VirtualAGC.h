@@ -1,5 +1,5 @@
 /*
- * Copyright 2009,2016,2017,2019, 2020 Ronald S. Burkey <info@sandroid.org>
+ * Copyright 2009,2016,2017,2019,2020,2022 Ronald S. Burkey <info@sandroid.org>
  *
  * This file is part of yaAGC.
  *
@@ -54,6 +54,12 @@
  *          	2019-08-16 RSB	Added Artemis 71.
  *          	2019-09-22 RSB  Added Luminary 163 and 173
  *          	2020-12-06 RSB  Added Comanche 44 and 45, though 45 isn't available yet.
+ *          	2021-08-24 RSB  Added Luminary 96, removed 99R2
+ *          	2022-07-18 RSB  Nobody has ever complained about it, but
+ *          	                I've become so irked by the "Simulation Status"
+ *          	                window covering up all the other stuff at the
+ *          	                center of the screen that I've moved it to
+ *          	                the upper left.
  *
  * This file was originally generated using the wxGlade RAD program.
  * However, it is now maintained entirely manually, and any ability to
@@ -139,11 +145,12 @@ enum
   ID_APOLLO10LMBUTTON,
   ID_COMANCHE51BUTTON,
   ID_COMANCHE55BUTTON,
+  ID_LUMINARY96BUTTON,
   ID_LUMINARY97BUTTON,
   ID_LUMINARY98BUTTON,
   ID_LMY99R0BUTTON,
   ID_LUMINARY99BUTTON,
-  ID_LUM99R2BUTTON,
+  // ID_LUM99R2BUTTON,
   ID_APOLLO12CMBUTTON,
   ID_APOLLO12LMBUTTON,
   ID_APOLLO13CMBUTTON,
@@ -244,8 +251,8 @@ public:
 
   virtual ~Simulation() {};
   Simulation(wxWindow* parent, int id, const wxString& title,
-      const wxPoint& pos = wxDefaultPosition,
-      const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE);
+      const wxPoint& pos = wxPoint(0,0),
+      const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE | wxRESIZE_BORDER);
   void
   WriteSimulationLabel(wxString Label);
   unsigned char Keycodes[8192];

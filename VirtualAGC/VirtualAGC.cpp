@@ -1,5 +1,5 @@
 /*
- * Copyright 2009,2010,2016-2021 Ronald S. Burkey <info@sandroid.org>
+ * Copyright 2009,2010,2016-2022 Ronald S. Burkey <info@sandroid.org>
  *
  * This file is part of yaAGC.
  *
@@ -140,6 +140,19 @@
  *                              failures with wxWidgets 3.1.x. Eliminated combinations
  *                              of wxEXPAND with wxCENTER_xxx.  Eliminated
  *                              wxALIGN_CENTER_HORIZONTAL in horizontal sizers.
+ *              2021-08-24 RSB  Added Luminary 96, removed 99R2. Changed Apollo 12 from FP7
+ *                              to FP6.
+ *              2022-07-17 RSB  Fixed an "assertion error" that appears at startup when
+ *                              the newly-released wxWidgets 3.2 is used and VirtualAGC.cfg
+ *                              doesn't exist yet. Made window border resizable and removed
+ *                              wxCLIP_CHILDREN in attempt to fix some sizing issues.
+ *                              Added --font-floor.
+ *              2022-07-18 RSB  I'm told that on some platforms, the text color (which
+ *                              should be black unless explicitly grayed out) is unreadably
+ *                              light on some platforms now that wxWidgets 3.2 is installed.
+ *                              On the theory that the default color isn't being initialized
+ *                              the way I expect, I now try to explicitly set it to black.
+ *
  *
  * This file was originally generated using the wxGlade RAD program.
  * However, it is now maintained entirely manually, and cannot be managed
@@ -164,6 +177,7 @@ int noSquish = 0;
 int dropdownSquish = 1;
 int maximumSquish = 0;
 int maximizeAtStartup = 0;
+long fontFloor = 8;
 
 /*
  * The following array specifies most properties of "missions" (i.e., specific
@@ -231,21 +245,24 @@ static const missionAlloc_t missionConstants[ID_AGCCUSTOMBUTTON
             { "Apollo 11 Command Module", "Comanche055/MAIN.agc.html",
                 "Click this to select the CM for the Apollo 11 mission, running software COMANCHE 55.",
                 ENABLED, CM, BLOCK2, PERIPHERALS, "Comanche055", "CM.ini" },
+            { "LUMINARY 96 (LM)", "Luminary096/MAIN.agc.html",
+                    "Click this to select Luminary 96, the original software release targeting the Apollo 11 LM.",
+                    ENABLED, LM, BLOCK2, PERIPHERALS, "Luminary096", "LM.ini" },
             { "LUMINARY 97 (LM)", "Luminary097/MAIN.agc.html",
-                "Click this to select Luminary 97, the original software release targeting the Apollo 11 LM.",
+                "Click this to select Luminary 97, the 2nd software release targeting the Apollo 11 LM.",
                 ENABLED, LM, BLOCK2, PERIPHERALS, "Luminary097", "LM.ini" },
             { "LUMINARY 98 (LM)", "Luminary098/MAIN.agc.html",
                 "Click this to select Luminary 98, an engineering revision of the Apollo 11 LM software.",
                 ENABLED, LM, BLOCK2, PERIPHERALS, "Luminary098", "LM.ini" },
             { "LUMINARY 99 Rev 0 (LM)", "LMY99R0/MAIN.agc.html",
-                "Click this to select Luminary 99 rev 0, the 2nd software release targeting the Apollo 11 LM.",
+                "Click this to select Luminary 99 rev 0, the 3rd software release targeting the Apollo 11 LM.",
                 ENABLED, LM, BLOCK2, PERIPHERALS, "LMY99R0", "LM.ini" },
             { "Apollo 11 Lunar Module", "Luminary099/MAIN.agc.html",
                 "Click this to select the LM for the Apollo 11 mission, running software LUMINARY 99 Rev 1.",
                 ENABLED, LM, BLOCK2, PERIPHERALS, "Luminary099", "LM.ini" },
-            { "LUMINARY 99 rev 2 (LM)", "LUM99R2/MAIN.agc.html",
-                "Click this to select Luminary 99 rev 2, a hypothetical but unflown revision of the Apollo 11 LM software.",
-                ENABLED, LM, BLOCK2, PERIPHERALS, "LUM99R2", "LM.ini" },
+            //{ "LUMINARY 99 rev 2 (LM)", "LUM99R2/MAIN.agc.html",
+            //    "Click this to select Luminary 99 rev 2, a hypothetical but unflown revision of the Apollo 11 LM software.",
+            //    ENABLED, LM, BLOCK2, PERIPHERALS, "LUM99R2", "LM.ini" },
             { "Apollo 12 Command Module", "",
                 "Click this to select the CM for the Apollo 12 mission.",
                 DISABLED, CM, BLOCK2, PERIPHERALS, "", "CM.ini" },
@@ -423,8 +440,8 @@ VirtualAGC::VirtualAGC(wxWindow* parent, int id, const wxString& title,
     wxFrame(parent, id, title, pos, size,
         maximumSquish ?
             (maximizeAtStartup ? wxMAXIMIZE : 0) :
-            (wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX | wxCLIP_CHILDREN
-                | wxSYSTEM_MENU))
+            (wxCAPTION | wxMINIMIZE_BOX | wxCLOSE_BOX // | wxCLIP_CHILDREN
+                | wxSYSTEM_MENU | wxRESIZE_BORDER))
 {
 
   // We auto-adjust fonts and image sizes if the screen size is too small.
@@ -448,8 +465,8 @@ VirtualAGC::VirtualAGC(wxWindow* parent, int id, const wxString& title,
     }
   if (ReallySmall)
     DropDown = true;
-  if (Points < 8)
-    Points = 8;
+  if (Points < fontFloor)
+    Points = fontFloor;
   Font.SetPointSize(Points);
   SetFont(Font);
 
@@ -538,6 +555,8 @@ VirtualAGC::VirtualAGC(wxWindow* parent, int id, const wxString& title,
           wxT("AGC Simulation Type"), wxDefaultPosition, wxDefaultSize);
       SimTypeLabel2 = new wxStaticText(this, wxID_ANY,
           wxT("AGC Simulation Type"), wxDefaultPosition, wxDefaultSize);
+      SimTypeLabel->SetForegroundColour(wxColor (0, 0, 0));
+      SimTypeLabel2->SetForegroundColour(wxColor (0, 0, 0));
     }
   for (int i = ID_FIRSTMISSION; i < ID_AGCCUSTOMBUTTON; i++)
     {
@@ -644,9 +663,9 @@ VirtualAGC::VirtualAGC(wxWindow* parent, int id, const wxString& title,
   FlightProgram5Button = new wxRadioButton(this, ID_FLIGHTPROGRAM5BUTTON,
       wxT("Apollo 10 (Flight Program 5)"));
   FlightProgram6Button = new wxRadioButton(this, ID_FLIGHTPROGRAM6BUTTON,
-      wxT("Apollo 11 (Flight Program 6)"));
+      wxT("Apollo 11-12 (Flight Program 6)"));
   FlightProgram7Button = new wxRadioButton(this, ID_FLIGHTPROGRAM7BUTTON,
-      wxT("Apollo 12-14? (Flight Program 7)"));
+      wxT("Apollo 13-14? (Flight Program 7)"));
   FlightProgram8Button = new wxRadioButton(this, ID_FLIGHTPROGRAM8BUTTON,
       wxT("Apollo 15-17 (Flight Program 8)"));
   if (!maximumSquish)
@@ -737,10 +756,11 @@ EVT_RADIOBUTTON(ID_APOLLO10LMBUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_COMANCHE51BUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_COMANCHE55BUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_LUMINARY97BUTTON, VirtualAGC::ConsistencyEvent)
+EVT_RADIOBUTTON(ID_LUMINARY96BUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_LUMINARY98BUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_LMY99R0BUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_LUMINARY99BUTTON, VirtualAGC::ConsistencyEvent)
-EVT_RADIOBUTTON(ID_LUM99R2BUTTON, VirtualAGC::ConsistencyEvent)
+//EVT_RADIOBUTTON(ID_LUM99R2BUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_APOLLO12CMBUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_APOLLO12LMBUTTON, VirtualAGC::ConsistencyEvent)
 EVT_RADIOBUTTON(ID_APOLLO13CMBUTTON, VirtualAGC::ConsistencyEvent)
@@ -1648,12 +1668,12 @@ VirtualAGC::set_properties()
   FlightProgram6Button->SetBackgroundColour(wxColour(255, 255, 255));
   FlightProgram6Button->SetToolTip(
       wxT(
-          "Click this to simulate the Apollo 11 LM for the FIRST moon landing.  This will run the AEA/AGS software designated as Flight Program 6 (June 1969)."));
+          "Click this to simulate the Apollo 11-12 LM for the FIRST moon landing.  This will run the AEA/AGS software designated as Flight Program 6 (June 1969)."));
   FlightProgram6Button->SetValue(1);
   FlightProgram7Button->SetBackgroundColour(wxColour(255, 255, 255));
   FlightProgram7Button->SetToolTip(
       wxT(
-          "Click this to simulate the Apollo 12-14 LM ... maybe.  We're not actually sure which missions were associated with this software version.  This will run the AEA/AGS software designated as Flight Program 7."));
+          "Click this to simulate the Apollo 13-14 LM.  This will run the AEA/AGS software designated as Flight Program 7."));
   FlightProgram7Button->Enable(false);
   FlightProgram8Button->SetBackgroundColour(wxColour(255, 255, 255));
   FlightProgram8Button->SetToolTip(
@@ -2032,6 +2052,10 @@ VirtualAgcApp::OnInit()
         {
           maximizeAtStartup = 1;
         }
+      else if (ArgStart.IsSameAs(wxT("--font-floor")))
+        {
+          ArgEnd.ToLong(&fontFloor);
+        }
       else
         {
           Help: printf("USAGE:\n");
@@ -2076,11 +2100,15 @@ VirtualAgcApp::OnInit()
           printf("\tmaximization button, nor is it generally resizable.\n");
           printf("\tso --maximize is actually the only method provided of\n");
           printf("\tmaximizing the program anyway.\n");
+          printf("--font-floor=N\n");
+          printf("\tSets the minimum allowed font size, in integers.  The\n");
+          printf("\tdefault is 8.\n");
           exit(1);
         }
     }
 
   MainFrame = new VirtualAGC(NULL, wxID_ANY, wxEmptyString);
+  MainFrame->SetForegroundColour(wxColor (0, 0, 0));
   SetTopWindow(MainFrame);
   MainFrame->Show();
   return true;
@@ -2336,6 +2364,19 @@ void
 VirtualAGC::SetDefaultConfiguration(void)
 {
   missionRadioButtons[ID_LUMINARY131BUTTON - ID_FIRSTMISSION]->SetValue(true);
+  if (DropDown) // 2022-07-17.
+    {
+      DeviceAGCversionDropDownList->SetSelection(0);
+      for (int drop = 0; drop < DeviceAGCversionDropDownList->GetCount();
+          drop++)
+        {
+          if (DeviceAGCversionDropDownList->GetString(drop) == wxT("Apollo 11 Lunar Module"))
+            {
+              DeviceAGCversionDropDownList->SetSelection(drop);
+              break;
+            }
+        }
+    }
   AgcCustomFilename->SetValue(wxT(""));
   FlightProgram6Button->SetValue(true);
   if (!maximumSquish)
