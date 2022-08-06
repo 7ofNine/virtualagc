@@ -111,6 +111,9 @@
     <ClCompile Include="..\yul2agc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\strcmpEBCDIC.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\yaYUL.h">

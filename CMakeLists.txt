@@ -52,6 +52,7 @@ endfunction(wx_config)
 
 find_package(wxWidgets COMPONENTS gl core base)
 if(NOT wxWidgets_FOUND)
+  message(STATUS "wxwidget not found")      
   wx_config()
 endif()
 

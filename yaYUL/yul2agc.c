@@ -67,7 +67,7 @@ yul2agc (char *s)
   if (s[0] != 0)
     {
       Line_t card;
-      int len;
+      size_t len;
       char c;
 
       memcpy (card, s, sizeof(card));

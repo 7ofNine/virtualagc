@@ -215,7 +215,7 @@ char *
 NormalizeFilename(char *SourceName)
 {
   static char HtmlFilename[1025];
-  int n;
+  size_t n;
 
   strcpy(HtmlFilename, SourceName);
   n = strlen(HtmlFilename);

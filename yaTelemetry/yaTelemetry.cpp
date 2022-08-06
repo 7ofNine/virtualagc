@@ -103,7 +103,7 @@ static int StartupDelay = 0;
 #endif
 static int Points = DEFAULT_FONTSIZE_RETRO;
 static bool Simple = false;
-static bool Undecorated = true;
+static bool Undecorated = false; // temporary for tests
 
 // Here are some templates for various MSK screens.
 

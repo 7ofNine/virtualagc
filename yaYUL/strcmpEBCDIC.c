@@ -164,7 +164,9 @@ int
 strcmpHoneywell(const char *s1, const char *s2)
 {
   static char *l1 = NULL, *l2 = NULL;
-  int len = -1, n, n1, n2;
+  int len = -1, n;
+  size_t n1;
+  size_t n2;
   // YUL seems to right-pad labels with spaces, thus making labels like
   // "0.00125" come earlier in the collation sequence than "0.0012".  So
   // we have to right-pad the input strings when it's necessary to make
