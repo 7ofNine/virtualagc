@@ -134,7 +134,8 @@ rl_gets (void)
 char *
 source_generator (const char *text, int state)
 {
-  static int list_index, len;
+  static int list_index;
+  static size_t len;
   char *name;
 
   if (!state)
@@ -148,7 +149,7 @@ source_generator (const char *text, int state)
       name = nbSourceFiles[list_index];
       list_index++;
       if (strncmp (name, text, len) == 0)
-	return (strdup(name));
+	return (_strdup(name));  // VS --> _....
     }
   
   return (char *)NULL;

@@ -46,7 +46,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef WIN32
-typedef unsigned short uint16_t;
+//typedef unsigned short uint16_t;
 #endif
 #define SOCKET_API_AGS_C
 #include "yaAGC.h"

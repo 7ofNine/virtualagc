@@ -49,11 +49,11 @@
 #include <ctype.h>
 #ifdef WIN32
 #include <windows.h>
-#include <sys/time.h>
+//#include <sys/time.h>  // windows ??? mingw maybe?
 #define LB "\r\n"
 #else
 #include <time.h>
-#include <sys/times.h>
+//#include <sys/times.h> does not exist in windows
 #define LB ""
 #endif
 
@@ -145,7 +145,7 @@ static void
 rfgetsAGS (ags_t *State, char *Buffer, int MaxSize, FILE * fp)
 {
   int c, Count = 0;
-  char *s;
+  char *s = NULL;
   //static int FirstTime = 1;
   MaxSize--;
   while (1)

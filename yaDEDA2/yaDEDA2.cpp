@@ -53,6 +53,7 @@
  */
 
 #include "yaDEDA2.h"
+#include "wx/msgout.h"
 
 #define VER(x) #x
 
@@ -87,7 +88,7 @@ static int StartupDelay = 500;
 #else
 static int StartupDelay = 0;
 #endif
-extern int Portnum;
+/*extern*/ int Portnum;   // GUT why does the extern not work properly? why is it extern anyways?
 static int ServerSocket = -1;
 
 // Names of various graphics files.
@@ -548,7 +549,8 @@ IMPLEMENT_APP (yaDedaAppClass)
 bool
 yaDedaAppClass::OnInit ()
 {
-  int i;
+	//wxMessageOutputStderr err;
+	//err.Printf(“Error in app % s.\n”, appName.c_str());    // to be investigated uisng wx means. printf doesn't work under windows. goes nowhere according to wx documentation
   wxInitAllImageHandlers ();
   MainWindow = new MainFrame (NULL, wxID_ANY, wxEmptyString);
 
@@ -561,7 +563,7 @@ yaDedaAppClass::OnInit ()
 	  "Refer to http://www.ibiblio.org/apollo/index.html for more information.\n");
 
   Portnum = 19897;
-  for (i = 1; i < argc; i++)
+  for (int i = 1; i < argc; ++i)
     {
       wxString Arg = argv[i];
       wxString ArgStart = Arg.BeforeFirst ('=');
@@ -742,7 +744,7 @@ TimerClass::Notify ()
 	      else
 		{
 		  printf ("yaDEDA2 reports server error %d\n", errno);
-		  close (ServerSocket);
+		  _close (ServerSocket); // VS --> _.....
 		  ServerSocket = -1;
 		  break;
 		}
@@ -869,7 +871,7 @@ MainFrame::OutputData (int Type, int Data)
       j = send (ServerSocket, (const char *) Packet, 4, MSG_NOSIGNAL);
       if (j == SOCKET_ERROR && SOCKET_BROKEN)
 	{
-	  close (ServerSocket);
+	  _close (ServerSocket); // VS --> _.....
 	  ServerSocket = -1;
 	}
     }

@@ -1164,7 +1164,9 @@ EditSymbolNew(const char *Name, Address_t *Value, int Type, char *FileName,
 void
 WriteSymbolsToFile(char *fname)
 {
-  int i, fd, step;
+    int fd = -1;
+    int step = 0;
+    errno_t err = 0;
   SymbolFile_t symfile =
     {
       { 0 } };
@@ -1174,8 +1176,8 @@ WriteSymbolsToFile(char *fname)
   // Open the symbol table file
   step = 1;
 #ifdef MSC_VS
-  if ((fd = _sopen_s(&fd, fname, _O_BINARY | _O_WRONLY | _O_CREAT |
-              _O_TRUNC, _SH_DENYWR, _S_IREAD | _S_IWRITE)) < 0)
+  if ((err = _sopen_s(&fd, fname, _O_BINARY | _O_WRONLY | _O_CREAT |
+              _O_TRUNC, _SH_DENYWR, _S_IREAD | _S_IWRITE)) != 0)
   goto error;
 #else
   if ((fd = open(fname, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0)
@@ -1197,7 +1199,7 @@ WriteSymbolsToFile(char *fname)
 
   // Loop and write the symbols to a file
   step = 4;
-  for (i = 0; i < SymbolTableSize; i++)
+  for (int i = 0; i < SymbolTableSize; ++i)
     {
       memcpy(&symbol, (void *) &SymbolTable[i], sizeof(Symbol_t));
       LittleEndian32(&symbol);
@@ -1211,7 +1213,7 @@ WriteSymbolsToFile(char *fname)
   // JMS: 07.28
   // Loop and write the symbol lines to a file
   step = 5;
-  for (i = 0; i < LineTableSize; i++)
+  for (int i = 0; i < LineTableSize; ++i)
     {
       memcpy(&Line, (void *) &LineTable[i], sizeof(SymbolLine_t));
       LittleEndian32(&Line);

@@ -135,9 +135,9 @@ extern "C" {
 #ifndef AGC_ENGINE_H
 #define AGC_ENGINE_H
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1300)
-#define _CRT_SECURE_NO_DEPRECATE
-#endif
+//#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+//#define _CRT_SECURE_NO_DEPRECATE
+//#endif
 
 #ifndef NULL
 #define NULL ((void *) 0)
@@ -540,8 +540,8 @@ extern int Portnum;
 //---------------------------------------------------------------------------
 // Function prototypes.
 
-//char *nbfgets (char *Buffer, int Length);
-//void nbfgets_ready (const char *);
+char *nbfgets (char *Buffer, int Length);
+void nbfgets_ready (const char *);
 int agc_engine (agc_t * State);
 int agc_engine_init (agc_t * State, const char *RomImage,
 		     const char *CoreDump, int AllOrErasable);

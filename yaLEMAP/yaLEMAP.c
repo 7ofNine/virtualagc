@@ -1372,7 +1372,7 @@ main (int argc, char *argv[])
     }
   if (RetVal)
     return (RetVal);
-  fp = fopen (FileSelected, "r");
+  fp = fopen (FileSelected, "r"); // NEEDS fix . Exception when no file is given
   if (fp == NULL)
     {
       fprintf (stderr, "The source file \"%s\" does not exist.\n",

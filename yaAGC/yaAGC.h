@@ -102,8 +102,8 @@ extern "C" {
 #define FORMAT_64U "%llu"
 #define FORMAT_64O "%llo"
 
-#elif defined(SDCC)
-#elif defined(WASI)
+//#elif defined(SDCC)   //  confuses VS
+ //#elif defined(WASI)   // confuses VS
 
 #else
 

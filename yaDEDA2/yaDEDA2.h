@@ -44,7 +44,7 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include <sys/time.h>
+//#include <sys/time.h> // not defined under windows
 struct tms {
   clock_t tms_utime;  /* user time */
   clock_t tms_stime;  /* system time */

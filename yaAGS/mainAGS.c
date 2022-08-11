@@ -120,15 +120,15 @@
 #include "agc_symtab.h"
 #include "yaAEA.h"
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>   // does not exist in windows
 #ifdef WIN32
 #include <pthread.h>
 #include <windows.h>
-#include <sys/time.h>
+//#include <sys/time.h>
 #define LB "\r\n"
 #else
 #include <time.h>
-#include <sys/times.h>
+//#include <sys/times.h> // not existent on windows
 #define LB ""
 #endif
 #include <ctype.h>
