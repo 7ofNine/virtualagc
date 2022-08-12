@@ -130,7 +130,8 @@ agc_load_binfile (agc_t *State, const char *RomImage)
 {
   FILE *fp = NULL;
   int Bank;
-  int m, n, i, j;
+  int n, i, j;
+  size_t m = 0;
   int RetVal = 0;
 
   // The following sequence of steps loads the ROM image into the simulated

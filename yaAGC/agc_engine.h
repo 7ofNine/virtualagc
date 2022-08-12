@@ -144,17 +144,18 @@ extern "C" {
 #endif
 
 #include <stdio.h>
+#include <stdint.h>
 
 // The following is used to get the int16_t datatype.
 #ifdef WIN32
 // Win32
-typedef short int16_t;
-typedef signed char int8_t;
-typedef unsigned char uint8_t; // 20170326
-typedef unsigned int uint32_t; // 20170326
-typedef unsigned short uint16_t; // 20170329
+//typedef short int16_t;
+//typedef signed char int8_t;
+//typedef unsigned char uint8_t; // 20170326
+//typedef unsigned int uint32_t; // 20170326
+//typedef unsigned short uint16_t; // 20170329
 #ifdef __MINGW32__
-typedef unsigned long long uint64_t;
+//typedef unsigned long long uint64_t;
 #else
 typedef unsigned __int64 uint64_t;
 #endif

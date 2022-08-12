@@ -98,6 +98,7 @@ static int SimInitializeEngine(void)
 		switch (result)
 		{
 		    case 0:
+				printf("AGC state initialized and core loaded.\n");
 		    	break; /* All is OK */
 			case 1:
 			  printf ("Specified core-rope image file not found.\n");
