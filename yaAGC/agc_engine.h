@@ -424,6 +424,7 @@ int DebugDsky = 0;
 int InhibitAlarms = 0;
 int NumDebugRules = 0;
 DebugRule_t DebugRules[MAX_DEBUG_RULES];
+int initializeSunburst37;
 #else
 extern int DebugDsky;
 extern int InhibitAlarms;
@@ -468,7 +469,7 @@ typedef struct
 #define DEFAULT_MAX_CLIENTS 10
 
 #ifdef AGC_ENGINE_C
-int DebugMode = 1;
+int DebugMode = 0;
 int SingleStepCounter = -2;		// -2 when not in --debug mode.
 int BacktraceInitialized = 0;		// Becomes -1 on error.
 // We have a backtrace circular buffer, in which we place an entry every

@@ -15,12 +15,12 @@
     <LocalDebuggerCommandArguments>--core=main.agc.bin</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>--core=main.agc.bin -debug</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--core=main.agc.bin -debug --no-resume</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>..\..\Luminary099</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>--core=main.agc.bin -debug</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--core=main.agc.bin -debug --no-resume</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>..\..\Luminary099</LocalDebuggerWorkingDirectory>
   </PropertyGroup>

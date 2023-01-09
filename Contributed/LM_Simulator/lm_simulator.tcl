@@ -43,7 +43,7 @@ set font2                         -adobe-courier-medium-r-normal--12-*-*-*-*-*-*
 set font3                         -adobe-courier-bold-b-normal--12-*-*-*-*-*-*-*
 set font4                         -adobe-courier-bold-b-normal--24-*-*-*-*-*-*-*
 set serverIP                      "localhost"
-set serverSock                    19801
+set serverSock                    19701
 set Operating_System              "linux"
 set FDAI_Update_Rate              10
 set FDAI_Mode                     1
@@ -685,6 +685,12 @@ proc open_socket {} {
  global serverIP serverSock sockChan
 
  set err [catch {set sockChan [socket $serverIP $serverSock]}]
+ tk_messageBox -default ok  -message $serverIP   -parent . -title "LM System Simulator" -type ok
+ tk_messageBox -default ok  -message $serverSock -parent . -title "LM System Simulator" -type ok
+ tk_messageBox -default ok  -message $$err       -parent . -title "LM System Simulator" -type ok
+ #puts $serverIP
+ #puts $serverSock
+ #puts $err
  if {$err != 0} {ShowMessageBox "error" "Can't connect to yaAGC!"; exit_program}
  fconfigure ${sockChan} -blocking 0 -buffering none -buffersize 0 -encoding binary
 }

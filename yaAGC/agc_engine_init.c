@@ -352,7 +352,8 @@ agc_engine_init (agc_t * State, const char *RomImage, const char *CoreDump,
 	  for (Bank = 0; Bank < 8; Bank++)
 	    for (j = 0; j < 0400; j++)
 	      {
-		if (1 != fscanf (cd, "%o", &i))
+			int readresult = 0;
+		if (1 != (readresult = fscanf (cd, "%o", &i)))
 		  goto Done;
 		if (AllOrErasable || Bank > 0 || j >= 010)
 		  State->Erasable[Bank][j] = i;
