@@ -70,3 +70,6 @@ yaAGC-Block1-Pultorak/yaAGC-Block1
 yaAGCb1/test.agc.pad
 yaAGCb1/yaAGCb1
 yaUplinkBlock1/yaUplinkBlock1
+/xpl-sources/*
+/yaYUL/yaLEMap/x64*
+/yaYUL/yaLEMap/yaLEMAP.bin
