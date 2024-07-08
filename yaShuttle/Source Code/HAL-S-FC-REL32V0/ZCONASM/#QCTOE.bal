@@ -1,4 +1,0 @@
-#QCTOE   CSECT
- DC Z(CTOE,,X'E')
- EXTRN CTOE
- END

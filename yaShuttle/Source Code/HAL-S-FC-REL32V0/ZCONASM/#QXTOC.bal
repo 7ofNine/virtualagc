@@ -1,4 +1,0 @@
-#QXTOC   CSECT
- DC Z(XTOC,,X'E')
- EXTRN XTOC
- END

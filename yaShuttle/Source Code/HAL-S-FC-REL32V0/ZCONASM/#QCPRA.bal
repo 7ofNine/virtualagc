@@ -1,4 +1,0 @@
-#QCPRA   CSECT
- DC Z(CPRA,,X'E')
- EXTRN CPRA
- END

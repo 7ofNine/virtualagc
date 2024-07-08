@@ -256,9 +256,26 @@ void ppDECLARATION(DECLARATION p, int _i_)
     if (_i_ > 0) renderC(_R_PAREN);
     break;
 
+  case is_ADdeclaration_labelToken_function_minorAttrList:
+    if (_i_ > 0) renderC(_L_PAREN);
+    ppIdent(p->u.addeclaration_labeltoken_function_minorattrlist_.noarguserfuncidentifiertoken_, 0);
+    renderS("FUNCTION");
+    ppTYPE_AND_MINOR_ATTR(p->u.addeclaration_labeltoken_function_minorattrlist_.type_and_minor_attr_, 0);
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
   case is_ADdeclaration_labelToken_function:
     if (_i_ > 0) renderC(_L_PAREN);
     ppIdent(p->u.addeclaration_labeltoken_function_.labeltoken_, 0);
+    renderS("FUNCTION");
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
+  case is_AEdeclaration_labelToken_function:
+    if (_i_ > 0) renderC(_L_PAREN);
+    ppIdent(p->u.aedeclaration_labeltoken_function_.noarguserfuncidentifiertoken_, 0);
     renderS("FUNCTION");
 
     if (_i_ > 0) renderC(_R_PAREN);
@@ -1374,6 +1391,13 @@ void ppNO_ARG_ARITH_FUNC(NO_ARG_ARITH_FUNC p, int _i_)
 {
   switch(p->kind)
   {
+  case is_ZZnoArgumentUserFunction:
+    if (_i_ > 0) renderC(_L_PAREN);
+    ppIdent(p->u.zznoargumentuserfunction_.noarguserfuncidentifiertoken_, 0);
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
   case is_ZZclocktime:
     if (_i_ > 0) renderC(_L_PAREN);
     renderS("CLOCKTIME");
@@ -1486,13 +1510,6 @@ void ppARITH_FUNC(ARITH_FUNC p, int _i_)
   case is_ZZmod:
     if (_i_ > 0) renderC(_L_PAREN);
     renderS("MOD");
-
-    if (_i_ > 0) renderC(_R_PAREN);
-    break;
-
-  case is_ZZodd:
-    if (_i_ > 0) renderC(_L_PAREN);
-    renderS("ODD");
 
     if (_i_ > 0) renderC(_R_PAREN);
     break;
@@ -1752,6 +1769,38 @@ void ppARITH_FUNC(ARITH_FUNC p, int _i_)
 
   default:
     fprintf(stderr, "Error: bad kind field when printing ARITH_FUNC!\n");
+    exit(1);
+  }
+}
+
+void ppBIT_FUNC(BIT_FUNC p, int _i_)
+{
+  switch(p->kind)
+  {
+  case is_ZZodd:
+    if (_i_ > 0) renderC(_L_PAREN);
+    renderS("ODD");
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
+  case is_ZZxor:
+    if (_i_ > 0) renderC(_L_PAREN);
+    renderS("XOR");
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
+  case is_ZZuserBitFunction:
+    if (_i_ > 0) renderC(_L_PAREN);
+    ppIdent(p->u.zzuserbitfunction_.bitfunctionidentifiertoken_, 0);
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
+
+  default:
+    fprintf(stderr, "Error: bad kind field when printing BIT_FUNC!\n");
     exit(1);
   }
 }
@@ -2840,31 +2889,6 @@ void ppLABEL(LABEL p, int _i_)
 
   default:
     fprintf(stderr, "Error: bad kind field when printing LABEL!\n");
-    exit(1);
-  }
-}
-
-void ppBIT_FUNC(BIT_FUNC p, int _i_)
-{
-  switch(p->kind)
-  {
-  case is_ZZxor:
-    if (_i_ > 0) renderC(_L_PAREN);
-    renderS("XOR");
-
-    if (_i_ > 0) renderC(_R_PAREN);
-    break;
-
-  case is_ZZuserBitFunction:
-    if (_i_ > 0) renderC(_L_PAREN);
-    ppIdent(p->u.zzuserbitfunction_.bitfunctionidentifiertoken_, 0);
-
-    if (_i_ > 0) renderC(_R_PAREN);
-    break;
-
-
-  default:
-    fprintf(stderr, "Error: bad kind field when printing BIT_FUNC!\n");
     exit(1);
   }
 }
@@ -6562,6 +6586,14 @@ void ppCLOSING(CLOSING p, int _i_)
     if (_i_ > 0) renderC(_R_PAREN);
     break;
 
+  case is_ADclosing:
+    if (_i_ > 0) renderC(_L_PAREN);
+    renderS("CLOSE");
+    ppIdent(p->u.adclosing_.noarguserfuncidentifiertoken_, 0);
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
   case is_ACclosing:
     if (_i_ > 0) renderC(_L_PAREN);
     ppLABEL_DEFINITION(p->u.acclosing_.label_definition_, 0);
@@ -6617,6 +6649,25 @@ void ppFUNCTION_NAME(FUNCTION_NAME p, int _i_)
   case is_AAfunction_name:
     if (_i_ > 0) renderC(_L_PAREN);
     ppLABEL_EXTERNAL(p->u.aafunction_name_.label_external_, 0);
+    renderS("FUNCTION");
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
+  case is_ABfunction_name:
+    if (_i_ > 0) renderC(_L_PAREN);
+    ppIdent(p->u.abfunction_name_.noarguserfuncidentifiertoken_, 0);
+    renderC(':');
+    renderS("FUNCTION");
+
+    if (_i_ > 0) renderC(_R_PAREN);
+    break;
+
+  case is_ACfunction_name:
+    if (_i_ > 0) renderC(_L_PAREN);
+    ppIdent(p->u.acfunction_name_.noarguserfuncidentifiertoken_, 0);
+    renderC(':');
+    renderS("EXTERNAL");
     renderS("FUNCTION");
 
     if (_i_ > 0) renderC(_R_PAREN);
@@ -7361,6 +7412,12 @@ void ppGeToken(String s, int i)
 }
 
 
+void ppNoArgUserFuncIdentifierToken(String s, int i)
+{
+  renderS(s);
+}
+
+
 void ppBitIdentifierToken(String s, int i)
 {
   renderS(s);
@@ -7633,6 +7690,20 @@ void shDECLARATION(DECLARATION p)
     bufAppendC(')');
 
     break;
+  case is_ADdeclaration_labelToken_function_minorAttrList:
+    bufAppendC('(');
+
+    bufAppendSp(p, "ADdeclaration_labelToken_function_minorAttrList");
+
+    bufAppendC(' ');
+
+    shIdent(p->u.addeclaration_labeltoken_function_minorattrlist_.noarguserfuncidentifiertoken_);
+  bufAppendC(' ');
+    shTYPE_AND_MINOR_ATTR(p->u.addeclaration_labeltoken_function_minorattrlist_.type_and_minor_attr_);
+
+    bufAppendC(')');
+
+    break;
   case is_ADdeclaration_labelToken_function:
     bufAppendC('(');
 
@@ -7641,6 +7712,18 @@ void shDECLARATION(DECLARATION p)
     bufAppendC(' ');
 
     shIdent(p->u.addeclaration_labeltoken_function_.labeltoken_);
+
+    bufAppendC(')');
+
+    break;
+  case is_AEdeclaration_labelToken_function:
+    bufAppendC('(');
+
+    bufAppendSp(p, "AEdeclaration_labelToken_function");
+
+    bufAppendC(' ');
+
+    shIdent(p->u.aedeclaration_labeltoken_function_.noarguserfuncidentifiertoken_);
 
     bufAppendC(')');
 
@@ -9180,6 +9263,18 @@ void shNO_ARG_ARITH_FUNC(NO_ARG_ARITH_FUNC p)
 {
   switch(p->kind)
   {
+  case is_ZZnoArgumentUserFunction:
+    bufAppendC('(');
+
+    bufAppendSp(p, "ZZnoArgumentUserFunction");
+
+    bufAppendC(' ');
+
+    shIdent(p->u.zznoargumentuserfunction_.noarguserfuncidentifiertoken_);
+
+    bufAppendC(')');
+
+    break;
   case is_ZZclocktime:
 
     bufAppendSp(p, "ZZclocktime");
@@ -9306,14 +9401,6 @@ void shARITH_FUNC(ARITH_FUNC p)
   case is_ZZmod:
 
     bufAppendSp(p, "ZZmod");
-
-
-
-
-    break;
-  case is_ZZodd:
-
-    bufAppendSp(p, "ZZodd");
 
 
 
@@ -9610,6 +9697,45 @@ void shARITH_FUNC(ARITH_FUNC p)
 
   default:
     fprintf(stderr, "Error: bad kind field when showing ARITH_FUNC!\n");
+    exit(1);
+  }
+}
+
+void shBIT_FUNC(BIT_FUNC p)
+{
+  switch(p->kind)
+  {
+  case is_ZZodd:
+
+    bufAppendSp(p, "ZZodd");
+
+
+
+
+    break;
+  case is_ZZxor:
+
+    bufAppendSp(p, "ZZxor");
+
+
+
+
+    break;
+  case is_ZZuserBitFunction:
+    bufAppendC('(');
+
+    bufAppendSp(p, "ZZuserBitFunction");
+
+    bufAppendC(' ');
+
+    shIdent(p->u.zzuserbitfunction_.bitfunctionidentifiertoken_);
+
+    bufAppendC(')');
+
+    break;
+
+  default:
+    fprintf(stderr, "Error: bad kind field when showing BIT_FUNC!\n");
     exit(1);
   }
 }
@@ -11045,37 +11171,6 @@ void shLABEL(LABEL p)
 
   default:
     fprintf(stderr, "Error: bad kind field when showing LABEL!\n");
-    exit(1);
-  }
-}
-
-void shBIT_FUNC(BIT_FUNC p)
-{
-  switch(p->kind)
-  {
-  case is_ZZxor:
-
-    bufAppendSp(p, "ZZxor");
-
-
-
-
-    break;
-  case is_ZZuserBitFunction:
-    bufAppendC('(');
-
-    bufAppendSp(p, "ZZuserBitFunction");
-
-    bufAppendC(' ');
-
-    shIdent(p->u.zzuserbitfunction_.bitfunctionidentifiertoken_);
-
-    bufAppendC(')');
-
-    break;
-
-  default:
-    fprintf(stderr, "Error: bad kind field when showing BIT_FUNC!\n");
     exit(1);
   }
 }
@@ -16085,6 +16180,18 @@ void shCLOSING(CLOSING p)
     bufAppendC(')');
 
     break;
+  case is_ADclosing:
+    bufAppendC('(');
+
+    bufAppendSp(p, "ADclosing");
+
+    bufAppendC(' ');
+
+    shIdent(p->u.adclosing_.noarguserfuncidentifiertoken_);
+
+    bufAppendC(')');
+
+    break;
   case is_ACclosing:
     bufAppendC('(');
 
@@ -16167,6 +16274,30 @@ void shFUNCTION_NAME(FUNCTION_NAME p)
     bufAppendC(' ');
 
     shLABEL_EXTERNAL(p->u.aafunction_name_.label_external_);
+
+    bufAppendC(')');
+
+    break;
+  case is_ABfunction_name:
+    bufAppendC('(');
+
+    bufAppendSp(p, "ABfunction_name");
+
+    bufAppendC(' ');
+
+    shIdent(p->u.abfunction_name_.noarguserfuncidentifiertoken_);
+
+    bufAppendC(')');
+
+    break;
+  case is_ACfunction_name:
+    bufAppendC('(');
+
+    bufAppendSp(p, "ACfunction_name");
+
+    bufAppendC(' ');
+
+    shIdent(p->u.acfunction_name_.noarguserfuncidentifiertoken_);
 
     bufAppendC(')');
 
@@ -17143,6 +17274,14 @@ void shLeToken(String s)
 
 
 void shGeToken(String s)
+{
+  bufAppendC('\"');
+  bufAppendS(s);
+  bufAppendC('\"');
+}
+
+
+void shNoArgUserFuncIdentifierToken(String s)
 {
   bufAppendC('\"');
   bufAppendS(s);

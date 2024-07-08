@@ -57,9 +57,10 @@ import re
 import atexit
 from processSource import processSource
 from palmatAux import constructPALMAT, writePALMAT, readPALMAT, \
-        collectGarbage, findIdentifier, astSourceFile
-from p_Functions import removeIdentifier, removeAllIdentifiers, substate
-from executePALMAT import executePALMAT, setupExecutePALMAT
+        collectGarbage, findIdentifier, astSourceFile, expandStructureTemplate
+from p_Functions import removeIdentifier, removeAllIdentifiers, substate, \
+        resetStatement, printTemplate
+from executePALMAT import executePALMAT
 from replaceBy import bareIdentifierPattern
 from optimizePALMAT import optimizePALMAT
 
@@ -73,8 +74,6 @@ if rlModule != None:
         rlModule.set_history_length(1000)
     except FileNotFoundError:
         pass
-
-setupExecutePALMAT()
 
 def printScopeHeading(PALMAT, i):
     scope = PALMAT["scopes"][i]
@@ -99,95 +98,110 @@ helpMenu = \
 \tHAL/S source code is case-sensitive.  Any input line
 \tbeginning with a back-tick (`) is an interpreter command.
 \tThe available interpreter commands are listed below:
-\t`HELP        Show this menu.
-\t`QUIT        Quit this interpreter program.
-\t`CANCEL *    Cancel any uncompleted multi-line source-
-\t             code input.
-\t`CANCEL      Cancel just the preceding line of a 
-\t             multi-line source-code input.
-\t`NOSTRICT    This is the default, for convenience in
-\t             using the interpreter.  In this mode, column
-\t             1 is not special, and thus full-line comments
-\t             (C in column 1), compiler directives (D), and
-\t             multiline math input (E/M/S) are not 
-\t             available.
-\t`STRICT      Enables the special the special treatment of
-\t             column 1 specified by HAL/S documentation.
-\t`OPTIMIZE    (Default.)  Enable optimization of PALMAT code.
-\t`NOOPTIMIZE  Disable optimization of PALMAT code.
-\t`RUN P [*]   Run PROGRAM P. By default, runs as the 
-\t             "primary", which affects the DATA (see
-\t             below).  If the optional 3rd field is
-\t             present, runs as a "secondary" with 
-\t             cloned DATA structures that persist only
-\t             while PROGRAM P runs, and vanish afterward.
-\t`SPOOL       Begin spooling all HAL/S source lines for
-\t             later processing.  (The default is to
-\t             process lines one-by-one upon input, and
-\t             to spool only lines not ending in ';'.)
-\t             Note that all interpreter commands are
-\t             acted upon immediately rather than being
-\t             added to the spool.
-\t`UNSPOOL     Immediately process all spooled lines.
-\t`REVIEW      Redisplay spooled HAL/S source lines.
-\t`COLORIZE C  Enable colorizing (ANSI terminals only).
-\t             C is one of the following words: black,
-\t             red, green, yellow, blue, magenta, cyan,
-\t             white, gray, brightred, brightgreen,
-\t             brightyellow, brightblue, brightmagenta,
-\t             brightcyan, or brightwhite.
-\t`NOCOLORIZE  Disable colorized output.
-\t`WRITE F     Write current PALMAT to a file named F.
-\t`READ F      Read PALMAT from a file named F.
-\t`DATA        Inspect identifiers in root scope.
-\t`DATA N      Inspect identifiers in scope N (integer).
-\t`DATA *      Inspect identifiers in all scopes.
-\t`LABELS      Enables display of program labels in `DATA.
-\t`NOLABELS    Disables display of labels in `DATA.
-\t`PALMAT      Inspect PALMAT code in root scope.
-\t`PALMAT N    Inspect PALMAT code in scope N (integer).
-\t`PALMAT *    Inspect PALMAT code in all scopes.
-\t`EXECUTE     (Re)execute already-compiled PALMAT.
-\t`CLONE       Same as EXECUTE, but clone instantiation.
-\t`SCOPES      Inspect scope hierarchy.
-\t`GARBAGE     Perform "garbage collection".  This is
-\t             done automatically prior to processing
-\t             any newly-input HAL/S, but it may be
-\t             useful sometimes to do it explictly if
-\t             you want to inspect the environment 
-\t             under which the next HAL/S will run.
-\t`REMOVE D    Remove identifier D.
-\t`REMOVE *    Remove all identifiers.
-\t`RESET       Reset all PALMAT.
-\t`STATUS      Show current settings and other info.
-\t`WINE        Enable Windows compiler (Linux only).
-\t`NOWINE      Disable Windows compiler (Linux only).
-\t`TRACE1      Enable parser tracing.
-\t`NOTRACE1    Disable parser tracing.
-\t`TRACE2      Enable code-generator tracing.
-\t`NOTRACE2    Disable code-generator tracing.
-\t`TRACE3      Enable execution tracing.
-\t`NOTRACE3    Disable execution tracing.
-\t`TRACE4      Enable tracing of compile-time calculations.
-\t`NOTRACE4    Disable compile-time calculation tracing.
-\t`LBNF        Show abstract syntax trees in LBNF.
-\t`BNF         Show abstract syntax trees in BNF.
-\t`NOAST       Don't show abstract syntax trees.
-\t`EXEC        Execute the HAL/S code.
-\t`NOEXEC      Don't execute the HAL/S code.'''
+\t`HELP            Show this menu.
+\t`QUIT            Quit this interpreter program.
+\t`CANCEL *        Cancel any uncompleted multi-line source-
+\t                 code input.
+\t`CANCEL          Cancel just the preceding line of a 
+\t                 multi-line source-code input.
+\t`NOSTRICT        This is the default, for convenience in
+\t                 using the interpreter.  In this mode, column
+\t                 1 is not special, and thus full-line comments
+\t                 (C in column 1), compiler directives (D), and
+\t                 multiline math input (E/M/S) are not 
+\t                 available.
+\t`STRICT          Enables the special the special treatment of
+\t                 column 1 specified by HAL/S documentation.
+\t`OPTIMIZE        (Default.)  Enable optimization of PALMAT code.
+\t`NOOPTIMIZE      Disable optimization of PALMAT code.
+\t`RUN P [*]       Run PROGRAM P. By default, runs as the 
+\t                 "primary", which affects the DATA (see
+\t                 below).  If the optional 3rd field is
+\t                 present, runs as a "secondary" with 
+\t                 cloned DATA structures that persist only
+\t                 while PROGRAM P runs, and vanish afterward.
+\t`SPOOL           Begin spooling all HAL/S source lines for
+\t                 later processing.  (The default is to
+\t                 process lines one-by-one upon input, and
+\t                 to spool only lines not ending in ';'.)
+\t                 Note that all interpreter commands are
+\t                 acted upon immediately rather than being
+\t                 added to the spool.
+\t`UNSPOOL          process all spooled lines.
+\t`REVIEW          Redisplay spooled HAL/S source lines.
+\t`COLORIZE C      Enable colorizing (ANSI terminals only).
+\t                 C is one of the following words: black,
+\t                 red, green, yellow, blue, magenta, cyan,
+\t                 white, gray, brightred, brightgreen,
+\t                 brightyellow, brightblue, brightmagenta,
+\t                 brightcyan, or brightwhite.
+\t`NOCOLORIZE      Disable colorized output.
+\t`WRITE F         Write current PALMAT to a file named F.
+\t`READ F          Read PALMAT from a file named F.
+\t`DATA            Inspect identifiers in root scope.
+\t`DATA N          Inspect identifiers in scope N (integer).
+\t`DATA *          Inspect identifiers in all scopes.
+\t`LABELS          Enables display of program labels in `DATA.
+\t`NOLABELS        Disables display of labels in `DATA.
+\t`PALMAT          Inspect PALMAT code in root scope.
+\t`PALMAT N        Inspect PALMAT code in scope N (integer).
+\t`PALMAT *        Inspect PALMAT code in all scopes.
+\t`EXECUTE         (Re)execute already-compiled PALMAT.
+\t`CLONE           Same as EXECUTE, but clone instantiation.
+\t`SCOPES          Inspect scope hierarchy.
+\t`GARBAGE         Perform "garbage collection".  This is
+\t                 done automatically prior to processing
+\t                 any newly-input HAL/S, but it may be
+\t                 useful sometimes to do it explictly if
+\t                 you want to inspect the environment 
+\t                 under which the next HAL/S will run.
+\t`REMOVE D        Remove identifier D.
+\t`REMOVE *        Remove all identifiers.
+\t`RESET           Reset all PALMAT.
+\t`STATUS          Show current settings and other info.
+\t`WINE            Enable Windows compiler (Linux only).
+\t`NOWINE          Disable Windows compiler (Linux only).
+\t`TRACE0          Enable preprocessor tracing.
+\t`NOTRACE0        Disable preprocessor tracing.
+\t`TRACE1          Enable parser tracing.
+\t`NOTRACE1        Disable parser tracing.
+\t`TRACE2          Enable code-generator tracing.
+\t`NOTRACE2        Disable code-generator tracing.
+\t`TRACE3          Enable execution tracing.
+\t`NOTRACE3        Disable execution tracing.
+\t`TRACE4          Enable tracing of compile-time calculations.
+\t`NOTRACE4        Disable compile-time calculation tracing.
+\t`LBNF            Show abstract syntax trees in LBNF.
+\t`BNF             Show abstract syntax trees in BNF.
+\t`NOAST           Don't show abstract syntax trees.
+\t`EXPAND          Expand structure-template references in `DATA.
+\t`NOEXPAND        Don't expand structure-template references.
+\t`EXEC            Execute the HAL/S code.
+\t`NOEXEC          Don't execute the HAL/S code.
+\t`MANGLING [*]    Display mangling macros in the global scope, 
+\t                 as understood by the preprocessor.  (These are
+\t                 the only macros affecting new interpreter
+\t                 input.)  If the optional * is added, additional
+\t                 macros having to do with structure-template 
+\t                 mangling are displayed, which are normally hidden
+\t                 because the cannot be directly accessed from
+\t                 the interpreter's input prompt.'''
 
-def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
+def interpreterLoop(shouldColorize=False, \
                     xeq=True, lbnf=False, bnf=False, ansiWrapper=True):
 
+    macros = [{"@": 0}]
     spooling = False
     strict = False
     colors = ["black", "red", "green", "yellow", "blue", "magenta", "cyan",
               "white", "gray", "brightred", "brightgreen", "brightyellow",
               "brightblue", "brightmagenta", "brightcyan", "brightwhite"]
+    trace0 = False
     trace1 = False
     trace2 = False
     trace3 = False
     trace4 = False
+    expand = False
     halCode = False
     quitting = False
     halsSource = []
@@ -218,7 +232,7 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
         colorName = ""
         debugColor = ""
     PALMAT = constructPALMAT()
-    astSourceFile(PALMAT, "interpreter")
+    astSourceFile(PALMAT, "Interpreter")
     print(colorize)
     print("Input HAL/S or else interpreter commands. Use `HELP for more info.")
     while not quitting:
@@ -246,9 +260,9 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
             fields = line.strip().split()
             numWords = len(fields)
             if numWords == 0:
+                fileIndex = astSourceFile(PALMAT, "Interpreter")
                 halsSource.append(" ")
-                metadata.append({"file": "interpreter", 
-                                  "lineNumber": len(halsSource)})
+                metadata.append({"file": fileIndex, "lineNumber": len(halsSource)})
                 continue
             if fields[0][:1] == "`":
                 fields[0] = fields[0][1:]
@@ -312,9 +326,10 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                 elif firstWord == "REMOVE" and len(fields) > 1:
                     identifier = fields[1]
                     if identifier == "*":
-                        removeAllIdentifiers(PALMAT, 0)
+                        removeAllIdentifiers(PALMAT, macros, 0)
+                        print("Removed all identifiers from topmost scope.")
                     else: 
-                        removeIdentifier(PALMAT, 0, "^" + identifier + "^")
+                        removeIdentifier(PALMAT, macros, 0, identifier)
                     continue
                 elif firstWord == "WRITE" and len(fields) > 1:
                     if writePALMAT(PALMAT, fields[1]):
@@ -350,8 +365,20 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                             for identifier in sorted(identifiers):
                                 if showLabels or \
                                         "label" not in identifiers[identifier]:
-                                    print("\t%s:" % identifier[1:-1], \
-                                            identifiers[identifier])
+                                    if "template" in identifiers[identifier]:
+                                        attributes = identifiers[identifier]
+                                        if expand:
+                                            attributes = \
+                                                expandStructureTemplate( \
+                                                                PALMAT,
+                                                                i,
+                                                                attributes)
+                                        printTemplate(identifier, \
+                                                      attributes, \
+                                                      8)
+                                    else:
+                                        print("\t%s:" % identifier[1:-1], \
+                                                identifiers[identifier])
                     continue
                 elif firstWord == "PALMAT":
                     if len(fields) == 1:
@@ -408,6 +435,14 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                     print("\tSTRICT off.")
                     strict = False
                     continue
+                elif firstWord == "TRACE0":
+                    print("\tTRACE0 on.")
+                    trace0 = True
+                    continue
+                elif firstWord == "NOTRACE0":
+                    print("\tTRACE0 off.")
+                    trace0 = False
+                    continue
                 elif firstWord == "TRACE1":
                     print("\tTRACE1 on.")
                     trace1 = True
@@ -439,6 +474,14 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                 elif firstWord == "NOTRACE4":
                     print("\tTRACE4 off.")
                     trace4 = False
+                    continue
+                elif firstWord == "EXPAND":
+                    print("\tEXPAND on.")
+                    expand = True
+                    continue
+                elif firstWord == "NOEXPAND":
+                    print("\tEXPAND off.")
+                    expand = False
                     continue
                 elif firstWord == "LBNF":
                     print("\tDisplaying abstract syntax trees (AST) in LBNF.")
@@ -481,6 +524,10 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                         print("\tLABELS                   (vs. NOLABELS)")
                     else:
                         print("\tNOLABELS                 (vs. LABELS)")
+                    if trace0:
+                        print("\tTRACE0                   (vs NOTRACE0)")
+                    else:
+                        print("\tNOTRACE0                 (vs TRACE0)")
                     if trace1:
                         print("\tTRACE1                   (vs NOTRACE1)")
                     else:
@@ -497,6 +544,10 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                         print("\tTRACE4                   (vs NOTRACE4)")
                     else:
                         print("\tNOTRACE4                 (vs TRACE4)")
+                    if expand:
+                        print("\tEXPAND                   (vs NOEXPAND)")
+                    else:
+                        print("\tNOEXPAND                 (vs EXPAND)")
                     if xeq:
                         print("\tEXEC                     (vs NOEXEC)")
                     else:
@@ -554,6 +605,26 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                     print("\tDisabled colorized output.")
                     colorize = ""
                     continue
+                elif firstWord == "MANGLING":
+                    if len(macros[0]) == 0:
+                        print("\t(None)")
+                    else:
+                        for macro in sorted(macros[0]):
+                            if macro == "@":
+                                continue
+                            if (len(fields) > 1 or "-STRUCTURE" not in macro) \
+                                     and "replacement" in macros[0][macro] and \
+                                    "ignore" not in macros[0][macro]:
+                                if "pattern" in macros[0][macro]:
+                                    print("\t%s  ->  %s  (%s)" % \
+                                          (macro, 
+                                           macros[0][macro]["replacement"],
+                                           macros[0][macro]["pattern"]))
+                                else:
+                                    print("\t%s  ->  %s" % \
+                                          (macro, 
+                                           macros[0][macro]["replacement"]))
+                    continue
                 elif firstWord == "HELP":
                     print(helpMenu)
                     continue
@@ -562,11 +633,23 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
                 halsSource.append(line)
             else:
                 halsSource.append(" " + line)
-            metadata.append({"file": "interpreter", 
-                              "lineNumber": len(halsSource)})
+            fileIndex = astSourceFile(PALMAT, "Interpreter")
+            metadata.append({"file": fileIndex, "lineNumber": len(halsSource)})
         if quitting:
             break 
         
+        # Sanity check.
+        illegals = set()
+        for line in halsSource:
+            if len(line) > 0 and line[0] not in ["M", "E", "S", "C", 
+                                                 "D", " ", "\t"] \
+                    and strict:
+                illegals.add(line[0])
+        if len(illegals) != 0:
+            print("\tThere are illegal characters in column one:", illegals)
+            print("\tPerhaps you should use the `NOSTRICT command.")
+            continue
+    
         # For whatever reason, just feeding nothing but blanks into the compiler
         # returns an error, which is not something I want, so detect that case
         # separately and avoid it.
@@ -587,25 +670,40 @@ def interpreterLoop(libraryFilename, structureTemplates, shouldColorize=False, \
         # after the next tranche of HAL/S code is processed, leaving only those
         # which might still be useful.
         collectGarbage(PALMAT)
-        # All existing macros are discarded before processing the next HAL/S.
-        # However, some of those (like prefixing "c_" to character variable
-        # names) remain useful, and indeed necessary.  We regenerate those
-        # from the identifier list.
-        macros = [{}]
-        macro0 = macros[0]
-        for identifier in identifiers:
-            identifier = identifier[1:-1]
-            if None != re.fullmatch("[lbcse]f?_" + bareIdentifierPattern, \
-                                    identifier):
-                fields = identifier.split("_", 1)
-                macro0[fields[1]] = { "arguments": [], 
-                            "replacement": identifier, 
-                            "pattern": "\\b" + fields[1] + "\\b" }
+        resetStatement()
         
-        success, ast = processSource(PALMAT, halsSource, metadata, \
-                         libraryFilename, structureTemplates, noCompile, \
+        # We want to get rid of all macros, except those for scope 0 which
+        # directly relate to the identifiers now present in scope 0.  There
+        # are two cases I know of in which the macro needs to be retained:
+        #    1.  The replacement (or the first field of the replacement if
+        #        split at periods) is an existing identifier.
+        #    2.  The key is of the form XXX-STRUCTURE[.something], where XXX is 
+        #        a structure template that exists among the identifiers.
+        while len(macros) > 1:
+            macros.pop()
+        macros0 = macros[0]
+        macrosToDrop = []
+        for macro in macros0:
+            if macro == "@":
+                continue
+            if "ignore" in macros0[macro]:
+                macrosToDrop.append(macro)
+                continue
+            replacement = macros0[macro]["replacement"]
+            fields = replacement.split(".")
+            if "^" + fields[0] + "^" in identifiers:
+                continue
+            if "-STRUCTURE" in macro:
+                fields = macro.split("-STRUCTURE")
+                if "^s_" + fields[0] + "^" in identifiers:
+                    continue
+            macrosToDrop.append(macro)
+        for macro in macrosToDrop:
+            macros0.pop(macro)
+        
+        success, ast = processSource(PALMAT, halsSource, metadata, noCompile, \
                          lbnf, bnf, trace1, wine, trace2, 8, macros, trace4, \
-                         strict)
+                         strict, trace0)
         if optimize:
             optimizePALMAT(PALMAT)
         if len(substate["warnings"]):

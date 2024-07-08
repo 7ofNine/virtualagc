@@ -1,4 +1,0 @@
-#QTANH   CSECT
- DC Z(TANH,,X'E')
- EXTRN TANH
- END

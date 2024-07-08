@@ -1,4 +1,0 @@
-#QCTOX   CSECT
- DC Z(CTOX,,X'E')
- EXTRN CTOX
- END

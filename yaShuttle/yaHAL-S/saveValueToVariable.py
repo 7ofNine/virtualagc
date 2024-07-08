@@ -20,7 +20,6 @@ History:    2023-02-18 RSB  Began.  This is essentially a complete, improved
 """
 
 from palmatAux import *
-from math import nan as NaN
 
 '''
 -------------------------------------------------------------------------------
@@ -144,7 +143,7 @@ def convertComposite(composite, datatype, datalength):
                 return False
         else:
             converted = convertSimple(value, datatype, datalength)
-            if converted == NaN:
+            if isNaN(converted):
                 return False
             composite[i] = converted
     return True
@@ -164,7 +163,7 @@ def assignSimpleSubscripted(value, valueInAttributes, indices, \
     index = indices[0][0] - 1;  # Recall HAL/S indexes from 1, Python from 0.
     if len(indices) == 1:
         converted = convertSimple(value, datatype, datalength)
-        if converted == NaN:
+        if isNaN(converted):
             return False
         valueInAttributes[index] = converted
         return True
@@ -235,7 +234,7 @@ def assignCompositeSubscripted(RHS, preSubscriptedLHS, subscriptsLHS, \
                     else:
                         converted = convertSimple(value, datatypeLHS, \
                                                   datalengthLHS)
-                        if converted == NaN:
+                        if isNaN(converted):
                             return False
                 preSubscriptedLHS[s-1] = converted
             return True
@@ -286,7 +285,7 @@ def zeroOutCompositeWithSubscripts(object, subscripts, fillValue=0):
     thisLevel = subscripts[0]
     if len(subscripts) > 1:
         for s in thisLevel:
-            zeroOutCompositeWithSubscripts(object(s-1), subscripts[1:], fillvalue)
+            zeroOutCompositeWithSubscripts(object[s-1], subscripts[1:], fillValue)
     else:
         for s in thisLevel:
             object[s-1] = fillValue
@@ -310,7 +309,8 @@ Returns True on success, False on failure.  The inputs are:
     subscripts  The subscripts to be applied to the target variable.  Note
                 that some of the subscripts may represent slicing.
 '''
-def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
+def saveValueToVariable(PALMAT, source, value, identifier, attributes, \
+                        subscripts=[]):
     '''
     First determine the relevant characteristics of the target variable
     to which the given value is supposed to be assigned.
@@ -352,7 +352,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
             or "matrix" in attributes:
         datatype = "scalar"
     else:
-        printError(source, "", \
+        printError(PALMAT, source, "", \
             "Assignments of this datatype (to variable %s) not yet implemented"\
             % identifier)
         return False
@@ -386,7 +386,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
         # geometrically at least.  There's no check that the array's elements
         # all have the same (or compatible) datatypes.
         if not isArrayGeometry(value, dimensions):
-            printError(source, "", \
+            printError(PALMAT, source, "", \
                 "Implementation error, value of unsupported datatype " + \
                 "cannot be assigned to variable %s"\
                 % identifier)
@@ -423,7 +423,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
     elif isinstance(typeCheckValue, float):
         datatype2 = "scalar"
     else:
-        printError(source, "", \
+        printError(PALMAT, source, "", \
                    "Not a presently-assignable datatype for variable %s." \
                    % identifier)
         return False
@@ -442,7 +442,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
         if isArray != isArray2 or \
                 primaryDimensions != primaryDimensions2 or \
                 secondaryDimensions != secondaryDimensions2:
-            printError(source, "", \
+            printError(PALMAT, source, "", \
                 "Incompatible geometries in assignment of variable %s" \
                 % identifier)
             return False
@@ -452,8 +452,8 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
         '''
         if len(primaryDimensions) == 0:
             converted = convertSimple(value, datatype, datalength)
-            if converted == NaN:
-                printError(source, "", \
+            if isNaN(converted):
+                printError(PALMAT, source, "", \
                     "Incompatible datatypes in assignment of variable %s: %s" \
                     % (identifier, str(value)))
                 return False
@@ -469,7 +469,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
         '''
         composite = copy.deepcopy(value)
         if convertComposite(composite, datatype, datalength) == False:
-            printError(source, "", \
+            printError(PALMAT, source, "", \
                 "Incompatible datatypes in assignment of composite variable %s"\
                 % (identifier))
             return False
@@ -504,13 +504,13 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
             indicesAllowed.append(list(range(unpound(subscript[0], width), \
                                              unpound(subscript[1], width)+1)))
         else:
-            printError(source, "", \
+            printError(PALMAT, source, "", \
                        "Implementation error, unknown subscript type.")
             return False
     for i in range(len(indicesAllowed)): # Double-check
         indices = indicesAllowed[i]
         if indices[0] < 1 or indices[-1] > dimensionsOfVariable[i]:
-            printError(source, "", "Subscript(s) out of range.")
+            printError(PALMAT, source, "", "Subscript(s) out of range.")
             return False
     for i in range(len(subscripts), len(dimensionsOfVariable)):
         indicesAllowed.append(list(range(1, dimensionsOfVariable[i] + 1)))
@@ -544,7 +544,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
         if d != 1:
             dV.append(d)
     if dSV != dV:
-        printError(source, "", \
+        printError(PALMAT, source, "", \
             "Geometry mismatch in assignment of %s%s: %s != %s" % \
             (identifier, str(subscripts), dimensionsOfSubscriptedVariable,
              dimensionsOfValue))
@@ -559,7 +559,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
         if False == assignSimpleSubscripted(value, attributes["value"], \
                                             indicesAllowed, \
                                             datatype, datalength):
-            printError(source, "", \
+            printError(PALMAT, source, "", \
                 "Conversion error in assignement of %s%s" % \
                 (identifier, subscripts))
             return False
@@ -567,7 +567,7 @@ def saveValueToVariable(source, value, identifier, attributes, subscripts=[]):
         if False == assignCompositeSubscripted(value, attributes["value"], \
                                            indicesAllowed, \
                                            datatype, datalength):
-            printError(source, "", \
+            printError(PALMAT, source, "", \
                 "Conversion error in assignement of %s%s" % \
                 (identifier, subscripts))
             return False

@@ -1,4 +1,0 @@
-#QBOUT   CSECT
- DC Z(BOUT,,X'E')
- EXTRN BOUT
- END

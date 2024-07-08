@@ -1,4 +1,0 @@
-#QDTAN   CSECT
- DC Z(DTAN,,X'E')
- EXTRN DTAN
- END

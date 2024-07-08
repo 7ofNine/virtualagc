@@ -1,4 +1,0 @@
-#QMSTR   CSECT
- DC Z(MSTR,,X'E')
- EXTRN MSTR
- END

@@ -140,6 +140,29 @@ def inflateArray(arrayList, attributes):
     arrayList.append("a")
 
 '''
+# This is a recursive function used for fixing CALL instructions targeting
+# forward-declared FUNCTIONs and PROCEDUREs.  Such CALLs will have the wrong
+# scope (but correct identifer) for the CALLs, because the scopes in which the
+# subroutines reside aren't known  when the forward declaration is encountered.
+# The topIndex is supposed to indicate the topmost scope in which the call can
+# occur (namely, the one in which the identifier appears in the identifier
+# list), while oldValue is the current value of the "call" key in the 
+# instruction, and newValue is the desired new value.  The function must
+# recurse through all descendents of the topIndex scope.
+def fixForwardCalls(PALMAT, topIndex, oldValue, newValue, trace=False):
+    scope = PALMAT["scopes"][topIndex]
+    instructions = scope["instructions"]
+    for i in range(len(instructions)):
+        instruction = instructions[i]
+        if "call" in instruction and instruction["call"] == oldValue:
+            instruction["call"] = newValue
+            if trace:
+                print("\tFixup for CALL at (%d, %d)" % (topIndex, i+1))
+    for index in scope["children"]:
+        fixForwardCalls(PALMAT, index, oldValue, newValue, trace)
+'''
+    
+'''
 Here's the idea:  generatePALMAT() is a recursive function that works its
 way through the given AST to generate PALMAT for it.
 
@@ -466,7 +489,6 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
               (currentIdentifier[1:-1], assignments, attributes["assignments"]))
             endLabels.pop()
             return False, PALMAT
-        #assignments = substate["commonAttributes"]["callAssignments"]
         assDict = {}
         for i in range(len(assignments)):
             assDict[attributes["assignments"][i]] = assignments[i]
@@ -528,13 +550,21 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
                 "blockHeadProgram": "program",
                 "blockHeadCompool": "compool"
             }
-        identifierDict = \
-          currentScope["identifiers"][substate["currentIdentifier"]]
+        blockIdentifier = substate["currentIdentifier"]
+        identifierDict = currentScope["identifiers"][blockIdentifier]
         if lbnfLabel == "blockHeadFunction" and \
                 isUnmarkedScalar(identifierDict):
             identifierDict["scalar"] = True
-        childIndex = addScope(PALMAT, currentScope["self"], \
-                              blockTypes[lbnfLabel])
+        blockType = blockTypes[lbnfLabel]
+        childIndex = addScope(PALMAT, currentScope["self"], blockType)
+        PALMAT["scopes"][childIndex]["instructions"].append({"automatics": True})
+        if blockType in ["function", "procedure"] and \
+                "forward" in identifierDict:
+            #fixForwardCalls(PALMAT, currentIndex, \
+            #                (identifierDict["scope"], blockIdentifier[1:-1]),
+            #                (childIndex, blockIdentifier[1:-1]), trace)
+            identifierDict["scope"] = childIndex
+            identifierDict.pop("forward")
         state["scopeIndex"] = childIndex
         currentScope = PALMAT["scopes"][childIndex]
         currentScope["name"] = substate["currentIdentifier"]
@@ -599,8 +629,8 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
         appendInstruction(instructions, { "read": substate["LUN"] }, source)
     elif lbnfLabel in ["declare_statement", "temporary_stmt"]:
         markUnmarkedScalars(currentScope["identifiers"])
-        messages = completeInitialConstants(currentScope["identifiers"])
-        setUninitialized(currentScope["identifiers"])
+        messages = completeInitialConstants(currentScope)
+        setUninitialized(PALMAT, currentScope)
         if messages != []:
             print("\tGeometry mismatch for INITIAL or CONSTANT data,", messages)
             return False, PALMAT
@@ -682,6 +712,10 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
                             valueList[i] = 0
                 else:
                     valueList = [value]
+                    
+                # Now insert the values in the data object, one-by-one.  In
+                # retrospect, this is pretty inefficient for objects like
+                # STRUCTUREs, and I'm not quite sure I did it this way.
                 for value in valueList:
                     if False:
                         pass
@@ -786,7 +820,27 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
                                     value = float(value)
                                 matrix[row].append(value)
                             value = matrix
-                    elif "fill" in value:
+                    elif "structure" in identifierDict:
+                        if identifierDict[key] == "^?^":
+                            # We have to create an uninitialized structure,
+                            # so that we can fill it with data.
+                            templateName = identifierDict["structure"]
+                            templateScopeIndex, templateAttributes = \
+                                findIdentifier("^" + templateName + "^", \
+                                               PALMAT, currentIndex)
+                            struct = uninitializedStructure(PALMAT, currentScope, \
+                                                            templateName, \
+                                                            templateAttributes)
+                            identifierDict[key] = struct
+                        else:
+                            struct = identifierDict[key]
+                        # We now have to find the next uninitialized location
+                        # in the structure and fill it with value.
+                        if not insertNextElement(struct, value):
+                            print("\tCannot insert INITIAL or CONSTANT data:", \
+                                  currentIdentifier, value)
+                        value = struct
+                    elif isinstance(value, dict) and "fill" in value:
                         identifierDict["fill"] = key
                         continue
                     else:
@@ -812,7 +866,8 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
                     identifierDict["value"] = copy.deepcopy(arrayList)
     elif lbnfLabel in ["char_spec", "bitSpecBoolean",  
                        "sQdQName_doublyQualNameHead_literalExpOrStar",
-                       "arraySpec_arrayHead_literalExpOrStar"]:
+                       "arraySpec_arrayHead_literalExpOrStar"] and \
+            "currentStructureTemplateIdentifier" not in substate:
         # I wish I had commented this when I first wrote it!  What I think
         # is going on here is that in a DECLARE for a BIT, CHARACTER, VECTOR,
         # MATRIX, or ARRAY, list of dimensions will have been computed by the
@@ -845,17 +900,26 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
                 identifierDict = substate["commonAttributes"]
             if lbnfLabel == "char_spec":
                 datatype = "character"
-                if len(maxLens) != 1:
+                if len(maxLens) not in [0, 1]:
                     raise Exception("CHARACTER(...) wrong dimension")
             elif lbnfLabel == "sQdQName_doublyQualNameHead_literalExpOrStar":
                 if "vector" in identifierDict:
-                    if len(maxLens) != 1:
-                        raise Exception("VECTOR(...) wrong dimension")
+                    if len(maxLens) not in [0, 1]:
+                        raise Exception(\
+                            "VECTOR(...) wrong dimension: '%s' %s %s %s" \
+                            % (currentIdentifier, 
+                               str(identifierDict), 
+                               str(maxLens),
+                               str(substate["commonAttributes"])) )
                     datatype = "vector"
                 elif "matrix" in identifierDict:
                     datatype = "matrix"
-                    if len(maxLens) != 2:
+                    if len(maxLens) not in [1, 2]:
                         raise Exception("MATRIX(...) wrong dimension")
+                else:
+                    raise Exception(\
+                        "Unimplemented datatype attributes: %s %s" \
+                          % (str(identifierDict), str(maxLens)) )
             elif lbnfLabel == "arraySpec_arrayHead_literalExpOrStar":
                 datatype = "array"
             elif lbnfLabel == "bitSpecBoolean":
@@ -867,20 +931,17 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
             else:
                 identifierDict[datatype] = maxLens[0]
             #instructions.clear()
-        except:
-            print("\tComputation of datatype length failed:", lbnfLabel)
+        except Exception as error:
+            print("\tComputation of datatype length failed: '%s' '%s': %s" % \
+                  (lbnfLabel, currentIdentifier, error) )
             #instructions.clear()
-            identifiers.pop(currentIdentifier)
+            if currentIdentifier in identifiers:
+                identifiers.pop(currentIdentifier)
             endLabels.pop()
             return False, PALMAT
     elif lbnfLabel in ["basicStatementExit", "basicStatementRepeat"]:
         loopScope = findEnclosingLoop(PALMAT, currentScope)
-        if lbnfLabel == "basicStatementExit" and 'labelExitRepeat' in substate:
-            appendInstruction(currentScope["instructions"], \
-                              {'goto': substate['labelExitRepeat']}, source)
-            substate.pop('labelExitRepeat')
-        elif lbnfLabel == "basicStatementRepeat" and \
-                'labelExitRepeat' in substate:
+        if 'labelExitRepeat' in substate:
             label = substate.pop('labelExitRepeat')
             # We have to find the ancestor scope in which this label is
             # defined.
@@ -915,7 +976,10 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
             doScope = PALMAT["scopes"][doScopeIndex]
             # At last we have the scope in which the enclosing DO-loop resides.
             # What we have to do now depends on what type of loop it is.
-            if doScope["type"] == "do for discrete":
+            if lbnfLabel == "basicStatementExit":
+                jumpToTarget(PALMAT, source, currentScope["self"], \
+                             doScopeIndex, "ux", "goto", False, doScopeIndex)
+            elif doScope["type"] == "do for discrete":
                 appendInstruction(currentScope["instructions"], \
                                   {'returnoffset': doScopeIndex}, source)
             elif doScope["type"] == "do for":
@@ -925,7 +989,7 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
                 jumpToTarget(PALMAT, source, currentScope["self"], \
                              doScopeIndex, "ue", "goto", False, dummy[0])
             else:
-                print("\tLabel for REPEAT not attched to a loop.")
+                print("\tLabel for REPEAT/EXIT not attched to a loop.")
                 endLabels.pop()
                 return False, PALMAT
         else:
@@ -957,7 +1021,7 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
     identifiers = currentScope["identifiers"]
     if "recycle" in endLabels[-1]:
         if len(expressionFlush) > 0:
-            # This is a buffered set of PALMAT instructions for a an UNTIL
+            # This is a buffered set of PALMAT instructions for an UNTIL
             # conditional expression
             instructions.extend(expressionFlush)
             jumpToTarget(PALMAT, source, currentIndex, currentIndex, \
@@ -974,10 +1038,10 @@ def generatePALMAT(ast, PALMAT, state={ "history":[], "scopeIndex":0 },
             # label at which the block is entered from elsewhere.  Hence
             # the label doesn't appear in the identifier list of the current
             # block.  We have to find it.
-            identifier = "^ue_%d^" % currentIndex
+            identifier = "^ug_%d^" % currentIndex
             si, attributes = findIdentifier(identifier, PALMAT, currentIndex)
             jumpToTarget(PALMAT, source, currentIndex, currentIndex, \
-                         "ue", "goto", False, si)
+                         "ug", "goto", False, si)
     if endLabels[-1]["used"]:
         if lbnfLabel == "true_part":
             if createTarget(PALMAT, source, currentIndex, currentIndex, "ub") \

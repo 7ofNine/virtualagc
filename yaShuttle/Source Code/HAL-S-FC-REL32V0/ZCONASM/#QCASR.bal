@@ -1,4 +1,0 @@
-#QCASR   CSECT
- DC Z(CASR,,X'E')
- EXTRN CASR
- END

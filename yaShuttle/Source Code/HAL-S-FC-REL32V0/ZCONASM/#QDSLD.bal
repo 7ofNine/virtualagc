@@ -1,4 +1,0 @@
-#QDSLD   CSECT
- DC Z(DSLD,,X'E')
- EXTRN DSLD
- END

@@ -1,4 +1,0 @@
-#QSKIP   CSECT
- DC Z(SKIP,,X'E')
- EXTRN SKIP
- END

@@ -1,4 +1,0 @@
-#QCOSH   CSECT
- DC Z(COSH,,X'E')
- EXTRN COSH
- END

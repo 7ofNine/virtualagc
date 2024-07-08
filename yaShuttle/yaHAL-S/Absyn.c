@@ -165,6 +165,20 @@ DECLARATION make_ACdeclaration_labelToken_function_minorAttrList(LabelToken p1, 
     tmp->u.acdeclaration_labeltoken_function_minorattrlist_.type_and_minor_attr_ = p2;
     return tmp;
 }
+/********************   ADdeclaration_labelToken_function_minorAttrList    ********************/
+DECLARATION make_ADdeclaration_labelToken_function_minorAttrList(NoArgUserFuncIdentifierToken p1, TYPE_AND_MINOR_ATTR p2)
+{
+    DECLARATION tmp = (DECLARATION) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ADdeclaration_labelToken_function_minorAttrList!\n");
+        exit(1);
+    }
+    tmp->kind = is_ADdeclaration_labelToken_function_minorAttrList;
+    tmp->u.addeclaration_labeltoken_function_minorattrlist_.noarguserfuncidentifiertoken_ = p1;
+    tmp->u.addeclaration_labeltoken_function_minorattrlist_.type_and_minor_attr_ = p2;
+    return tmp;
+}
 /********************   ADdeclaration_labelToken_function    ********************/
 DECLARATION make_ADdeclaration_labelToken_function(LabelToken p1)
 {
@@ -176,6 +190,19 @@ DECLARATION make_ADdeclaration_labelToken_function(LabelToken p1)
     }
     tmp->kind = is_ADdeclaration_labelToken_function;
     tmp->u.addeclaration_labeltoken_function_.labeltoken_ = p1;
+    return tmp;
+}
+/********************   AEdeclaration_labelToken_function    ********************/
+DECLARATION make_AEdeclaration_labelToken_function(NoArgUserFuncIdentifierToken p1)
+{
+    DECLARATION tmp = (DECLARATION) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating AEdeclaration_labelToken_function!\n");
+        exit(1);
+    }
+    tmp->kind = is_AEdeclaration_labelToken_function;
+    tmp->u.aedeclaration_labeltoken_function_.noarguserfuncidentifiertoken_ = p1;
     return tmp;
 }
 /********************   AEdeclaration_eventToken_event    ********************/
@@ -1462,7 +1489,20 @@ ARITH_ID make_FHarith_id(ArithFieldToken p1)
     tmp->kind = is_FHarith_id;
     tmp->u.fharith_id_.arithfieldtoken_ = p1;
     return tmp;
-}/********************   ZZclocktime    ********************/
+}/********************   ZZnoArgumentUserFunction    ********************/
+NO_ARG_ARITH_FUNC make_ZZnoArgumentUserFunction(NoArgUserFuncIdentifierToken p1)
+{
+    NO_ARG_ARITH_FUNC tmp = (NO_ARG_ARITH_FUNC) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ZZnoArgumentUserFunction!\n");
+        exit(1);
+    }
+    tmp->kind = is_ZZnoArgumentUserFunction;
+    tmp->u.zznoargumentuserfunction_.noarguserfuncidentifiertoken_ = p1;
+    return tmp;
+}
+/********************   ZZclocktime    ********************/
 NO_ARG_ARITH_FUNC make_ZZclocktime()
 {
     NO_ARG_ARITH_FUNC tmp = (NO_ARG_ARITH_FUNC) malloc(sizeof(*tmp));
@@ -1639,18 +1679,6 @@ ARITH_FUNC make_ZZmod()
         exit(1);
     }
     tmp->kind = is_ZZmod;
-    return tmp;
-}
-/********************   ZZodd    ********************/
-ARITH_FUNC make_ZZodd()
-{
-    ARITH_FUNC tmp = (ARITH_FUNC) malloc(sizeof(*tmp));
-    if (!tmp)
-    {
-        fprintf(stderr, "Error: out of memory when allocating ZZodd!\n");
-        exit(1);
-    }
-    tmp->kind = is_ZZodd;
     return tmp;
 }
 /********************   ZZremainder    ********************/
@@ -2083,6 +2111,42 @@ ARITH_FUNC make_ZZmin()
         exit(1);
     }
     tmp->kind = is_ZZmin;
+    return tmp;
+}/********************   ZZodd    ********************/
+BIT_FUNC make_ZZodd()
+{
+    BIT_FUNC tmp = (BIT_FUNC) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ZZodd!\n");
+        exit(1);
+    }
+    tmp->kind = is_ZZodd;
+    return tmp;
+}
+/********************   ZZxor    ********************/
+BIT_FUNC make_ZZxor()
+{
+    BIT_FUNC tmp = (BIT_FUNC) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ZZxor!\n");
+        exit(1);
+    }
+    tmp->kind = is_ZZxor;
+    return tmp;
+}
+/********************   ZZuserBitFunction    ********************/
+BIT_FUNC make_ZZuserBitFunction(BitFunctionIdentifierToken p1)
+{
+    BIT_FUNC tmp = (BIT_FUNC) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ZZuserBitFunction!\n");
+        exit(1);
+    }
+    tmp->kind = is_ZZuserBitFunction;
+    tmp->u.zzuserbitfunction_.bitfunctionidentifiertoken_ = p1;
     return tmp;
 }/********************   AAsubscript    ********************/
 SUBSCRIPT make_AAsubscript(SUB_HEAD p1)
@@ -3275,30 +3339,6 @@ LABEL make_FNlabel(StructFunctionIdentifierToken p1)
     }
     tmp->kind = is_FNlabel;
     tmp->u.fnlabel_.structfunctionidentifiertoken_ = p1;
-    return tmp;
-}/********************   ZZxor    ********************/
-BIT_FUNC make_ZZxor()
-{
-    BIT_FUNC tmp = (BIT_FUNC) malloc(sizeof(*tmp));
-    if (!tmp)
-    {
-        fprintf(stderr, "Error: out of memory when allocating ZZxor!\n");
-        exit(1);
-    }
-    tmp->kind = is_ZZxor;
-    return tmp;
-}
-/********************   ZZuserBitFunction    ********************/
-BIT_FUNC make_ZZuserBitFunction(BitFunctionIdentifierToken p1)
-{
-    BIT_FUNC tmp = (BIT_FUNC) malloc(sizeof(*tmp));
-    if (!tmp)
-    {
-        fprintf(stderr, "Error: out of memory when allocating ZZuserBitFunction!\n");
-        exit(1);
-    }
-    tmp->kind = is_ZZuserBitFunction;
-    tmp->u.zzuserbitfunction_.bitfunctionidentifiertoken_ = p1;
     return tmp;
 }/********************   FLevent    ********************/
 EVENT make_FLevent(EventToken p1)
@@ -7420,6 +7460,19 @@ CLOSING make_ABclosing(LABEL p1)
     tmp->u.abclosing_.label_ = p1;
     return tmp;
 }
+/********************   ADclosing    ********************/
+CLOSING make_ADclosing(NoArgUserFuncIdentifierToken p1)
+{
+    CLOSING tmp = (CLOSING) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ADclosing!\n");
+        exit(1);
+    }
+    tmp->kind = is_ADclosing;
+    tmp->u.adclosing_.noarguserfuncidentifiertoken_ = p1;
+    return tmp;
+}
 /********************   ACclosing    ********************/
 CLOSING make_ACclosing(LABEL_DEFINITION p1, CLOSING p2)
 {
@@ -7483,6 +7536,32 @@ FUNCTION_NAME make_AAfunction_name(LABEL_EXTERNAL p1)
     }
     tmp->kind = is_AAfunction_name;
     tmp->u.aafunction_name_.label_external_ = p1;
+    return tmp;
+}
+/********************   ABfunction_name    ********************/
+FUNCTION_NAME make_ABfunction_name(NoArgUserFuncIdentifierToken p1)
+{
+    FUNCTION_NAME tmp = (FUNCTION_NAME) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ABfunction_name!\n");
+        exit(1);
+    }
+    tmp->kind = is_ABfunction_name;
+    tmp->u.abfunction_name_.noarguserfuncidentifiertoken_ = p1;
+    return tmp;
+}
+/********************   ACfunction_name    ********************/
+FUNCTION_NAME make_ACfunction_name(NoArgUserFuncIdentifierToken p1)
+{
+    FUNCTION_NAME tmp = (FUNCTION_NAME) malloc(sizeof(*tmp));
+    if (!tmp)
+    {
+        fprintf(stderr, "Error: out of memory when allocating ACfunction_name!\n");
+        exit(1);
+    }
+    tmp->kind = is_ACfunction_name;
+    tmp->u.acfunction_name_.noarguserfuncidentifiertoken_ = p1;
     return tmp;
 }/********************   AAprocedure_name    ********************/
 PROCEDURE_NAME make_AAprocedure_name(LABEL_EXTERNAL p1)

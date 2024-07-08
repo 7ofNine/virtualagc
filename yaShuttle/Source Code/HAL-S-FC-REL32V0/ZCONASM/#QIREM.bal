@@ -1,4 +1,0 @@
-#QIREM   CSECT
- DC Z(IREM,,X'E')
- EXTRN IREM
- END

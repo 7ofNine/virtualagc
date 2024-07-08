@@ -160,6 +160,14 @@
  *                              of the .tcl program it might be running.
  *              2022-10-28 RSB  Added LM131R1, SUNRISE45, and SUNRISE69.
  *              2022-11-17 RSB  Added Aurora 88.
+ *              2023-05-02 RSB  Tentatively enabled Corona 261.
+ *              2023-06-22 RSB  Added Corona161's HTML.
+ *              2024-01-25 RSB  Enabled Skylab 2-4 and ASTP missions because
+ *                              core dump (but not yet reconstructed source
+ *                              code) is now available.
+ *              2024-05-13 RSB  Enabled Comanche 67 for Apollo 12 CM.
+ *              2024-05-21 RSB  Added/Enabed Comanche 72 and Manche 72R3 for
+ *                              Apollo 13 CM.
  *
  * This file was originally generated using the wxGlade RAD program.
  * However, it is now maintained entirely manually, and cannot be managed
@@ -203,9 +211,10 @@ static const missionAlloc_t missionConstants[ID_AGCCUSTOMBUTTON
             { "Apollo 1 Command Module", "",
                 "Click this to select the unflown Apollo 1 mission.", DISABLED,
                 CM, BLOCK1, NO_PERIPHERALS, "", "CM0.ini" },
-            { "AS-202 (\"Apollo 3\") CM", "",
-                "Click this to select the AS-202 (\"Apollo 3\") unmanned CM mission.",
-                DISABLED, CM, BLOCK1, NO_PERIPHERALS, "", "CM0.ini" },
+            { "AS-202 (\"Apollo 3\") CM", "Corona261/MAIN.agc.html",
+                "Click this to select the AS-202 (\"Apollo 3\") unmanned CM mission. "
+                "Note that this software is presently tentative.",
+                ENABLED, CM, BLOCK1, NO_PERIPHERALS, "Corona261", "CM0.ini" },
             { "Apollo 4 Command Module", "Solarium055/MAIN.agc.html",
                 "Click this to select the unmanned Apollo 4 Block 1 CM mission, running software SOLARIUM 55, "
                     "which is believed to be identical to SOLARIUM 54.",
@@ -270,15 +279,18 @@ static const missionAlloc_t missionConstants[ID_AGCCUSTOMBUTTON
             //{ "LUMINARY 99 rev 2 (LM)", "LUM99R2/MAIN.agc.html",
             //    "Click this to select Luminary 99 rev 2, a hypothetical but unflown revision of the Apollo 11 LM software.",
             //    ENABLED, LM, BLOCK2, PERIPHERALS, "LUM99R2", "LM.ini" },
-            { "Apollo 12 Command Module", "",
+            { "Apollo 12 Command Module", "Comanche067/MAIN.agc.html",
                 "Click this to select the CM for the Apollo 12 mission.",
-                DISABLED, CM, BLOCK2, PERIPHERALS, "", "CM.ini" },
+                ENABLED, CM, BLOCK2, PERIPHERALS, "Comanche067", "CM.ini" },
             { "Apollo 12 Lunar Module", "Luminary116/MAIN.agc.html",
                 "Click this to select the LM for the Apollo 12 mission.",
                 ENABLED, LM, BLOCK2, PERIPHERALS, "Luminary116", "LM.ini" },
-            { "Apollo 13 Command Module", "",
+            { "COMANCHE 72 (CM)", "Comanche072/MAIN.agc.html",
+                    "Click this to select Comanche 72, a preliminary software release targeting the Apollo 13 CM.",
+                    ENABLED, CM, BLOCK2, PERIPHERALS, "Comanche072", "CM.ini" },
+            { "Apollo 13 Command Module", "Manche72R3/MAIN.agc.html",
                 "Click this to select the CM for the Apollo 13 mission.",
-                DISABLED, CM, BLOCK2, PERIPHERALS, "", "CM.ini" },
+                ENABLED, CM, BLOCK2, PERIPHERALS, "Manche72R3", "CM.ini" },
             { "LUMINARY 130 (LM)", "Luminary130/MAIN.agc.html",
                 "Click this to select Luminary 130, a preliminary revision of the Apollo 13 LM software.",
                 ENABLED, LM, BLOCK2, PERIPHERALS, "Luminary130", "LM.ini" },
@@ -309,12 +321,12 @@ static const missionAlloc_t missionConstants[ID_AGCCUSTOMBUTTON
             { "Apollo 15-17 Lunar Module", "Luminary210/MAIN.agc.html",
                 "Click this to select the LM for the Apollo 15-17 mission.",
                 ENABLED, LM, BLOCK2, PERIPHERALS, "Luminary210", "LM1.ini" },
-            { "Apollo Skylab Command Module", "",
-                "Click this to select the Apollo-Soyuz mission.", DISABLED, CM,
-                BLOCK2, PERIPHERALS, "", "CM.ini" },
-            { "Apollo Soyuz Command Module", "",
-                "Click this to select an Apollo-Skylab mission.", DISABLED, CM,
-                BLOCK2, PERIPHERALS, "", "CM.ini" },
+            { "Apollo Skylab 2-4 Command Module", "Skylark048/MAIN.agc.html",
+                "Click this to select the Skylab 2, 3, or 4 mission.", ENABLED, CM,
+                BLOCK2, PERIPHERALS, "Skylark048", "CM.ini" },
+            { "Apollo Soyuz Command Module (ASTP)", "Skylark048/MAIN.agc.html",
+                "Click this to select an Apollo-Soyuz mission.", ENABLED, CM,
+                BLOCK2, PERIPHERALS, "Skylark048", "CM.ini" },
             { "Validation Suite", "Validation/Validation.agc.html",
                 "Click this to select the AGC validation (non-mission) software.",
                 ENABLED, LM, BLOCK2, NO_PERIPHERALS, "Validation", "LM.ini" },

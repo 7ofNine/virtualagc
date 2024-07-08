@@ -61,10 +61,6 @@ of the parameters:
                         source code.  My conception of it has fallen away over 
                         time, but it does relate each line to a source-code file
                         and the  line-number in that file.
-    libraryFilename     The name of the file of structure templates, for 
-                        updating if new STRUCTURE statements are found.
-    structureTemplates  A dictionary of the structure templates imported or
-                        declared so far.
     noCompile           If True, then only preprocessing is performed, without
                         tokenization, parsing, code generation, etc.
     lbnf                Corresponds to the interpreter's `LBNF command.
@@ -80,7 +76,10 @@ of the parameters:
                         common (but not univesal, unfortunately) setting.
     macros              On input, a list of the macros already defined by
                         identifier mangling.  This list is *not* updated by 
-                        processSource().
+                        processSource().  A new macro dictionary is appended
+                        to the list for each PROGRAM, FUNCTION, PROCEDURE, or 
+                        COMPOOL entered, and then popped when the preprocessor
+                        leaves that object.
     trace4              Corresponds to the interpreter's `TRACE4 command.
     strict              Corresponds to the interpreter's `STRICT command.
                         Although not immediately obvious, the reason this is 
@@ -95,11 +94,10 @@ of the parameters:
                         compiler applications (no interpreter), strict will
                         always be True.
 '''
-def processSource(PALMAT, halsSource, metadata, libraryFilename, 
-                    structureTemplates, \
-                    noCompile=False, lbnf=False, bnf=False, \
+def processSource(PALMAT, halsSource, metadata, noCompile=False, lbnf=False, 
+                    bnf=False, \
                     trace1=False, wine=False, trace2=False, tabSize=8, \
-                    macros=[{}], trace4=False, strict=True):
+                    macros=[{"@": 0}], trace4=False, strict=True, trace0=False):
 
     # Because whitespace is important in E/M/S constructs and (potentially) in 
     # the positioning our compiler output is going to use for error markers, 
@@ -128,8 +126,7 @@ def processSource(PALMAT, halsSource, metadata, libraryFilename,
         reorganizer.reorganizer(halsSource, metadata)
 
     # Take care of REPLACE ... BY "..." macros.
-    replaceBy.replaceBy(halsSource, metadata, \
-                        libraryFilename, structureTemplates, macros)
+    replaceBy.replaceBy(halsSource, metadata, macros, trace0)
 
     # Output the modified source.  If --no-compile, then simply output to
     # stdout. If not --no-compile, then output to a file called yaHAL_S.tmp.
@@ -190,9 +187,6 @@ def processSource(PALMAT, halsSource, metadata, libraryFilename,
         print("Compiler pass 1 failure.")
         return False, ast
         
-    # Additional passes ...
-    # TBD
-
     success = generatePALMAT(ast, PALMAT, \
                 { "history" : [], "scopeIndex" : 0 }, trace2, [], -1, trace4)
     if success:

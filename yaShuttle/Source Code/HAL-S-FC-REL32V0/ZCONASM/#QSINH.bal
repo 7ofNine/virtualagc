@@ -1,4 +1,0 @@
-#QSINH   CSECT
- DC Z(SINH,,X'E')
- EXTRN SINH
- END

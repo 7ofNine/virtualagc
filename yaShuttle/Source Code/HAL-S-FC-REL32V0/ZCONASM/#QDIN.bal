@@ -1,4 +1,0 @@
-#QDIN    CSECT
- DC Z(DIN,,X'E')
- EXTRN DIN
- END

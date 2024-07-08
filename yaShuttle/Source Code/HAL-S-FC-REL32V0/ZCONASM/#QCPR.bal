@@ -1,4 +1,0 @@
-#QCPR    CSECT
- DC Z(CPR,,X'E')
- EXTRN CPR
- END

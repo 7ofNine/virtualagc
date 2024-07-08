@@ -1,4 +1,0 @@
-#QCTOK   CSECT
- DC Z(CTOK,,X'E')
- EXTRN CTOK
- END

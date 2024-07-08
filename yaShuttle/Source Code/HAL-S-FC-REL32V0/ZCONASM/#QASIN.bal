@@ -1,4 +1,0 @@
-#QASIN   CSECT
- DC Z(ASIN,,X'E')
- EXTRN ASIN
- END

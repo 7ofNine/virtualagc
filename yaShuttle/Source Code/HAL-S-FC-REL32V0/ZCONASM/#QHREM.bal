@@ -1,4 +1,0 @@
-#QHREM   CSECT
- DC Z(HREM,,X'E')
- EXTRN HREM
- END

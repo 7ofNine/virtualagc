@@ -1,4 +1,0 @@
-#QCATV   CSECT
- DC Z(CATV,,X'E')
- EXTRN CATV
- END

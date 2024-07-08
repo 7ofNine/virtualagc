@@ -1,4 +1,0 @@
-#QITOE   CSECT
- DC Z(ITOE,,X'E')
- EXTRN ITOE
- END

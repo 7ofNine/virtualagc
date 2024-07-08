@@ -1,4 +1,0 @@
-#QITOD   CSECT
- DC Z(ITOD,,X'E')
- EXTRN ITOD
- END

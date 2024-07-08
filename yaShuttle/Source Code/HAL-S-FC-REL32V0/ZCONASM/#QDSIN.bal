@@ -1,4 +1,0 @@
-#QDSIN   CSECT
- DC Z(DSIN,,X'E')
- EXTRN DSIN
- END

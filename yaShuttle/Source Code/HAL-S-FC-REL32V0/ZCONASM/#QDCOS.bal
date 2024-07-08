@@ -1,4 +1,0 @@
-#QDCOS   CSECT
- DC Z(DCOS,,X'E')
- EXTRN DCOS
- END

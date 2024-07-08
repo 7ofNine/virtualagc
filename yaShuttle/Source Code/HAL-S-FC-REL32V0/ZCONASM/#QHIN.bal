@@ -1,4 +1,0 @@
-#QHIN    CSECT
- DC Z(HIN,,X'E')
- EXTRN HIN
- END

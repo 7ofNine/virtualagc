@@ -17,6 +17,8 @@ from palmatAux import debug, findIdentifier, hTRUE, hFALSE, isArrayQuick, \
     astToLbnf, appendInstruction, POUND
 from p_Functions import substate
 
+MAXBITSTRING = 256
+
 # Return True on success, False on failure.  The stage argument is 0 when
 # called upon starting processing of an lbnfLabel, 2 after otherwise finishing
 # the processing of an lbnfLabel, or 1 when called with the lbnfLabel being 
@@ -58,10 +60,15 @@ def expressionSM(stage, ast, PALMAT, state, trace, depth, \
         if internalState == "waitIdentifier":
             si, attributes = \
                     findIdentifier(lbnfLabel, PALMAT, state["scopeIndex"])
+            if len(substate["qual"]) > 0:
+                si = substate["qualScope"]
+                appendInstruction(expression, { "operator": "dotted"}, source, substate["qualInsert"])
             if "readStatement" in stateMachine:
-                appendInstruction(expression, { "fetchp": (si, sp)}, source)
+                appendInstruction(expression, { "fetchp": (si, sp)}, source, substate["qualInsert"])
             else:
-                appendInstruction(expression, { "fetch": (si, sp) }, source)
+                appendInstruction(expression, { "fetch": (si, sp) }, source, substate["qualInsert"])
+            substate["qual"] = []
+            substate["qualInsert"] = -1
             internalState = "normal"
         elif internalState == "waitNumber":
             appendInstruction(expression, \
@@ -69,8 +76,12 @@ def expressionSM(stage, ast, PALMAT, state, trace, depth, \
             internalState = "normal"
         elif internalState == "waitCharString":
             if stateMachine["radix"] != 0:
+                #appendInstruction(expression, \
+                #    {"bitarray": "%d" % int(sp[1:-1], stateMachine["radix"])}, \
+                #    source)
                 appendInstruction(expression, \
-                    {"bitarray": "%d" % int(sp[1:-1], stateMachine["radix"])}, \
+                    {"boolean": [int(sp[1:-1], stateMachine["radix"]), 
+                                 MAXBITSTRING, 'b']}, \
                     source)
                 stateMachine["radix"] = 0
             else:
@@ -98,6 +109,11 @@ def expressionSM(stage, ast, PALMAT, state, trace, depth, \
             appendInstruction(expression, { "partition": True }, source)
         elif lbnfLabel == "minorAttributeStar":
             appendInstruction(expression, { "fill": True }, source)
+        elif lbnfLabel == "structure_id":
+            if len(substate["qual"]) == 1:
+                substate["qualInsert"] = len(expression)
+                appendInstruction(expression, {'sentinel': 'dotted'}, source)
+            appendInstruction(expression, {'string': substate["qual"][-1]}, source, substate["qualInsert"])
     if stage == 2 and depth == owningDepth:
         # Transfer the expression stack to the PALMAT instruction queue.
         # But if it's computable at compile-time, then we compute it down
@@ -347,7 +363,8 @@ def expressionSM(stage, ast, PALMAT, state, trace, depth, \
         elif lbnfLabel == "relational_expOR":
             appendInstruction(expression, { "operator": "OR" }, source)
         elif lbnfLabel in ["prePrimaryFunction", "userBitFunction", 
-                           "userCharFunction", "userStructFunc"]:
+                           "userCharFunction", "userStructFunc",
+                           "noArgumentUserFunction"]:
             internalState = "waitFunctionName"
         elif lbnfLabel == "factorTranspose":
             appendInstruction(expression, {"function": "TRANSPOSE"}, source)

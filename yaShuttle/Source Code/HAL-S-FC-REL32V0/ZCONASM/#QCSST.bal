@@ -1,4 +1,0 @@
-#QCSST   CSECT
- DC Z(CSST,,X'E')
- EXTRN CSST
- END

@@ -58,7 +58,8 @@ to pop the final value from the runtime execution stack.
 
 import sys
 import copy
-from palmatAux import addAttribute, findIdentifier, removeAncestors
+from palmatAux import addAttribute, findIdentifier, removeAncestors, \
+                      notUnmarkedScalars
 
 # This is persistent statelike information, unlike the "state" parameter
 # used for functions that propagates only *into* the recursive descent and
@@ -113,9 +114,132 @@ def fixupState(state, fsType, name=None):
         newState["history"] += [ourName]
     return newState
 
+'''
+Background:  When processing a STRUCTURE statement, the attributes in the 
+identifiers list are built up somewhat recursively.  There is a list used 
+in this process that grows and shrinks as processing descends into the hierarchy 
+of the structure template or ascends back to higher levels.  This list is:
+    substate["currentStructureTemplateDescent"]
+This list (for discussion, let's call it just Descent) contains the structure
+template fieldnames by which the current point in the processing has been 
+reached; i.e., Descent[0] is the level 1 fieldname, Descent[1] is the level 2
+fieldname in the template (a child of Descent[1]), and so on.  So for example, 
+if we were processing structure template S, and had reached the point where we 
+were determining the attributes of S.A.B.C, then 
+    Descent = ["A", "B", "C"]
+
+What the findTemplateAttributes functions does is to use the Descent list to 
+find the specific attributes dictionary for some field of a structure template.
+Upon input, "attributes" is the attributes dictionary for the full structure
+template, as taken from the scope's identifiers dictionary.  
+
+Thus in the example given earlier, upon entry "attributes" will be the dictionary
+identifiers["^s_S^].  Somewhere that dictionary lie the specific attributes for 
+field S.A.B.C.  The function returns the dictionary containing those attributes.  
+
+The parameter "append" can be used to create a structure-template subfield that 
+doesn't yet exist.  Descent is use to locate the parent field for the subfield.
+The "append" parameter is a 2-tuple or 2-list in which the first element is the
+name of the subfield and the second element is its initial attributes.
+
+The functure returns the found (or newly-added) field's attributes, or else
+None if the field couldn't be found (or created using "append").
+'''
+def findTemplateAttributes(attributes, descent, append=None):
+    for i in range(len(descent)):
+        fieldname = descent[i]
+        if "template" not in attributes:
+            return None
+        template = attributes["template"]
+        fieldnameList = template[0]
+        attributesList = template[1]
+        if fieldname not in fieldnameList:
+            return None
+        j = fieldnameList.index(fieldname)
+        attributes = attributesList[j]
+    # At this point, we've found the attributes for the specific fieldname
+    # specified by descent[].  Are we supposed to create a subfield in it?
+    if append != None:
+        if "template" not in attributes:
+            # When fields are created without explicit attributes, they are
+            # tentatively assigned as "scalar" but could turn out to be 
+            # "template", which seems to be what has happened here.
+            if "scalar" in attributes and len(attributes) == 1:
+                attributes.pop("scalar")
+                attributes["template"] = ([], [])
+            else:
+                return None
+        attributes["template"][0].append(append[0])
+        attributes["template"][1].append(append[1])
+        attributes = attributes["template"][1][-1]
+    return attributes
+
+# Print a structure template, given its name and attributes.
+def printTemplate(identifier, attributes, indent=0, level=0):
+    if identifier[0] == "^":
+        identifier = identifier[1:-1]
+    else:
+        identifier = "%d %s" % (level, identifier)
+    print("%*s%s:" % (indent, "", identifier), end="")
+    if "template" not in attributes:
+        print(" ", attributes)
+        return
+    print()
+    fieldnameList = attributes["template"][0]
+    attributesList = attributes["template"][1]
+    for i in range(len(fieldnameList)):
+        printTemplate(fieldnameList[i], attributesList[i], \
+                      indent + 4, level + 1)
+    
+if False:
+    # Test for findTemplateAttributes() and printTemplate() implementing example 
+    # T2-STRUCTURE from https://www.ibiblio.org/apollo/hal-s-compiler.html#Data.
+    attributes = {"template":([],[])}
+    findTemplateAttributes(attributes, [], ["C", {"template":([],[])}])
+    findTemplateAttributes(attributes, [], ["D", {"template":([],[])}])
+    findTemplateAttributes(attributes, [], ["E", {"vector":3}])
+    findTemplateAttributes(attributes, ["C"], ["A", {"scalar":True}])
+    findTemplateAttributes(attributes, ["C"], ["B", {"scalar":True}])
+    findTemplateAttributes(attributes, ["C"], ["I", {"integer":True}])
+    findTemplateAttributes(attributes, ["D"], ["A", {"scalar":True}])
+    findTemplateAttributes(attributes, ["D"], ["B", {"scalar":True}])
+    findTemplateAttributes(attributes, ["D"], ["I", {"integer":True}])
+    print(attributes)
+    printTemplate("S", attributes)
+    import sys
+    sys.exit(1)
+
 # Update attribute for identifier.
 def updateCurrentIdentifierAttribute(PALMAT, state, attribute=None, value=True):
     global substate
+    if "currentStructureTemplateAttributes" in substate and \
+            0 != len(substate["currentStructureTemplateAttributes"]):
+        # We come here if we're processing a STRUCTURE statement.
+        if attribute != None:
+            lastAttributes = substate["currentStructureTemplateAttributes"][-1]
+            lastAttributes[attribute] = value
+            if "scalar" in lastAttributes and attribute in notUnmarkedScalars:
+                lastAttributes.pop("scalar")
+            
+        # Take care of the identifiers dictionary.
+        identifiers = PALMAT["scopes"][state["scopeIndex"]]["identifiers"]
+        identifier = substate["currentStructureTemplateIdentifier"]
+        #print("**", state["scopeIndex"], identifier, identifiers)
+        attributes = identifiers[identifier]
+        descent = substate["currentStructureTemplateDescent"]
+        specificAttributes = findTemplateAttributes(attributes, descent)
+        if specificAttributes == None:
+            specificAttributes = findTemplateAttributes( \
+                                    attributes, descent[:-1], \
+                                    [descent[-1], { }] )
+        if attribute == None:
+            specificAttributes["scalar"] = True
+        else:
+            if "scalar" in specificAttributes and attribute in notUnmarkedScalars:
+                specificAttributes.pop("scalar")
+            specificAttributes[attribute] = value 
+        return
+    # We come here if we're processing a DECLARE statement.
     history = state["history"]
     if substate["currentIdentifier"] == "":
         if ('declareBody_attributes_declarationList' in history and \
@@ -134,16 +258,45 @@ def updateCurrentIdentifierAttribute(PALMAT, state, attribute=None, value=True):
     if attribute != None:
         identifiers[substate["currentIdentifier"]][attribute] = value
 
-# Remove identifiers.  This is not something you can
+# Remove identifier.  This is not something you can
 # do in HAL/S, but there are interpreter commands for it.
-def removeIdentifier(PALMAT, scopeIndex, identifier):
+# The identifier name is unmangled and not carat-quoted.
+def removeIdentifier(PALMAT, macros, scopeIndex, identifier):
     scope = PALMAT["scopes"][scopeIndex]
+    macros0 = macros[scopeIndex]
+    mangled = identifier
+    if identifier in macros0:
+        attributes = macros0[identifier]
+        if attributes["arguments"] == []:
+            mangled = attributes["replacement"]
+    carated = "^" + mangled + "^"
     identifiers = scope["identifiers"]
-    if identifier in identifiers:
-        identifiers.pop(identifier)
+    if carated in identifiers:
+        identifiers.pop(carated)
+        if identifier in macros0:
+            macros0.pop(identifier)
+        print("Removed identifier: %s (%s)" % (identifier, mangled))
+    else:
+        print("Identifier not found: %s (%s)" % (identifier, mangled))
 
-def removeAllIdentifiers(PALMAT, scopeIndex):
-    PALMAT["scopes"][scopeIndex]["identifiers"] = {}
+def removeAllIdentifiers(PALMAT, macros, scopeIndex):
+    scope = PALMAT["scopes"][scopeIndex]
+    macros0 = macros[scopeIndex]
+    identifiers = scope["identifiers"]
+    forRemoval = []
+    for identifier in identifiers:
+        attributes = identifiers[identifier]
+        if "program" not in attributes and "function" not in attributes and \
+                "procedure" not in attributes and "compool" not in attributes:
+            forRemoval.append(identifier)
+    for identifier in forRemoval:
+        identifiers.pop(identifier)
+    macroRemovals = []
+    for macro in macros0:
+        if "^" + macros[macro]["replacement"] + "^" in forRemoval:
+            macroRemovals.append(macro)
+    for macro in macroRemovals:
+        macros0.pop(macro)
    
 # This function is called from generatePALMAT() for a string literal.
 # Returns only True/False for Success/Failure.
@@ -191,8 +344,118 @@ def stringLiteral(PALMAT, state, s):
     # variations (sp, isp, fsp). 
     if False:
         pass
+    elif state1 == "structure_id" and "qual_struct" in history:
+        if len(substate["qual"]) == 0:
+            iScope, iAttributes = findIdentifier(s, PALMAT, scopeIndex)
+            substate["qualScope"] = iScope
+            substate["qualInsert"] = -1
+        substate["qual"].append(sp[2:])
+    elif state1 == "number" and \
+            "arraySpec_arrayHead_literalExpOrStar" in history and \
+            "structure_stmt" in history:
+        attributes = findTemplateAttributes(\
+                identifiers[substate["currentStructureTemplateIdentifier"]], \
+                substate["currentStructureTemplateDescent"])
+        attributes["array"].append(int(sp))
+    elif state1 == "number" and \
+            "sQdQName_doublyQualNameHead_literalExpOrStar" in history and \
+            "currentStructureTemplateDescent" in substate and \
+            substate["currentStructureTemplateIdentifier"] in identifiers:
+        attributes = findTemplateAttributes(\
+                identifiers[substate["currentStructureTemplateIdentifier"]], \
+                substate["currentStructureTemplateDescent"])
+        if attributes != None:
+            if "vector" in attributes:
+                width = int(sp)
+                attributes["vector"] = width
+                substate["currentStructureTemplateAttributes"][-1]["vector"] = width
+            elif "matrix" in attributes:
+                width = int(sp)
+                attributes["matrix"].append(width)
+    elif state1 == "structure_id":
+        # Start of a STRUCTURE statement.
+        if "structure_stmt" in history:
+            if "attributes_typeAndMinorAttr" in history:
+                # This is a declaration that a field in a structure is itself
+                # a substructure.
+                updateCurrentIdentifierAttribute(PALMAT, state, \
+                                            "structure", sp[2:] + "-STRUCTURE")
+            else:
+                # This is the name of in an actual definition of a structure 
+                # template.
+                if s in identifiers:
+                    substate["errors"]\
+                        .append("Structure-template name (%s) already declared." \
+                                % sp)
+                    return False
+                else:
+                    identifiers[s] = { "template": ([], []) }
+                    substate["currentStructureTemplateIdentifier"] = s
+                    substate["currentStructureTemplateDescent"] = []
+                    substate["currentStructureTemplateAttributes"] = []
+        else:
+            updateCurrentIdentifierAttribute(PALMAT, state, "structure", sp)
+    elif "structure_stmt" in history and \
+            state1 in ["struct_stmt_head", "struct_stmt_tail",
+                       "nameId_structIdentifierToken", "bit_id"]:
+        '''
+        The variable called "descent" is a hierarchical list of unmangled 
+        fieldnames identifying the exact field we're currently processing.  When 
+        we descend to the next level, we append a fieldname to the list.  When 
+        we remain within a level, we replace the last fieldname in the list.
+        When we retreat, we remove the final fieldnames until we get back
+        the earlier level we want.
+        '''
+        if sp.isdigit():
+            # Level in a structure statement.
+            substate["commonAttributes"] = {}
+            substate["currentStructureTemplateLevel"] = int(sp)
+        else:
+            # Fieldname for the structure statement.
+            descent = substate["currentStructureTemplateDescent"]
+            dattributes = substate["currentStructureTemplateAttributes"]
+            level = substate["currentStructureTemplateLevel"]
+            while len(descent) > level:
+                descent.pop()
+                dattributes.pop()
+            if len(descent) == level:
+                # We're on an existing level, and can thus add the new field
+                # to that level.
+                descent[-1] = sp
+                dattributes[-1] = {}
+                pass
+            elif level == len(descent) + 1:
+                # The last field added was a substructure, or else the template
+                # is completely empty so far, so we now have to
+                # add the level for that substructure and add our new field
+                # to it.
+                descent.append(sp)
+                dattributes.append({})
+                pass
+            else:
+                substate["errors"]\
+                    .append("Illegal level in structure-template %s: %d %s" % \
+                            (sp, level, str(descent)))
+                return False
+            #print("*C", level)
+            #print("*D", descent)
+            updateCurrentIdentifierAttribute(PALMAT, state, "scalar")
     elif state1 == "number" and "minorAttributeRepeatedConstant" in history:
         pass
+    elif state1 == "number" and "bitSpecBoolean" in history \
+            and "structure_stmt" in history:
+        substate["currentStructureTemplateAttributes"][-1]["bit"] = isp
+        attributes = findTemplateAttributes(\
+            identifiers[substate["currentStructureTemplateIdentifier"]], 
+            substate["currentStructureTemplateDescent"])
+        attributes["bit"] = isp
+    elif state1 == "number" and "typeSpecChar" in history \
+            and "structure_stmt" in history:
+        substate["currentStructureTemplateAttributes"][-1]["character"] = isp
+        attributes = findTemplateAttributes(\
+            identifiers[substate["currentStructureTemplateIdentifier"]], 
+            substate["currentStructureTemplateDescent"])
+        attributes["character"] = isp
     elif state2 == ["typeSpecChar", "number"]:
         if "declareBody_attributes_declarationList" in history:
             substate["commonAttributes"]["character"] = isp
@@ -216,23 +479,25 @@ def stringLiteral(PALMAT, state, s):
                 "declaration_labelToken_function_minorAttrList" in history:
             addAttribute(identifiers, s, "function", True)
             addAttribute(identifiers, s, "scope", len(scopes))
+            addAttribute(identifiers, s, "forward", True)
             addAttribute(identifiers, s, "parameters", [])
         elif "blockHeadProcedure" in history:
             addAttribute(identifiers, s, "procedure", True)
             addAttribute(identifiers, s, "scope", len(scopes))
+            addAttribute(identifiers, s, "forward", True)
             addAttribute(identifiers, s, "parameters", [])
             addAttribute(identifiers, s, "assignments", [])
         return True, state
-    elif state1 == "variable" and "call_assign_list" in history:
+    elif state1 in ["variable", "bit_id"] and "call_assign_list" in history:
         if "callAssignments" not in substate["commonAttributes"]:
             substate["commonAttributes"]["callAssignments"] = []
         si, attributes = findIdentifier(s, PALMAT, scopeIndex)
         if attributes == None:
             substate["errors"]\
                 .append("Variable %s in ASSIGN not found." % s[1:-1])
-            scope["children"].remove(i)
-            identifiers.pop(s)
-            PALMAT["scopes"][i]["parent"] = None
+            #scope["children"].remove(i)
+            #identifiers.pop(s)
+            #PALMAT["scopes"][i]["parent"] = None
         else:
             substate["commonAttributes"]["callAssignments"].append((si, s[1:-1]))
     elif state1 == "call_key":
@@ -272,7 +537,12 @@ def stringLiteral(PALMAT, state, s):
     elif state1 in ["basicStatementExit", "basicStatementRepeat"]:
         substate["labelExitRepeat"] = s
     elif state1 == "basicStatementGoTo":
-        instructions.append({'goto': s})
+        si, attributes = findIdentifier(s, PALMAT, scopeIndex)
+        if attributes == None:
+            substate["errors"].append("Can't find label %s.", sp)
+            return False
+        else:
+            instructions.append({'goto': (si, s)})
     elif state1 == "number" and \
             ("write_key" in history or "read_key" in history):
         substate["LUN"] = sp
@@ -307,6 +577,14 @@ def resetStatement():
     substate["commonAttributes"] = {}
     substate["lhs"] = []
     substate["expression"] = []
+    substate["qual"] = []
+    substate["qualInsert"] = -1
+    forRemoval = []
+    for key in substate:
+        if "currentStructureTemplate" in key:
+            forRemoval.append(key)
+    for key in forRemoval:
+        substate.pop(key)
 
 # Transfer the expression stack to end of the PALMAT instruction list, 
 # in reverse order, and clear the expression stack.
@@ -366,10 +644,12 @@ augmentationCandidates = [
     "literalExp",
     "nameId_bitFunctionIdentifierToken",
     "nameId_charFunctionIdentifierToken",
+    "nameId_structIdentifierToken",
     "parameter",
     "parameter_list",
     "prePrimaryFunction",
     "procedure_name",
+    "qual_struct",
     "read_arg",
     "read_key",
     "relational_exp",
@@ -385,6 +665,9 @@ augmentationCandidates = [
     "prePrimaryRtlShapingHeadMatrixSubscript",
     "repeated_constantMark",
     "sQdQName_doublyQualNameHead_literalExpOrStar",
+    "structure_id",
+    "struct_stmt_head",
+    "struct_stmt_tail",
     "sub_exp",
     "subscript",
     "then",

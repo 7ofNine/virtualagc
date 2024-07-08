@@ -60,7 +60,7 @@ import sys
 #import reorganizer
 #from pass1 import tokenizeAndParse, tmpFile, compiler, astPrint, captured
 from processSource import processSource
-from palmatAux import constructPALMAT
+from palmatAux import constructPALMAT, astSourceFile
 from pass1 import parms
 from optimizePALMAT import optimizePALMAT
 
@@ -69,9 +69,6 @@ tabSize = 8
 halsSource = []
 metadata = []
 files = []
-noLibrary = False
-libraryFilename = "yaHAL-default.templates"
-structureTemplates = {}
 noCompile = False
 lbnf = False
 bnf = False
@@ -80,7 +77,7 @@ interactive = False
 colorize = False
 noexec = False
 ansiWrapper = True
-for param in ["--library="+libraryFilename] + sys.argv[1:]:
+for param in sys.argv[1:]:
     if param == "--help":
         print("""
         This is a preprocessor+compiler+interpreter for HAL/S code. 
@@ -97,7 +94,8 @@ for param in ["--library="+libraryFilename] + sys.argv[1:]:
                         supplied on
                         punchcards, but it's certainly possible to accidentally
                         end up with tabs if source is edited in modern editors.
-        --no-library    Do not try to load or update a template library.
+        --no-compile    Merely output preprocessed source, and do not attempt
+                        to invoke the compiler.
         --library=F     Specifies the filename of the library of structure
                         templates.  By default, "yaHAL-default.templates".
                         This option can be used multiple times, but any new
@@ -125,6 +123,18 @@ for param in ["--library="+libraryFilename] + sys.argv[1:]:
                         although it processes it normally in all other
                         ways.
         """ % parms["compiler"])
+        '''
+        Here are some former OPTIONS I've at least temporarily discontinued
+        because they weren't thought out well.  --no-library is now the 
+        default, and --library isn't functional.
+        --no-library    Do not try to load or update a template library.
+        --library=F     Specifies the filename of the library of structure
+                        templates.  By default, "yaHAL-default.templates".
+                        This option can be used multiple times, but any new
+                        structure templates encountered during preprocessing
+                        will only be added to the final library file specified.
+                        This option must precede the HAL/S source filenames.
+       '''
         sys.exit(0)
     elif param == "--interactive":
         interactive = True
@@ -149,35 +159,14 @@ for param in ["--library="+libraryFilename] + sys.argv[1:]:
     elif param == "--trace":
         trace = True
     elif param == "--no-library":
-        noLibrary = True
-        structureTemplates = {}
-        libraryFilename = None
-        print("Note: Disabling template-library file, if any.")
+        print("Note: The --no-library option is no longer of use.")
     elif param[:10] == "--library=":
-        libraryFilename = param[10:].strip()
-        #print("Here", libraryFilename)
-        # Read the structure-template library file.  This is just a text file
-        # in which each line is a HAL/S STRUCTURE statement.
-        try:
-            f = open(libraryFilename, "r")
-            for line in f:
-                fields = line.split()
-                identifier = fields[1]
-                if identifier[-1:] == ":":
-                    identifier = identifier[:-1]
-                if identifier in structureTemplates:
-                    print("Overwriting structure-template", identifier, \
-                            file=sys.stderr)
-                structureTemplates[identifier] = line.strip()
-            f.close()
-            #print(structureTemplates)
-        except:
-            print("Note: Structure-template library not found.", file=sys.stderr)
+        print("Note: The --library option is no longer of use.")
     elif param[:1] == "-":
         print("Unknown parameter:", param)
         sys.exit(1)
     else:
-        files.append(param)
+        fileIndex = astSourceFile(PALMAT, param)
         start = len(halsSource)
         halsFile = open(param, "r")
         halsSource += halsFile.readlines()
@@ -185,36 +174,18 @@ for param in ["--library="+libraryFilename] + sys.argv[1:]:
         if len(halsSource) == start:
             continue
         for i in range(len(metadata), len(halsSource)):
-            m = { "lineNumber" : i + 1 } # Lines numbered from 1.
-            m["file"] = param
+            m = { "file": fileIndex, "lineNumber" : i + 1 } # Lines numbered from 1.
             if halsSource[i][:1] == "C":
                 m["comment"] = True
-            elif halsSource[i][:1] == "D":
-                m["directive"] = True
-                # If this is an INCLUDE TEMPLATE directive, then replace the
-                # input line by the requested library template and append
-                # the original line to the end of it as an inline comment.
-                fields = halsSource[i].split()
-                if len(fields) >= 4 and fields[1] == "INCLUDE" and \
-                        fields[2] == "TEMPLATE":
-                    templateName = fields[3]
-                    if templateName in structureTemplates:
-                        halsSource[i] = " " + structureTemplates[templateName] \
-                            + "\t/*" + halsSource[i].strip()+ " */"
-                    else:
-                        m["errors"] = ["Structure template " + templateName + \
-                            " requested by compiler directive not in libary."]
             metadata.append(m)
 
 # Interpret or compile.
 if not interactive:
     PALMAT = constructPALMAT()
-    processSource(PALMAT, halsSource, metadata, libraryFilename, 
-                    structureTemplates,
-                    noCompile, lbnf, bnf, trace)
+    PALMAT["sourceFiles"] = files
+    processSource(PALMAT, halsSource, metadata, noCompile, lbnf, bnf, trace)
     optimizePALMAT(PALMAT)
 else:
     from interpreterLoop import interpreterLoop
-    interpreterLoop(libraryFilename, structureTemplates, colorize, \
-                    not noexec, lbnf, bnf, ansiWrapper)
+    interpreterLoop(colorize, not noexec, lbnf, bnf, ansiWrapper)
 

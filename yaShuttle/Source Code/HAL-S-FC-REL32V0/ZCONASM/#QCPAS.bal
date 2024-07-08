@@ -1,4 +1,0 @@
-#QCPAS   CSECT
- DC Z(CPAS,,X'E')
- EXTRN CPAS
- END

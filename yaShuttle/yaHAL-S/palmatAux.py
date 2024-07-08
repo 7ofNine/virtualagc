@@ -21,7 +21,33 @@ import json
 import re
 import copy
 import math
+from math import nan as NaN
 from decimal import Decimal, ROUND_HALF_UP
+
+# The following patterns are used the same way as "\\b" would be used in a 
+# regex at the start and end of a pattern to indicate a word boundary.  The 
+# difference is that (effectively) they add "." to the list of "word
+# characters", so that a match cannot be immediately preceded or followed by a
+# "." (perhaps surrounded by spaces.  This extension is necessary for mangling 
+# of structure fields, in which the field separator is ".".  For example, if 
+# we have a fully-qualified field expression like a.b.c.d, we want our mangling
+# to match the full "a.b.c.d" and not match (for example) "a" or "a.b", or 
+# "a.b.c".  The techniques used are, respectively, "negative lookbehind" and 
+# "negative lookahead", if you want to look them up in the Python regex docs.
+# The technique isn't perfect, unfortunately, because look-behind requires a 
+# fixed-length pattern, so all I can really check for is that there's no leading
+# "."; I can't check for a leading dot and some unknown number of spaces.
+# Fortunately, lookahed isn't restricted like that.
+fqStart = "(?<!\\.)\\b"
+fqEnd = "\\b(?!\\s*\\.)"
+
+# math.isnan() doesn't work on lists, tuples, dictionaries, or sets, as I found
+# out the hard way since it's not documented in the Python docs, which implies
+# that it works on anything.  So it must be modified as follows.
+def isNaN(object):
+    if object == None or isinstance(object, (list, tuple, dict, set, str)):
+        return False
+    return math.isnan(object)
 
 # Add a `debug` PALMAT instruction.
 def debug(PALMAT, state, message):
@@ -30,12 +56,54 @@ def debug(PALMAT, state, message):
             'debug': message
         })
 
+# Workaround for the fact that separators I'd like to use with Python's .split() 
+# method may sometimes occur within parethesized argument lists where I don't
+# actually want a split to occur.  Tailored for HAL/S.  In other words, 
+# splitOutsideParentheses(string) or splitOutside Parentheses(string, separator)
+# works just like string.split() or string.split(separater), except that the 
+# splits won't occur anywhere between parentheses.  For the default case
+# (splitting on whitspace), a split also won't occur immediately preceding a
+# leading parenthesis (for cases like an attribute "VECTOR (5)".  Note that
+# maxsplit isn't supported.
+def splitOutsideParentheses(string, separator=None):
+    fullTrim = False
+    if separator == None:
+        # Collapse multiple whitespace characters to a single actual space.
+        string = " ".join(string.strip().split())
+        # And eliminate whitespace preceding a leading parenthesis.
+        string = string.replace(" (", "(")
+        separator = " "
+        fullTrim = True # Gets rid of whitespace within parentheses.
+    start = 0
+    parenCount = 0
+    fields = []
+    for i in range(len(string)):
+        c = string[i]
+        if c == "(":
+            parenCount += 1
+        elif c == ")":
+            parenCount -= 1
+        elif parenCount == 0 and c == separator:
+            if fullTrim:
+                fields.append(string[start:i].replace(" ", ""))
+            else:
+                fields.append(string[start:i])
+            start = i + 1
+    if fullTrim:
+        fields.append(string[start:].replace(" ", ""))
+    else:
+        fields.append(string[start:])
+    return fields
+
 # Append a PALMAT instruction, with line/column reference if possible.
-def appendInstruction(instructions, instruction, source):
+def appendInstruction(instructions, instruction, source, insert=-1):
     if source[1:] != [-1, -1]:
         instruction = copy.deepcopy(instruction)
         instruction["source"] = copy.deepcopy(source)
-    instructions.append(instruction)
+    if insert >= 0:
+        instructions[insert:insert] = [instruction]
+    else:
+        instructions.append(instruction)
 
 # Configures HAL/S source-file name for astToLbnf() (see below).
 astSourceIndex = -1
@@ -178,7 +246,7 @@ def isArrayQuick(value):
 
 # Get dimensions of an Array.  Doesn't check that it *is* and ARRAY, but just
 # gets the dimensions assuming that it is.  The return value is the list of
-# dimensions and value[0]...[0] (the value of the very first leaf).  If this
+# dimensions and a representative value of the array's entries.  If this
 # is not an uninitialized value, we can use it very quickly to determine some
 # gross aspects of the datatype.  If it is uninitialized ... well, too bad.
 def getArrayDimensions(value):
@@ -186,12 +254,166 @@ def getArrayDimensions(value):
     while isArrayQuick(value):
         dimensions.append(len(value) - 1)
         value = value[0]
+    if value == None: # This particular value uninitialized?
+        unraveled = []
+        flatten(value, unraveled)
+        for value in unraveled:
+            if value != None:
+                break
     return dimensions, value
 
 # Test if a value on the computation stack is a boolean.
 def isBitArray(value):
     return isinstance(value, list) and len(value) == 3 and value[2] == "b" \
             and isinstance(value[0], int) and isinstance(value[1], int)
+
+'''
+Apply a unary function to each element of an array, returning an array of the
+same geometry, or NaN on failure.  (The unary function must also return NaN
+on error.  Python None is a proper return, because it signifies an uninitialized
+value rather than an illegal operation.)
+'''
+def unaryOperation(PALMAT, function, array):
+    if isArrayQuick(array):
+        dimensions, dummy = getArrayDimensions(array)
+    else:
+        dimensions = []
+    if len(dimensions) > 0:
+        result = []
+        for a in array[:-1]:
+            r = unaryOperation(PALMAT, function, a)
+            if isNaN(r):
+                return NaN
+            result.append(r)
+        result.append("a")
+    else:
+        # We're at a leaf element, apply the function to it.
+        if array == None:
+            return None
+        return function(PALMAT, array)
+    return result
+
+'''
+Apply a binary function to two objects, either or both of which being arrays
+(of the same geometry if both are arrays), but otherwise of compatible datatypes
+when the arrayness is ignored.  Returns the result of the operation, either
+as an array (if one or both operands were arrays) or a non-array (if neither
+operand was an array). Or else returns NaN on failure.
+(The binary function must also return NaN on error.
+Python None is a proper return, because it signifies an uninitialized
+value rather than an illegal operation.) 
+'''
+def binaryOperation(PALMAT, function, array1, array2):
+    if isArrayQuick(array1):
+        dimensions1, dummy = getArrayDimensions(array1)
+    else:
+        dimensions1 = []
+    if isArrayQuick(array2):
+        dimensions2, dummy = getArrayDimensions(array2)
+    else:
+        dimensions2 = []
+    # The list called "dimensions" will be the array dimensions if either 
+    # operand (and thus the output result) are to be arrays.  If dimensions==[],
+    # then neither the operands nor the output is an array.
+    if dimensions1 == []:
+        dimensions = dimensions2
+    elif dimensions2 == []:
+        dimensions = dimensions1
+    elif dimensions1 != dimensions2:
+        return NaN
+    else:
+        dimensions = dimensions1
+    if len(dimensions) > 0:
+        result = []
+        for i in range(dimensions[0]):
+            if dimensions1 == []:
+                child1 = array1
+            else:
+                child1 = array1[i]
+            if dimensions2 == []:
+                child2 = array2
+            else:
+                child2 = array2[i]
+            r = binaryOperation(PALMAT, function, child1, child2)
+            if isNaN(r):
+                return NaN
+            result.append(r)
+        result.append("a")
+    else:
+        # We're at a leaf element, so apply the function right now and 
+        # stop recursing.
+        if array1 == None or array2 == None:
+            return None
+        result = function(PALMAT, array1, array2)
+    return result
+
+'''
+Apply a trinary function to three objects, any of which can be arrays
+(of identical geometries), but otherwise of compatible datatypes
+when the arrayness is ignored.  Returns the result of the operation, either
+as an array (if some operands were arrays) or a non-array (if no
+operand was an array). Or else returns NaN on failure.
+(The trinary function must also return NaN on error.
+Python None is a proper return, because it signifies an uninitialized
+value rather than an illegal operation.) 
+As far as I know, the only use-case for trinaryOperation() is the RTL
+function MIDVAL().
+'''
+def trinaryOperation(PALMAT, function, array1, array2, array3):
+    if isArrayQuick(array1):
+        dimensions1, dummy = getArrayDimensions(array1)
+    else:
+        dimensions1 = []
+    if isArrayQuick(array2):
+        dimensions2, dummy = getArrayDimensions(array2)
+    else:
+        dimensions2 = []
+    if isArrayQuick(array3):
+        dimensions3, dummy = getArrayDimensions(array3)
+    else:
+        dimensions3 = []
+    # The list called "dimensions" will be the array dimensions if any 
+    # operand (and thus the output result) are to be arrays.  If dimensions==[],
+    # then neither the operands nor the output are arrays.
+    if dimensions1 != []:
+        dimensions = dimensions1
+        if (dimensions2 != [] and dimensions2 != dimensions1) or \
+                (dimensions3 != [] and dimensions3 != dimensions1):
+            return NaN
+    elif dimensions2 != []:
+        dimensions = dimensions2
+        if dimensions3 != [] and dimensions3 != dimensions2:
+            return NaN
+    else:
+        dimensions = dimensions3
+        
+    if len(dimensions) > 0:
+        result = []
+        for i in range(dimensions[0]):
+            if dimensions1 == []:
+                child1 = array1
+            else:
+                child1 = array1[i]
+            if dimensions2 == []:
+                child2 = array2
+            else:
+                child2 = array2[i]
+            if dimensions3 == []:
+                child3 = array3
+            else:
+                child3 = array3[i]
+            r = trinaryOperation(PALMAT, function, child1, child2, child3)
+            if isNaN(r):
+                return NaN
+            result.append(r)
+        result.append("a")
+    else:
+        # We're at a leaf element, so apply the function right now and 
+        # stop recursing.
+        if array1 == None or array2 == None or array3 == None:
+            return None
+        result = function(PALMAT, array1, array2, array3)
+    return result
 
 def formBitArray(value, length):
     if isinstance(value, int):
@@ -282,7 +504,7 @@ def collectGarbage(PALMAT):
         scope = PALMAT["scopes"][scopeIndex]
         scope["unreachable"] = True
         for i in scope["children"]:
-            findObsoleted(scopeIndex)
+            findObsoleted(i)
     
     # Scopes disconnected from the root of the tree are unreachable.
     for i in range(1, len(PALMAT["scopes"])):
@@ -356,12 +578,13 @@ def readPALMAT(filename):
 # Create a new, empty scope.
 def constructScope(selfIndex=0, parentIndex=None, scopeType="root"):
     scope = {
-                "parent"        : parentIndex,
-                "self"          : selfIndex,
-                "children"      : [ ],
-                "identifiers"   : { },
-                "instructions"  : [ ],
-                "type"          : scopeType
+                "parent"            : parentIndex,
+                "self"              : selfIndex,
+                "children"          : [ ],
+                "identifiers"       : { },
+                "instructions"      : [ ],
+                "type"              : scopeType,
+                "structureTemplates": {}
             }
     return scope
 
@@ -473,6 +696,24 @@ def findIdentifier(identifier, PALMAT, scopeIndex=None, write=False):
             return i, PALMAT["scopes"][i]["identifiers"][identifier]
     return -1, None
 
+# "Expands" all of the structure-TEMPLATE references within a structure TEMPLATE,
+# returning a new template.  Or returns None on error.
+def expandStructureTemplate(PALMAT, scopeIndex, template):
+    if "structure" in template:
+        s = template["structure"]
+        identifier = "^s_" + s[:-10] + "^"
+        si, attributes = findIdentifier(identifier, PALMAT, scopeIndex)
+        if attributes == None or "template" not in attributes:
+            return None
+        template = attributes
+    newTemplate = copy.deepcopy(template)
+    if "template" in newTemplate:
+        fieldAttributes = newTemplate["template"][1]
+        for i in range(len(fieldAttributes)):
+            fieldAttributes[i] = expandStructureTemplate(PALMAT, scopeIndex, \
+                                                         fieldAttributes[i])
+    return newTemplate
+
 # This is for searching for identifiers when the proper name-mangling prefix
 # isn't known.  All it does is to return a tuple consisting of the scope index
 # and the mangled identifier, or else -1 if not found.
@@ -560,6 +801,8 @@ def makeDoEnd(PALMAT, source, parentScope, scopeType="unknown"):
     parentIndex = parentScope["self"]
     childIndex = addScope(PALMAT, parentIndex, scopeType)
     createTarget(PALMAT, source, parentIndex, childIndex, "ue")
+    PALMAT["scopes"][childIndex]["instructions"].append({"automatics": True})
+    createTarget(PALMAT, source, parentIndex, childIndex, "ug")
     jumpToTarget(PALMAT, source, parentIndex, childIndex, "ue", "goto")
     createTarget(PALMAT, source, childIndex, parentIndex, "ur", True)
     return childIndex, PALMAT["scopes"][childIndex]
@@ -610,13 +853,93 @@ def uninitializedComposite(arrayDimensions, dimensions):
         return composite
     return None
 
+# Returns an uninitialized STRUCTURE, given the attributes of the associated
+# structure template, or NaN on error.
+def uninitializedStructure(PALMAT, currentScope, templateName, templateAttributes):
+    currentIndex = currentScope["self"]
+    if "template" in templateAttributes:
+        fieldNames = templateAttributes["template"][0]
+        fieldAttributes = templateAttributes["template"][1]
+    elif "structure" in templateAttributes:
+        subTemplateName = templateAttributes["structure"][:-10]
+        subTemplateScope, subTemplateAttribute = \
+            findIdentifier("^s_" + subTemplateName + "^", \
+                           PALMAT, currentIndex)
+        fieldNames = subTemplateAttribute["template"][0]
+        fieldAttributes = subTemplateAttribute["template"][1]
+    else:
+        return NaN
+    structure = []
+    for i in range(len(fieldNames)):
+        fieldName = fieldNames[i]
+        fieldAttribute = fieldAttributes[i]
+        if "structure" in fieldAttribute:
+            sub = uninitializedStructure(PALMAT, currentScope, \
+                                         fieldAttribute["structure"][:-10], \
+                                         fieldAttribute)
+            if sub == NaN:
+                return NaN
+            structure.append(sub)
+        elif "template" in fieldAttribute:
+            sub = uninitializedStructure(PALMAT, currentScope, "", \
+                                         fieldAttribute)
+            if sub == NaN:
+                return NaN
+            structure.append(sub)
+        elif "array" in fieldAttribute or "vector" in fieldAttribute \
+                or "matrix" in fieldAttribute:
+            arrayDimensions = []
+            if "array" in fieldAttribute:
+                arrayDimensions = fieldAttribute["array"]
+            dimensions = []
+            if "vector" in fieldAttribute:
+                dimensions = [fieldAttribute["vector"]]
+            elif "matrix" in fieldAttribute:
+                dimensions = fieldAttribute["matrix"]
+            structure.append(uninitializedComposite(arrayDimensions, dimensions))
+        else:
+            structure.append(None)
+    if templateName[:2] == "s_":
+        structure.append(templateName[2:] + "-STRUCTURE")
+    else:
+        structure.append(templateName + "-STRUCTURE")
+    return structure
+
+# Find the next uninitialized value in a STRUCTURE, and initialize it with 
+# a value.  Returns True upon completion.
+def insertNextElement(struct, value):
+    # We should be performing data conversions here.  Initially, though, I'm
+    # just assuming the datatypes are right.  We *should* be fed the structure
+    # template attributes as a paramter, and should be using it.
+    # **FIXME**
+    for i in range(len(struct)):
+        if isinstance(struct[i], list):
+            if insertNextElement(struct[i], value):
+                return True
+        elif struct[i] == None:
+            struct[i] = value
+            return True
+    return False
+
 # Complete the initialization of a VECTOR, MATRIX, or ARRAY by making sure that
 # INITIALs or CONSTANTs are filled out to the proper geometry with appropriate
 # values.  Returns [] on success, or a list of identifiers which failed.
-def completeInitialConstants(identifiers):
+def completeInitialConstants(currentScope):
+    identifiers = currentScope["identifiers"]
+    parameters = []
+    if "attributes" in currentScope and \
+            "parameters" in currentScope["attributes"]:
+        parameters = currentScope["attributes"]["parameters"]
     messages = []
     for identifier in identifiers:
         identifierDict = identifiers[identifier]
+        if identifier[1:-1] in parameters:
+            # A parameter for a FUNCTION or PROCEDURE.  There's no 
+            # INITAL or CONSTANT clause (or if there is, it shouldn't be there),
+            # and nothing is needed for a value, since it's just going to be
+            # popped from the computation stack upon entry to the subroutine
+            # anyway.
+            continue
         if "vector" not in identifierDict and "matrix" not in identifierDict \
                 and "array" not in identifierDict:
             continue
@@ -697,8 +1020,14 @@ def completeInitialConstants(identifiers):
     
 # Make sure every variable in the scope has a "value", even if it's 
 # uninitialized.
-def setUninitialized(identifiers):
-        
+def setUninitialized(PALMAT, currentScope):
+    
+    identifiers = currentScope["identifiers"]
+    parameters = []
+    if "attributes" in currentScope and \
+            "parameters" in currentScope["attributes"]:
+        parameters = currentScope["attributes"]["parameters"]
+    
     def uninitializeLevel(arrayDimensions, dimensions):
         level = []
         if len(arrayDimensions) > 0:
@@ -714,11 +1043,25 @@ def setUninitialized(identifiers):
         return level
 
     for identifier in identifiers:
+        if identifier[1:-1] in parameters:
+            # Don't need to "uninitialize" a formal parameter.
+            continue
         attributes = identifiers[identifier]
         if "value" not in attributes and "constant" not in attributes and \
                 ("integer" in attributes or "scalar" in attributes or \
                  "vector" in attributes or "matrix" in attributes or \
-                 "bit" in attributes or "character" in attributes):
+                 "bit" in attributes or "character" in attributes or \
+                 "structure" in attributes):
+            if "structure" in attributes:
+                templateName = attributes["structure"]
+                dummy, templateAttributes = \
+                    findIdentifier("^" + templateName + "^", \
+                                   PALMAT, currentScope["self"])
+                attributes["value"] = uninitializedStructure(PALMAT, \
+                                                             currentScope, \
+                                                             templateName, \
+                                                             templateAttributes)
+                continue
             dimensions = []
             arrayDimensions = []
             if "array" in attributes:
@@ -816,13 +1159,14 @@ def checkArithmeticalDatatype(operand):
         return False, False, False, True
     return False, False, False, False
 
-def printError(source, instruction, msg):
+def printError(PALMAT, source, instruction, msg):
     if msg == "":
         msg = "n/a"
     if instruction == None:
-        print("\t%d,%d,%d: %s" % \
-            (source[0], source[1], source[2], msg))
+        print("\t%s, line %d, column %d: %s" % \
+            (PALMAT["sourceFiles"][source[0]], source[1], source[2], msg))
     else:
-        print("\t%d,%d,%d (%s): %s" % \
-            (source[0], source[1], source[2], str(instruction), msg))
+        print("\t%s, line %d, column %d (%s): %s" % \
+            (PALMAT["sourceFiles"][source[0]], source[1], source[2], \
+             str(instruction), msg))
 

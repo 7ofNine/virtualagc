@@ -1,4 +1,0 @@
-#QCTOH   CSECT
- DC Z(CTOH,,X'E')
- EXTRN CTOH
- END
