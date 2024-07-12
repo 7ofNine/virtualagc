@@ -150,7 +150,9 @@ SymbolPass (const char *InputFilename)
         {
           if (*ss == '\t')
             {
-              int pos, tabStop, len;
+			  size_t pos;
+			  size_t tabStop;
+			  size_t len;
               pos = ss - s;
               tabStop = ((pos + 8) & ~7);
               len = strlen(ss + 1);

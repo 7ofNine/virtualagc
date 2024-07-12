@@ -73,3 +73,12 @@ yaUplinkBlock1/yaUplinkBlock1
 /xpl-sources/*
 /yaYUL/yaLEMap/x64*
 /yaYUL/yaLEMap/yaLEMAP.bin
+*.vs
+*.dll
+*.vs
+/Virtualagc2-build/yaAGC/x64/Debug/*
+/Virtualagc2-build/yaAGC/x64/Release/*
+**/Debug/*
+/Virtualagc2-build/**/Release/**
+**/core
+**/foo2.txt

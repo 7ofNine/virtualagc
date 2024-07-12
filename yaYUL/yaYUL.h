@@ -92,8 +92,12 @@
 
 #ifdef MSC_VS
 #define NVER "TBD"
+#ifndef _CONSOLE
 #define _CONSOLE
+#endif
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #endif
 
 // The following constant should be commented out in production code.
@@ -213,10 +217,10 @@ typedef struct
 
 // Invalid, Constant, Address, SReg, Erasable, Fixed, Unbanked, Banked, EB, FB, Super, Overflow, Value, Syllable.
 #if defined(MSC_VS)
-#define VALID_ADDRESS ( { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } )
-#define REG(n) ( { 0, 0, 1, n, 1, 0, 1, 0, 0, 0, 0, 0, n, 0 })
+#define VALID_ADDRESS ( (const Address_t){ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } )
+#define REG(n) { 0, 0, 1, n, 1, 0, 1, 0, 0, 0, 0, 0, n, 0 }
 #define CONSTANT(n) ( { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, n, 0 })
-#define FIXEDADD(n) ( { 0, 0, 1, n, 0, 1, 1, 0, 0, 0, 0, 0, n, 0 })
+#define FIXEDADD(n) ( (const Address_t) { 0, 0, 1, n, 0, 1, 1, 0, 0, 0, 0, 0, n, 0 })
 #elif defined(SOLARIS)
 #define VALID_ADDRESS ((const Address_t) { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } )
 #define REG(n) { 0, 0, 1, n, 1, 0, 1, 0, 0, 0, 0, 0, n, 0 }

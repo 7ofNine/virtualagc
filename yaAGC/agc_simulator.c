@@ -41,15 +41,15 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <stdlib.h>
 
 #include "yaAGC.h"
 #include "agc_cli.h"
 #include "agc_engine.h"
-#include "agc_symtab.h"
-#include "agc_debug.h"
-#include "agc_debugger.h"
+//#include "agc_symtab.h"
+//#include "agc_debug.h"
+//#include "agc_debugger.h"
 #include "agc_simulator.h"
 
 /** Declare the singleton Simulator object instance */
@@ -158,13 +158,13 @@ int SimInitialize(Options_t* Options)
 	SocketInterlaceReload = Options->interlace;
 
 	/* If we are not in quiet mode display the version info */
-	if (!Options->quiet) DbgDisplayVersion();
+	//if (!Options->quiet) DbgDisplayVersion();
 
 	/* Initialize the AGC Engine */
 	result = SimInitializeEngine();
 
 	/* Initialize the Debugger if running with debug mode */
-	if(Options->debug) DbgInitialize(Options,&(Simulator.State));
+	//if(Options->debug) DbgInitialize(Options,&(Simulator.State));
 
 //	if (Options->cdu_log)
 //	{
@@ -305,7 +305,7 @@ void SimExecute(void)
 		while (Simulator.CycleCount < Simulator.DesiredCycles)
 		{
 			/* If debugging is enabled run the debugger */
-			if (Simulator.Options->debug && DbgExecute()) continue;
+			//if (Simulator.Options->debug && DbgExecute()) continue;
 
 			/* Execute a cyle of the AGC  engine */
 			SimExecuteEngine();

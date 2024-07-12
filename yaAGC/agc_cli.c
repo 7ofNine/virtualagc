@@ -41,7 +41,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <direct.h>
+//#include <unistd.h> not in VS
 #include "agc_cli.h"
 #include "agc_engine.h"
 #include "agc_symtab.h"
@@ -125,7 +126,10 @@ It returns 0 on "success" and 1 on known error.
 int CliParseCfg (char *Filename)
 {
 	char s[129] = { 0 };
-	int KeyCode, Channel, Value, Result = 1;
+	int KeyCode;
+	int Channel;
+	int Value;
+	int Result = 1;
 	char Logic;
 	FILE *fin;
 
@@ -142,7 +146,7 @@ int CliParseCfg (char *Filename)
 			for (ss = s; *ss; ss++) if (*ss == '\n' || *ss == '\r') *ss = 0;
 
 			/* Parse string */
-			if (4 == sscanf(s,"DEBUG %d %o %c %x",&KeyCode,&Channel,&Logic,&Value))
+			if (4 == sscanf(s, "DEBUG %d %o %c %x", &KeyCode, &Channel, &Logic, &Value))
 			{
 				/* Ensure valid values are porvided */
 				if (Channel < 0 || Channel > 255) continue;
@@ -220,37 +224,37 @@ static int CliProcessArgument(char* token)
 	else if (!strncmp (token, "-core=", 6))
 	{
 		/* If --core is used assume classic behavior is expected */
-		Options.core = strdup(&token[6]);
+		Options.core = _strdup(&token[6]);
 
 		/* with classi behavior default is nodebug */
 		Options.debug = 0;
 	}
-	else if (!strncmp (token, "-directory=", 11))Options.directory = strdup(&token[11]);
-	else if (!strncmp (token, "-cd=", 4))Options.cd = strdup(&token[4]);
-	else if (!strncmp (token, "-exec=", 6))Options.core = strdup(&token[6]);
-	else if (!strncmp (token, "-resume=", 8))Options.resume = strdup(&token[8]);
-	else if (1 == sscanf (token, "-port=%d", &j)) Options.port = j;
-	else if (1 == sscanf (token, "-dump-time=%d", &j)) Options.dump_time = j;
+	else if (!strncmp (token, "-directory=", 11))Options.directory = _strdup(&token[11]);
+	else if (!strncmp (token, "-cd=", 4))Options.cd = _strdup(&token[4]);
+	else if (!strncmp (token, "-exec=", 6))Options.core = _strdup(&token[6]);
+	else if (!strncmp (token, "-resume=", 8))Options.resume = _strdup(&token[8]);
+	else if (1 == sscanf_s (token, "-port=%d", &j)) Options.port = j;
+	else if (1 == sscanf_s (token, "-dump-time=%d", &j)) Options.dump_time = j;
 	else if (!strcmp (token, "-debug-dsky")) Options.debug_dsky = 1;
 	else if (!strcmp (token, "-debug-deda")) Options.debug_deda = 1;
 	else if (!strcmp (token, "-deda-quiet")) Options.deda_quiet = 1;
 	else if (!strcmp (token, "-inhibit-alarms")) Options.inhibit_alarms = 1;
 	else if (!strcmp (token, "-cdu-log")) Options.cdu_log = CduLog;
-	else if (!strncmp (token, "-cfg=", 5)) Options.cfg = strdup(&token[5]);
+	else if (!strncmp (token, "-cfg=", 5)) Options.cfg = _strdup(&token[5]);
 	else if (!strcmp (token, "-fullname")) Options.fullname = 1;
 	else if (!strcmp (token, "-quiet"))Options.quiet = 1;
 	else if (!strcmp (token, "-nodebug")) Options.debug = 0;
 	else if (!strcmp (token, "-debug")) Options.debug = 1;
 	else if (!strcmp (token, "-version")) Options.version = 6;
-	else if (!strncmp (token, "-command=",9)) Options.fromfile = strdup(&token[9]);
+	else if (!strncmp (token, "-command=",9)) Options.fromfile = _strdup(&token[9]);
 	else if (!strncmp (token, "-interpreter=",13)) /* Ignore for now */;
-	else if (!strncmp (token, "-symbols=", 9)) Options.symtab = strdup(&token[9]);
-	else if (!strncmp (token, "-symtab=", 8)) Options.symtab = strdup(&token[8]);
-	else if (1 == sscanf (token,"-interlace=%d", &j)) Options.interlace = j;
+	else if (!strncmp (token, "-symbols=", 9)) Options.symtab = _strdup(&token[9]);
+	else if (!strncmp (token, "-symtab=", 8)) Options.symtab = _strdup(&token[8]);
+	else if (1 == sscanf_s (token,"-interlace=%d", &j)) Options.interlace = j;
 	else if (!strcmp (token, "-initialize-sunburst-37")) Options.initializeSunburst37 = 1;
 	else if (!strcmp (token, "-no-resume")) Options.no_resume = 1;
-	else if (Options.core == (char*)0) Options.core = strdup(token);
-	else if (Options.resume == (char*)0) Options.resume = strdup(token);
+	else if (Options.core == (char*)0) Options.core = _strdup(token);
+	else if (Options.resume == (char*)0) Options.resume = _strdup(token);
 	else result = CLI_E_UNKOWNTOKEN;
 
 	return (result);
@@ -291,7 +295,7 @@ Options_t* CliParseArguments(int argc, char *argv[])
 		 * immediately */
 		if (Options.cd != NULL)
 		  {
-		    if (chdir(Options.cd) < 0)
+		    if (_chdir(Options.cd) < 0)
 		      {
 		        printf("\n*** Cannot change directories. ***\n]n");
 		        return (NULL);
@@ -306,7 +310,7 @@ Options_t* CliParseArguments(int argc, char *argv[])
 		 */
 		if (strstr(Options.core,".bin"))
 		{
-			int FullPathLength = strlen(Options.core);
+			size_t FullPathLength = strlen(Options.core);
 
 			/* If Debugging without symtab set default symtab */
 			if (Options.debug && !Options.symtab)

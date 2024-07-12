@@ -197,18 +197,18 @@ init_syntax_once ()
 #include <alloca.h>
 #else /* not __GNUC__ or HAVE_ALLOCA_H */
 #ifndef _AIX /* Already did AIX, up at the top.  */
-char *alloca ();
+//char *alloca ();
 #endif /* not _AIX */
 #endif /* not HAVE_ALLOCA_H */ 
 #endif /* not __GNUC__ */
 
 #endif /* not alloca */
 
-#define REGEX_ALLOCATE alloca
+#define REGEX_ALLOCATE _alloca
 
 /* Assumes a `char *destination' variable.  */
 #define REGEX_REALLOCATE(source, osize, nsize)				\
-  (destination = (char *) alloca (nsize),				\
+  (destination = (char *) _alloca (nsize),				\
    bcopy (source, destination, osize),					\
    destination)
 
@@ -3117,7 +3117,7 @@ typedef union
   } while (0)
 #else /* not REGEX_MALLOC */
 /* Some MIPS systems (at least) want this to free alloca'd storage.  */
-#define FREE_VARIABLES() alloca (0)
+#define FREE_VARIABLES() _alloca (0)
 #endif /* not REGEX_MALLOC */
 
 

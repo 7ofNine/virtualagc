@@ -42,11 +42,11 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include <sys/time.h>
+#include <time.h> // not in VS
 #define LB "\r\n"
 #else
 #include <time.h>
-#include <sys/times.h>
+//#include <sys/times.h> // not in VS
 #define LB ""
 #endif
 

@@ -74,7 +74,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 //#include <sys/uio.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include "agc_engine.h"
 #include "agc_symtab.h"
@@ -344,11 +344,11 @@ ReadSymbolTable (char *fname)
       printf ("Cannot open symbol table file: %s\n", fname);
       return 1;
     }
-  fd = fileno (fp);
+  fd = _fileno (fp);
 
   // Read in the SymbolFile_t structure as the header
   //printf ("__BYTE_ORDER=%0x04X\n", BYTE_ORDER);
-  read (fd, &symfile, sizeof(SymbolFile_t));
+  _read (fd, &symfile, sizeof(SymbolFile_t));
   //printf ("NumberSymbols=0x%08X\n", symfile.NumberSymbols);
   //printf ("NumberLines=0x%08X\n", symfile.NumberLines);
   LittleEndian32 (&symfile.NumberSymbols);
@@ -357,7 +357,7 @@ ReadSymbolTable (char *fname)
   //printf ("NumberLines=0x%08X\n", symfile.NumberLines);
 
   /* Set the source path if it is not overridden by command-line option */
-  if (SourcePathName == (char*)0) SourcePathName = strdup (symfile.SourcePath);
+  if (SourcePathName == (char*)0) SourcePathName = _strdup (symfile.SourcePath);
 
   // Allocate the symbol table
   SymbolTableSize = symfile.NumberSymbols;
@@ -559,7 +559,7 @@ Symbol_t* ResolveLastLabel(SymbolLine_t *Line)
 
 //LineNumber
 
-	for (i=0;i<SymbolTableSize;i++)
+	for (i=0; i<SymbolTableSize; i++)
 	{
 		Symbol = &SymbolTable[i];
 		if (Symbol->Type == SYMBOL_LABEL &&
@@ -829,7 +829,7 @@ OpenSourceFile (char *FileName)
   strcpy (CurrentSourcePath, ss);
 
   // Otherwise, we can open the file so complete and return
-  CurrentSourceFile = strdup (FileName);
+  CurrentSourceFile = _strdup (FileName);
   return 0;
 }
 

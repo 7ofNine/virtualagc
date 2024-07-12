@@ -125,9 +125,9 @@ int ParseIoPacketAGS (unsigned char *Packet, int *Type, int *Data);
 
 #ifndef WASI
 int InitializeSocketSystem (void);
-void UnblockSocket (int SocketNum);
-int EstablishSocket (unsigned short portnum, int MaxClients);
-int CallSocket (char *hostname, unsigned short portnum);
+void UnblockSocket (SOCKET SocketNum);
+SOCKET EstablishSocket (unsigned short portnum, int MaxClients);
+SOCKET CallSocket (char *hostname, unsigned short portnum);
 #endif
 
 #endif // YAAGC_H

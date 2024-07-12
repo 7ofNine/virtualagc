@@ -269,7 +269,7 @@ ParseSTOVL(ParseInput_t *InRecord, ParseOutput_t *OutRecord)
 static int
 ParseCommaString(char *s)
 {
-  int Len;
+  size_t Len;
   Len = strlen(s);
   if (Len < 3)
     return (0);

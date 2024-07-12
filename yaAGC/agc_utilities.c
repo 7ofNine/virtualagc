@@ -268,13 +268,13 @@ InitializeSocketSystem (void)
 
 // Set an existing socket to be non-blocking.
 void
-UnblockSocket (int SocketNum)
+UnblockSocket (SOCKET socket)
 {
 #if defined(unix)
   fcntl (SocketNum, F_SETFL, O_NONBLOCK);
 #else
   unsigned long nonBlock = 1;
-  ioctlsocket (SocketNum, FIONBIO, &nonBlock);
+  ioctlsocket (socket, FIONBIO, &nonBlock);
 #endif
 }
 
@@ -289,11 +289,12 @@ UnblockSocket (int SocketNum)
 // Returns -1 on error, or the new socket number (>=0) if successful.
 
 #define MAXHOSTNAME 256
-int
+SOCKET
 EstablishSocket (unsigned short portnum, int MaxClients)
 {
   char myname[MAXHOSTNAME + 1];
-  int s, i;
+  SOCKET s = INVALID_SOCKET;
+  int i;
   struct sockaddr_in sa;
   struct hostent *hp;
 
@@ -357,13 +358,13 @@ EstablishSocket (unsigned short portnum, int MaxClients)
 // or else a dotted IP number.  (The latter fails on Win32.)
 // The portnum is the port-number on which the server listens.
 
-int
+SOCKET
 CallSocket (char *hostname, unsigned short portnum)
 {
   struct sockaddr_in sa;
   struct hostent *hp;
   //int a;
-  int s;
+  SOCKET s;
 
   InitializeSocketSystem ();
 

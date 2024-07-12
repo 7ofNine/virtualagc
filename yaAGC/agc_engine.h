@@ -148,38 +148,40 @@ extern "C" {
 #include <stdio.h>
 
 // The following is used to get the int16_t datatype.
-#ifdef WIN32
+//#ifdef WIN32
 // Win32
-typedef short int16_t;
-typedef signed char int8_t;
-typedef unsigned char uint8_t; // 20170326
-typedef unsigned int uint32_t; // 20170326
-typedef unsigned short uint16_t; // 20170329
-#ifdef __MINGW32__
-typedef unsigned long long uint64_t;
-#else
-typedef unsigned __int64 uint64_t;
-#endif
-#elif defined (__embedded__)
+//typedef short int16_t;
+//typedef signed char int8_t;
+//typedef unsigned char uint8_t; // 20170326
+//typedef unsigned int uint32_t; // 20170326
+//typedef unsigned short uint16_t; // 20170329
+//#ifdef __MINGW32__
+//typedef unsigned long long uint64_t;
+//#else
+//typedef unsigned __int64 uint64_t;
+//#endif
+//#elif defined (__embedded__)
 // Embedded, gcc cross-compiler.
-typedef short int16_t;
-typedef signed char int8_t;
-typedef unsigned short uint16_t;
-#elif defined (SDCC)
+//typedef short int16_t;
+//typedef signed char int8_t;
+//typedef unsigned short uint16_t;
+//#elif defined (SDCC)
 // SDCC (8-bit 8051)
-typedef int int16_t;
-typedef signed char int8_t;
-typedef unsigned uint16_t;
-extern long random (void);
-#else // WIN32
+//typedef int int16_t;
+//typedef signed char int8_t;
+//typedef unsigned uint16_t;
+//extern long random (void);
+//#else // WIN32
 // All other (Linux, Mac OS, etc.)
 //#include <sys/types.h>
 #include <stdint.h>
-#endif // WIN32
+//#endif // WIN32
 
 // For socket connections.
 #ifdef WIN32
+#include <WinSock2.h>
 #define SOCKET_BROKEN 1
+
 #else
 #define SOCKET_ERROR -1
 #define SOCKET_BROKEN (errno == EPIPE)
@@ -435,28 +437,28 @@ extern int initializeSunburst37;
 #endif
 
 // Stuff for --debug mode.
-#define MAX_BACKTRACE_POINTS 100
-#define BACKTRACES_PER_LINE 5
-typedef struct {
-  uint64_t /* unsigned long long */ CycleCounter;
-  int16_t Erasable[8][0400];	// Banks 0,1,2 are "unswitched erasable".
-  int16_t InputChannel[NUM_CHANNELS];
-  int16_t OutputChannel7;
-  int16_t OutputChannel10[16];
-  int16_t IndexValue;
-  int8_t InterruptRequests[1 + NUM_INTERRUPT_TYPES];
-  int8_t DueToInterrupt;	// Indicates interrupt type causing jump (0 if not).
-  unsigned ExtraCode:1;		// Set by the "Extend" instruction.
-  unsigned AllowInterrupt:1;	// Set when interrupts are enabled.
-  //unsigned RegA16:1;		// Bit "16" of register A.
-  unsigned InIsr:1;		// Set when in an ISR, reset when in normal code.
-  unsigned SubstituteInstruction:1;	// Use BBRUPT register.
-  //unsigned RegQ16:1;		// Bit "16" of register Q.
-} BacktracePoint_t;
+//#define MAX_BACKTRACE_POINTS 100
+//#define BACKTRACES_PER_LINE 5
+//typedef struct {
+//  uint64_t /* unsigned long long */ CycleCounter;
+//  int16_t Erasable[8][0400];	// Banks 0,1,2 are "unswitched erasable".
+//  int16_t InputChannel[NUM_CHANNELS];
+//  int16_t OutputChannel7;
+//  int16_t OutputChannel10[16];
+//  int16_t IndexValue;
+//  int8_t InterruptRequests[1 + NUM_INTERRUPT_TYPES];
+//  int8_t DueToInterrupt;	// Indicates interrupt type causing jump (0 if not).
+//  unsigned ExtraCode:1;		// Set by the "Extend" instruction.
+//  unsigned AllowInterrupt:1;	// Set when interrupts are enabled.
+//  //unsigned RegA16:1;		// Bit "16" of register A.
+//  unsigned InIsr:1;		// Set when in an ISR, reset when in normal code.
+//  unsigned SubstituteInstruction:1;	// Use BBRUPT register.
+//  //unsigned RegQ16:1;		// Bit "16" of register Q.
+//} BacktracePoint_t;
 
 typedef struct
 {
-  int Socket;
+  SOCKET Socket;
   unsigned char Packet[4];
   int Size;
   int ChannelMasks[256];
@@ -472,13 +474,13 @@ typedef struct
 #ifdef AGC_ENGINE_C
 int DebugMode = 0;
 int SingleStepCounter = -2;		// -2 when not in --debug mode.
-int BacktraceInitialized = 0;		// Becomes -1 on error.
+//int BacktraceInitialized = 0;		// Becomes -1 on error.
 // We have a backtrace circular buffer, in which we place an entry every
 // time an instruction is hit that may branch. The buffer is updated only
 // if we're in --debug mode.
-BacktracePoint_t *BacktracePoints = NULL;
-int BacktraceNextAdd = 0;
-int BacktraceCount = 0;
+//BacktracePoint_t *BacktracePoints = NULL;
+//int BacktraceNextAdd = 0;
+//int BacktraceCount = 0;
 // MAX_CLIENTS is the maximum number of hardware simulations which can be
 // attached.  The DSKY is always one, presumably.  The array is a list of
 // the sockets used for the clients.  Thus stuff shown below is the
@@ -488,9 +490,9 @@ int BacktraceCount = 0;
 // then pointing the Clients and ServerSockets pointers at those arrays.
 int MAX_CLIENTS = DEFAULT_MAX_CLIENTS;
 static Client_t DefaultClients[DEFAULT_MAX_CLIENTS];
-static int DefaultSockets[DEFAULT_MAX_CLIENTS];
+static SOCKET DefaultSockets[DEFAULT_MAX_CLIENTS];
 Client_t *Clients = DefaultClients;
-int *ServerSockets = DefaultSockets;
+SOCKET *ServerSockets = DefaultSockets;
 int NumServers = 0;
 int SocketInterlaceReload = 50;
 int DebugDeda = 0, DedaQuiet = 0;
@@ -507,13 +509,13 @@ int LastRhcPitch = 0, LastRhcYaw = 0, LastRhcRoll = 0;
 #else //AGC_ENGINE_C
 extern int DebugMode;
 extern int SingleStepCounter;
-extern int BacktraceInitialized;
-extern BacktracePoint_t *BacktracePoints;
-extern int BacktraceNextAdd;
-extern int BacktraceCount;
+//extern int BacktraceInitialized;
+//extern BacktracePoint_t *BacktracePoints;
+//extern int BacktraceNextAdd;
+//extern int BacktraceCount;
 extern int MAX_CLIENTS;
 extern Client_t *Clients;
-extern int *ServerSockets;
+extern SOCKET *ServerSockets;
 extern int NumServers;
 extern int SocketInterlaceReload;
 extern int DebugDeda, DedaQuiet;
@@ -543,8 +545,8 @@ extern int Portnum;
 //---------------------------------------------------------------------------
 // Function prototypes.
 
-char *nbfgets (char *Buffer, int Length);
-void nbfgets_ready (const char *);
+//char *nbfgets (char *Buffer, int Length);
+//void nbfgets_ready (const char *);
 int agc_engine (agc_t * State);
 int agc_engine_init (agc_t * State, const char *RomImage,
 		     const char *CoreDump, int AllOrErasable);
@@ -553,11 +555,11 @@ int ReadIO (agc_t * State, int Address);
 void WriteIO (agc_t * State, int Address, int Value);
 void CpuWriteIO (agc_t * State, int Address, int Value);
 void MakeCoreDump (agc_t * State, const char *CoreDump);
-void UnblockSocket (int SocketNum);
+void UnblockSocket (SOCKET SocketNum);
 FILE *rfopen (const char *Filename, const char *mode);
-void BacktraceAdd (agc_t *State, int Cause);
-int BacktraceRestore (agc_t *State, int n);
-void BacktraceDisplay (agc_t *State,int Num);
+//void BacktraceAdd (agc_t *State, int Cause);
+//int BacktraceRestore (agc_t *State, int n);
+//void BacktraceDisplay (agc_t *State,int Num);
 int16_t OverflowCorrected (int Value);
 int SignExtend (int16_t Word);
 int AddSP16 (int Addend1, int Addend2);

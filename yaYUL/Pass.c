@@ -1802,7 +1802,9 @@ Pass(int WriteOutput, const char *InputFilename, FILE *OutputFile, int *Fatals,
         {
           if (*ss == '\t')
             {
-              int pos, tabStop, len;
+              size_t pos;
+              size_t tabStop;
+              size_t len;
               pos = ss - s;
               tabStop = ((pos + 8) & ~7);
               len = strlen(ss + 1);
@@ -2699,7 +2701,8 @@ Pass(int WriteOutput, const char *InputFilename, FILE *OutputFile, int *Fatals,
               if (HtmlOut)
                 {
                   Symbol_t *Symbol;
-                  int Comma = 0, Dollar = 0, n;
+                  int Comma = 0, Dollar = 0;
+                  size_t n;
 
                   if (*ParseInputRecord.Label == 0)
                     fprintf(HtmlOut, " %s ",
@@ -2822,7 +2825,7 @@ Pass(int WriteOutput, const char *InputFilename, FILE *OutputFile, int *Fatals,
                               &ParseInputRecord.Operand[n - 2]);
                         }
                       fprintf(HtmlOut, " ");
-                      for (i = n; i < 10; i++)
+                      for (size_t i = n; i < 10; i++)
                         fprintf(HtmlOut, " ");
                     }
 

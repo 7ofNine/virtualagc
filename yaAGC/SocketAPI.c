@@ -134,7 +134,7 @@ ChannelOutput (agc_t * State, int Channel, int Value)
 	if (j == SOCKET_ERROR && SOCKET_BROKEN)
 	  {
 	    if (!DebugMode)
-	      printf ("Removing socket %d\n", Clients[i].Socket);
+	      printf ("Removing socket %lld\n", Clients[i].Socket);
 #ifdef unix
 	    close (Clients[i].Socket);
 #else
@@ -428,7 +428,7 @@ ChannelRoutineGeneric (void *State, void (*UpdatePeripherals) (void *, Client_t 
 	    extern int DebugMode;
 	    UnblockSocket (Client->Socket);
 	    if (!DebugMode)
-	      printf ("Adding socket %d on port %d\n", Client->Socket,
+	      printf ("Adding socket %lld on port %d\n", Client->Socket,
 		      Portnum + i);
 	    Client->Size = 0;
 	    for (ii = 0; ii < 256; ii++)
@@ -453,7 +453,7 @@ ChannelRoutineGeneric (void *State, void (*UpdatePeripherals) (void *, Client_t 
 	    if (j == SOCKET_ERROR && SOCKET_BROKEN)
 	      {
 	        if (!DebugMode)
-		  printf ("Removing socket %d\n", Clients[i].Socket);
+		  printf ("Removing socket %lld\n", Clients[i].Socket);
 #ifdef unix
 		close (Clients[i].Socket);
 #else
