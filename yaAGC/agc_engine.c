@@ -2243,7 +2243,7 @@ agc_engine (agc_t * State)
               for (i = 1; i <= NUM_INTERRUPT_TYPES; i++)
                 State->InterruptRequests[i] = 0;
 
-              // Clear channels 5, 6, 10, 11, 12, 13, and 14
+              // Clear channels 05, 06, 010, 011, 012, 013, and 014
               CpuWriteIO(State, 005, 0);
               CpuWriteIO(State, 006, 0);
               CpuWriteIO(State, 010, 0);
@@ -2264,10 +2264,10 @@ agc_engine (agc_t * State)
               State->IndexValue = AGC_P0;
               State->ExtraCode = 0;
               State->SubstituteInstruction = 0;
-              State->PendFlag = 0;
+              State->PendFlag  = 0;
               State->PendDelay = 0;
-              State->TookBZF = 0;
-              State->TookBZMF = 0;
+              State->TookBZF   = 0;
+              State->TookBZMF  = 0;
 
               // Light the RESTART light on the DSKY, if we're not going into standby
               if (!State->Standby)
@@ -3004,33 +3004,37 @@ agc_engine (agc_t * State)
       else
       c (RegA) = SignExtend (ReadIO (State, Address9));
       break;
+
       case 0101:// WRITE
-      if (IsL (Address9) || IsQ (Address9))
-      c (Address9) = Accumulator;
-      else
-      CpuWriteIO (State, Address9, OverflowCorrected (Accumulator));
-      break;
+        if (IsL (Address9) || IsQ (Address9))
+            c (Address9) = Accumulator;
+        else
+            CpuWriteIO (State, Address9, OverflowCorrected (Accumulator));
+        break;
+
       case 0102:// RAND
-      if (IsL (Address9) || IsQ (Address9))
-      c (RegA) = (Accumulator & c (Address9));
-      else
-	{
-	  Operand16 = OverflowCorrected (Accumulator);
-	  Operand16 &= ReadIO (State, Address9);
-	  c (RegA) = SignExtend (Operand16);
-	}
+        if (IsL (Address9) || IsQ (Address9))
+            c (RegA) = (Accumulator & c (Address9));
+        else
+	    {
+	        Operand16 = OverflowCorrected (Accumulator);
+	        Operand16 &= ReadIO (State, Address9);
+	        c (RegA) = SignExtend (Operand16);
+	    }
       break;
+
       case 0103:			// WAND
-      if (IsL (Address9) || IsQ (Address9))
-      c (RegA) = c (Address9) = (Accumulator & c (Address9));
-      else
-	{
-	  Operand16 = OverflowCorrected (Accumulator);
-	  Operand16 &= ReadIO (State, Address9);
-	  CpuWriteIO (State, Address9, Operand16);
-	  c (RegA) = SignExtend (Operand16);
-	}
-      break;
+        if (IsL (Address9) || IsQ (Address9))
+            c (RegA) = c (Address9) = (Accumulator & c (Address9));
+        else
+	    {
+	        Operand16 = OverflowCorrected (Accumulator);
+	        Operand16 &= ReadIO (State, Address9);
+	        CpuWriteIO (State, Address9, Operand16);
+	        c (RegA) = SignExtend (Operand16);
+	    }
+        break;
+
       case 0104:			// ROR
       if (IsL (Address9) || IsQ (Address9))
       c (RegA) = (Accumulator | c (Address9));
@@ -3041,17 +3045,19 @@ agc_engine (agc_t * State)
 	  c (RegA) = SignExtend (Operand16);
 	}
       break;
+      
       case 0105:			// WOR
-      if (IsL (Address9) || IsQ (Address9))
-      c (RegA) = c (Address9) = (Accumulator | c (Address9));
-      else
-	{
-	  Operand16 = OverflowCorrected (Accumulator);
-	  Operand16 |= ReadIO (State, Address9);
-	  CpuWriteIO (State, Address9, Operand16);
-	  c (RegA) = SignExtend (Operand16);
-	}
-      break;
+        if (IsL (Address9) || IsQ (Address9))
+            c (RegA) = c (Address9) = (Accumulator | c (Address9));
+        else
+	    {
+	        Operand16 = OverflowCorrected (Accumulator);
+	        Operand16 |= ReadIO (State, Address9);
+	        CpuWriteIO (State, Address9, Operand16);
+	        c (RegA) = SignExtend (Operand16);
+	    }
+        break;
+
       case 0106:			// RXOR
       if (IsL (Address9) || IsQ (Address9))
       c (RegA) = (Accumulator ^ c (Address9));
