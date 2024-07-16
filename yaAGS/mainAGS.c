@@ -120,17 +120,17 @@
 #include "agc_symtab.h"
 #include "yaAEA.h"
 #include <string.h>
-#include <unistd.h>
-#ifdef WIN32
+//#include <unistd.h>
+//#ifdef WIN32
 #include <pthread.h>
 #include <windows.h>
-#include <sys/time.h>
+//#include <sys/time.h>
 #define LB "\r\n"
-#else
+//#else
 #include <time.h>
-#include <sys/times.h>
-#define LB ""
-#endif
+//#include <sys/times.h>
+//#define LB ""
+//#endif
 #include <ctype.h>
 FILE *rfopen (const char *Filename, const char *mode);
 

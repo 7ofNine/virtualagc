@@ -742,7 +742,7 @@ TimerClass::Notify ()
 	      else
 		{
 		  printf ("yaDEDA2 reports server error %d\n", errno);
-		  close (ServerSocket);
+		  _close (ServerSocket);
 		  ServerSocket = -1;
 		  break;
 		}
@@ -869,7 +869,7 @@ MainFrame::OutputData (int Type, int Data)
       j = send (ServerSocket, (const char *) Packet, 4, MSG_NOSIGNAL);
       if (j == SOCKET_ERROR && SOCKET_BROKEN)
 	{
-	  close (ServerSocket);
+	  _close (ServerSocket);
 	  ServerSocket = -1;
 	}
     }

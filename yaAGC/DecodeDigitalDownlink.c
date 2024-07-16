@@ -1969,7 +1969,8 @@ PrintUSP (int *Ptr, int Scale, int row, int col)
 static void
 PrintField (const FieldSpec_t *FieldSpec)
 {
-  int row, col, *Ptr;
+  int row,  *Ptr;
+  size_t col;
   row = FieldSpec->Row;
   col = FieldSpec->Col;
   if (row == 0 && col == 0)

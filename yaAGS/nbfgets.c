@@ -62,6 +62,8 @@
 #include <windows.h>
 #endif
 
+#include "nbfgets.h"
+
 #define MAX_NBFGETS 256
 static int nbfgetsInitialized = 0;
 static volatile int nbfgetsReady = 0;
@@ -134,7 +136,8 @@ rl_gets (void)
 char *
 source_generator (const char *text, int state)
 {
-  static int list_index, len;
+  static int list_index;
+  static size_t len;
   char *name;
 
   if (!state)
@@ -148,7 +151,7 @@ source_generator (const char *text, int state)
       name = nbSourceFiles[list_index];
       list_index++;
       if (strncmp (name, text, len) == 0)
-	return (strdup(name));
+	return (_strdup(name));
     }
   
   return (char *)NULL;

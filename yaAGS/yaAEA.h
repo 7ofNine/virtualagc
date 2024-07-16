@@ -73,7 +73,7 @@
 // Function prototypes.
 
 int InitializeSocketSystem (void);
-void UnblockSocket (int SocketNum);
+//void UnblockSocket (SOCKET socket); also declared in AGC.h
 int EstablishSocket (unsigned short portnum, int MaxClients);
 int CallSocket (char *hostname, unsigned short portnum);
 

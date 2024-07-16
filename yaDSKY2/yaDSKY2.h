@@ -274,5 +274,9 @@ public:
     virtual void HotkeyEvent (wxKeyEvent &event);
 }; // wxGlade: end class
 
+// they are actually defined in agc_engine.h but are are not available because of defines. Why?
+int DebugMode = 0;
+int CmOrLm = 0;
+int Portnum = 19697; // is being set in the SW, too.
 
 #endif // YADSKY2_H

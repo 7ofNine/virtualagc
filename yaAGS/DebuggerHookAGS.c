@@ -43,19 +43,20 @@
 #include "yaAEA.h"
 #include "aea_engine.h"
 #include "agc_symtab.h"
+#include "nbfgets.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef WIN32
+//#ifdef WIN32
 #include <windows.h>
-#include <sys/time.h>
+//#include <sys/time.h>
 #define LB "\r\n"
-#else
+//#else
 #include <time.h>
-#include <sys/times.h>
-#define LB ""
-#endif
+//#include <sys/times.h>
+//#define LB ""
+//#endif
 
 #ifdef WIN32
 struct tms
@@ -145,7 +146,7 @@ static void
 rfgetsAGS (ags_t *State, char *Buffer, int MaxSize, FILE * fp)
 {
   int c, Count = 0;
-  char *s;
+  char *s = NULL;
   //static int FirstTime = 1;
   MaxSize--;
   while (1)

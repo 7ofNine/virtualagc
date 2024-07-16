@@ -6,7 +6,7 @@
     <LocalDebuggerCommandArguments>--exec=Comanche067-dump.bin</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>--exec=Main.agc.bin</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--exec=Main.agc.bin </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>D:\Dev\virtualagc2\Comanche067</LocalDebuggerWorkingDirectory>
   </PropertyGroup>

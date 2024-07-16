@@ -111,6 +111,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -1190,9 +1191,14 @@ bool
 yaDskyApp::OnInit ()
 {
 
-  int i, j, UsedCfg = 0;
+  int i, UsedCfg = 0;
 
   wxInitAllImageHandlers ();
+
+  std::string resourcesdocuments = (wxStandardPaths::Get().GetResourcesDir()).ToStdString();  // for tests
+  std::string data = (wxStandardPaths::Get().GetDataDir()).ToStdString();  // for tests
+  std::string workDirectory = wxGetCwd().ToStdString();
+
   MainWindow = new MainFrame (NULL, wxID_ANY, wxEmptyString);
   MainWindow->iLastButton = MainWindow->ProButton;
   MainWindow->CurrentBlank = wxString::FromAscii (SevenSeg0);
@@ -1690,7 +1696,7 @@ TimerClass::Notify ()
 	      else
 		{
 		  printf ("yaDSKY reports server error %d\n", errno);
-		  close (ServerSocket);
+		  _close (ServerSocket);
 		  ServerSocket = -1;
 		  break;
 		}
@@ -1727,7 +1733,8 @@ MainFrame::ImageSet (wxStaticBitmap *StaticBitmap, wxString &Filename)
   else
     Dummy = Filename;
   Bitmap = StaticBitmap->GetBitmap ();
-  Bitmap.LoadFile (Dummy, wxBITMAP_TYPE_JPEG);
+  std::string workDirectory = wxGetCwd().ToStdString();
+  bool result = Bitmap.LoadFile (Dummy, wxBITMAP_TYPE_JPEG);
   StaticBitmap->SetBitmap (Bitmap);
 }
 void
@@ -1752,7 +1759,7 @@ MainFrame::ImageSet (wxBitmapButton *BitmapButton, wxString &Filename)
   else
     Dummy = Filename;
   Bitmap = BitmapButton->GetBitmapLabel ();
-  Bitmap.LoadFile (Dummy, wxBITMAP_TYPE_JPEG);
+  bool result = Bitmap.LoadFile (Dummy, wxBITMAP_TYPE_JPEG);
   BitmapButton->SetBitmapLabel (Bitmap);
 }
 void
@@ -2021,7 +2028,6 @@ TimerClass::ActOnIncomingIO (unsigned char *Packet)
     }
   else if (Channel == 011)
     {
-      int i;
       // Here are appropriate Luminary 131 actions for various discrete
       // annunciations.
       if ((Value & 2) != (Last11 & 2))
@@ -2084,7 +2090,7 @@ MainFrame::OutputKeycode (int Keycode)
       j = send (ServerSocket, (const char *) Packet, 4, MSG_NOSIGNAL);
       if (j == SOCKET_ERROR && SOCKET_BROKEN)
 	{
-	  close (ServerSocket);
+	  _close (ServerSocket);
 	  ServerSocket = -1;
 	}
     }
@@ -2129,7 +2135,7 @@ MainFrame::OutputPro (int OffOn)
       j = send (ServerSocket, (const char *) Packet, 8, MSG_NOSIGNAL);
       if (j == SOCKET_ERROR && SOCKET_BROKEN)
 	{
-	  close (ServerSocket);
+	  _close (ServerSocket);
 	  ServerSocket = -1;
 	}
     }

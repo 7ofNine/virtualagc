@@ -397,7 +397,7 @@ VirtualAGC::SetSize(void)
   wxBitmap Bitmap;
   wxImage Image;
   wxSize Size;
-  int Width, Height;
+  //int Width, Height;
   if (!maximumSquish)
     {
       SET_FONT(SimTypeLabel, 2);
@@ -2093,7 +2093,7 @@ VirtualAgcApp::OnInit()
         }
       else
         {
-          Help: printf("USAGE:\n");
+          /*Help:*/ printf("USAGE:\n");
           printf("\tVirtualAGC [OPTIONS]\n");
           printf("The available options are:\n");
           printf("--radio-buttons\n");
@@ -2188,8 +2188,7 @@ VirtualAGC::ConvertRadio(void)
       {
         wxString missionName = wxString::FromUTF8(
             missionConstants[mission - ID_FIRSTMISSION].name);
-        for (int drop = 0; drop < DeviceAGCversionDropDownList->GetCount();
-            drop++)
+        for (unsigned int drop = 0; drop < DeviceAGCversionDropDownList->GetCount(); drop++)
           {
             if (DeviceAGCversionDropDownList->GetString(drop) == missionName)
               {
@@ -2402,8 +2401,7 @@ VirtualAGC::SetDefaultConfiguration(void)
   if (DropDown) // 2022-07-17.
     {
       DeviceAGCversionDropDownList->SetSelection(0);
-      for (int drop = 0; drop < DeviceAGCversionDropDownList->GetCount();
-          drop++)
+      for (unsigned int drop = 0; drop < DeviceAGCversionDropDownList->GetCount(); drop++)
         {
           if (DeviceAGCversionDropDownList->GetString(drop) == wxT("Apollo 11 Lunar Module"))
             {
@@ -2917,7 +2915,7 @@ VirtualAGC::FormCommands(void)
     LM_Simulator = wxT("");
   wxString basename;
   int mission;
-  const char *dskyIni;
+  const char *dskyIni = NULL;
   for (mission = ID_FIRSTMISSION; mission < ID_AGCCUSTOMBUTTON; mission++)
     if (missionRadioButtons[mission - ID_FIRSTMISSION]->GetValue())
       {
@@ -3323,7 +3321,7 @@ Simulation::UploadEvent(wxCommandEvent &event)
       wxString Pathname = Dialog->GetPath();
       Upload(Pathname);
     }
-  Done: delete Dialog;
+  /*Done:*/ delete Dialog;
   wxSetWorkingDirectory(MainFrame->ResourceDirectory);
 }
 
@@ -3724,7 +3722,7 @@ TimerClass::Notify()
                   printf("Digital uplink reports server error %d\n", errno);
                   MainFrame->SimulationWindow->UplinkText->AppendText(
                       wxT("\nConnection failure."));
-                  close(ServerSocket);
+                  _close(ServerSocket);
                   ServerSocket = -1;
                   break;
                 }
@@ -3856,7 +3854,7 @@ TimerClass::Notify()
                   MSG_NOSIGNAL);
                   if (i == SOCKET_ERROR && SOCKET_BROKEN)
                     {
-                      close(ServerSocket);
+                      _close(ServerSocket);
                       ServerSocket = -1;
                       MainFrame->SimulationWindow->UplinkText->AppendText(
                           wxT("\nUplink failure."));

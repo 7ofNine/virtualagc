@@ -59,7 +59,8 @@ aea_engine_init (ags_t * State, const char *RomImage, const char *CoreDump)
   int RetVal, i, j;
   FILE *fp;
   FILE *cd = NULL;
-  int m, n;
+  size_t m;
+  int n;
 
 #ifndef WIN32
   // The purpose of this is to make sure that getchar doesn't halt the program

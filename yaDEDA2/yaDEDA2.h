@@ -44,7 +44,7 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include <sys/time.h>
+//#include <sys/time.h>
 struct tms {
   clock_t tms_utime;  /* user time */
   clock_t tms_stime;  /* system time */
@@ -186,4 +186,5 @@ public:
     virtual void on_KeyHold_pressed(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
+int Portnum = 19897;
 #endif // YADEDA2_H

@@ -137,9 +137,9 @@ extern "C" {
 #ifndef AGC_ENGINE_H
 #define AGC_ENGINE_H
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1300)
-#define _CRT_SECURE_NO_DEPRECATE
-#endif
+//#if defined(_MSC_VER) && (_MSC_VER >= 1300)
+//#define _CRT_SECURE_NO_DEPRECATE
+//#endif
 
 #ifndef NULL
 #define NULL ((void *) 0)

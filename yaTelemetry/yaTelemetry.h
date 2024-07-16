@@ -54,6 +54,10 @@ public:
 private:
     virtual void Notify();
     void ActOnIncomingIO (unsigned char *Packet);
+
+    void initMask();
+
+    bool firstValidTimer = true;
 };
 
 

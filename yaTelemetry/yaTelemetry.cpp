@@ -502,14 +502,23 @@ TimerClass::Notify ()
     {
       StartupDelay -= PULSE_INTERVAL;
       return;
-    }
+  }
+  else {
+      if (firstValidTimer) {
+          initMask();
+          firstValidTimer = false;
+      }
+  }
   // Try to connect to the server (yaAGC) if not already connected.
   if (ServerSocket == -1)
     {
       ServerSocket = CallSocket (Hostname, Portnum);
-      if (ServerSocket != -1)
-        printf ("yaTelemetry is connected.\n");
+      if (ServerSocket != -1) {
+          printf("yaTelemetry is connected.\n");
+      }
     }
+  
+
   if (ServerSocket != -1)
     {
       for (;;)
@@ -529,7 +538,7 @@ TimerClass::Notify ()
                   //Dummy << wxT ("yaTelemetry reports server error ") << errno;
                   //wxMessageBox (Dummy);
                   printf ("yaTerminal reports server error %d\n", errno);
-                  close (ServerSocket);
+                  _close (ServerSocket);
                   ServerSocket = -1;
                   break;
                 }
@@ -556,17 +565,17 @@ void
 TimerClass::ActOnIncomingIO (unsigned char *Packet)
 {
   int Channel, Value, uBit;
-  if (firstTimeIO && Simple)
-    {
-      SimpleFrame->ClearScreen ();
-      SimpleFrame->Hide ();
-      SimpleFrame->InvalidateBestSize ();
-      SimpleFrame->Layout ();
-      SimpleFrame->Fit ();
-      SimpleFrame->Refresh ();
-      SimpleFrame->Update ();
-      SimpleFrame->Show ();
-    }
+  //if (firstTimeIO && Simple)
+  //  {
+  //    SimpleFrame->ClearScreen ();
+  //    SimpleFrame->Hide ();
+  //    SimpleFrame->InvalidateBestSize ();
+  //    SimpleFrame->Layout ();
+  //    SimpleFrame->Fit ();
+  //    SimpleFrame->Refresh ();
+  //    SimpleFrame->Update ();
+  //    SimpleFrame->Show ();
+  //  }
   firstTimeIO = false;
   // Check to see if the message has a yaAGC signature.  If not,
   // ignore it.  The yaAGC signature is 00 01 10 11 in the 
@@ -595,6 +604,19 @@ Error:
 }
 
 
+void TimerClass::initMask() {
+    if (firstValidTimer && Simple)
+    {
+        SimpleFrame->ClearScreen();
+        SimpleFrame->Hide();
+        SimpleFrame->InvalidateBestSize();
+        SimpleFrame->Layout();
+        SimpleFrame->Fit();
+        SimpleFrame->Refresh();
+        SimpleFrame->Update();
+        SimpleFrame->Show();
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // The stuff below this line was created by wxGlade, and could conceivably be
@@ -932,7 +954,7 @@ void SimpleFrameClass::FormattingBoxEvent(wxCommandEvent &event)
     {
     case 1: 
       MskType = 683 ; 
-      ProcessDownlinkList = PrintMsk683;
+      ProcessDownlinkList = PrintMsk683;  
       break;
     case 2: 
       MskType = 966 ; 
@@ -948,7 +970,7 @@ void SimpleFrameClass::FormattingBoxEvent(wxCommandEvent &event)
       break;
     default:
       MskType = 0; 
-      ProcessDownlinkList = PrintDownlinkList;
+      ProcessDownlinkList = PrintDownlinkList;  // only this one is currently used
       break;
     }
   if (MskType)
@@ -1002,8 +1024,8 @@ void SimpleFrameClass::set_properties()
     Bigger->SetToolTip(wxT("Make text bigger by clicking this button."));
     Smaller->SetToolTip(wxT("Make text smaller by clicking this button."));
     DecodingBox->SetToolTip(wxT("Use this box to select how the on-screen downlinked telemetry data is formatted.  The MSK settings provide our approximations to the actual CRT displays used by Apollo Program ground-control CRTs.  The \"raw\" setting has little formatting but insures that all of the downlinked data is displayed."));
-    DecodingBox->Enable(false);
-    DecodingBox->SetSelection(0);
+    DecodingBox->Enable(false);  // disables the telemetry display mask selection
+    DecodingBox->SetSelection(0);    // sets selection to array entry 0 which is Mask683
     panel_1->SetBackgroundColour(wxColour(255, 255, 255));
     TextCtrl->SetBackgroundColour(wxColour(255, 255, 255));
     TextCtrl->SetForegroundColour(wxColour(0, 0, 0));
